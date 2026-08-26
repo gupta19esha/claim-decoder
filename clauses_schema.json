@@ -1,0 +1,18 @@
+[
+  {"name": "clause_id",           "type": "STRING",  "mode": "NULLABLE"},
+  {"name": "clause_title",        "type": "STRING",  "mode": "NULLABLE"},
+  {"name": "clause_text",         "type": "STRING",  "mode": "REQUIRED"},
+  {"name": "clause_type",         "type": "STRING",  "mode": "NULLABLE"},
+  {"name": "applies_to",          "type": "STRING",  "mode": "REPEATED"},
+  {"name": "waiting_period_days", "type": "INTEGER", "mode": "NULLABLE"},
+  {"name": "monetary_cap",        "type": "INTEGER", "mode": "NULLABLE"},
+  {"name": "cap_basis",           "type": "STRING",  "mode": "NULLABLE"},
+  {"name": "percent_cap",         "type": "FLOAT",   "mode": "NULLABLE"},
+  {"name": "conditions_required", "type": "STRING",  "mode": "REPEATED"},
+  {"name": "exclusion_code",      "type": "STRING",  "mode": "NULLABLE"},
+  {"name": "source_page",         "type": "INTEGER", "mode": "REQUIRED"},
+  {"name": "insurer",             "type": "STRING",  "mode": "REQUIRED"},
+  {"name": "policy_name",         "type": "STRING",  "mode": "REQUIRED"},
+  {"name": "policy_id",           "type": "STRING",  "mode": "REQUIRED"},
+  {"name": "section",             "type": "STRING",  "mode": "NULLABLE"}
+]

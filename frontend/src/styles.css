@@ -1,0 +1,192 @@
+/*
+  Claim Decoder
+
+  The subject is an Indian health insurance policy wording: a dense, official,
+  two column document that nobody reads. The design borrows its authority
+  rather than fighting it. Deep ink navy, paper white, hairline rules.
+
+  The signature element is the clause exhibit. Verbatim policy text set in
+  monospace, with the page number in a margin tab, so a citation looks like
+  something you could go and check in the PDF. That is the entire thesis of
+  the product, so it gets the boldness and everything else stays quiet.
+*/
+
+:root {
+  --ink: #12213a;
+  --ink-soft: #4a5a75;
+  --paper: #fbfaf7;
+  --card: #ffffff;
+  --rule: #ddd8ce;
+  --amber: #a8631a;
+  --amber-bg: #fdf4e6;
+  --teal: #1a5f54;
+  --teal-bg: #eaf3f1;
+  --crimson: #8c2f2f;
+
+  --display: Georgia, "Times New Roman", serif;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ui);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* ------------------------------------------------------------- masthead */
+
+.masthead { border-bottom: 2px solid var(--ink); padding-bottom: 14px; margin-bottom: 32px; }
+
+.masthead h1 {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.masthead p { margin: 6px 0 0; color: var(--ink-soft); font-size: 14px; max-width: 46ch; }
+
+/* ----------------------------------------------------------------- form */
+
+.field { margin-bottom: 20px; }
+
+label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+textarea, select, input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--card);
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+textarea { min-height: 150px; resize: vertical; line-height: 1.5; }
+
+textarea:focus, select:focus, input:focus, button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.row { display: flex; gap: 12px; }
+.row > * { flex: 1; }
+
+button {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 22px;
+  border: 1px solid var(--ink);
+  border-radius: 3px;
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) { background: #1b3055; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+button.secondary { background: transparent; color: var(--ink); }
+button.secondary:hover:not(:disabled) { background: #eeeae1; }
+
+/* --------------------------------------------------------------- verdict */
+
+.verdict { border: 1px solid var(--rule); border-radius: 3px; padding: 22px; background: var(--card); margin-bottom: 24px; }
+
+.verdict-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+
+.verdict h2 { font-family: var(--display); font-size: 25px; font-weight: 400; margin: 4px 0 12px; }
+
+.badge { display: inline-block; font-size: 12px; padding: 3px 9px; border-radius: 2px; font-weight: 600; letter-spacing: 0.02em; }
+.badge.weak { background: var(--amber-bg); color: var(--amber); }
+.badge.strong { background: var(--teal-bg); color: var(--teal); }
+
+.confidence { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); margin-left: 8px; }
+
+/* ---------------------------------------- the exhibit, signature element */
+
+.exhibit {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ink);
+  border-radius: 0 3px 3px 0;
+  padding: 18px 20px 18px 22px;
+  margin: 14px 0;
+}
+
+.exhibit-page {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 0 3px 0 3px;
+}
+
+.exhibit-title { font-family: var(--display); font-size: 17px; margin: 0 0 10px; padding-right: 70px; }
+
+.exhibit-text {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.72;
+  margin: 0;
+  white-space: pre-wrap;
+  color: #22314c;
+}
+
+.exhibit-source { font-size: 12px; color: var(--ink-soft); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); }
+
+/* ------------------------------------------------------------- argument */
+
+.section-head {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 6px;
+  margin: 32px 0 14px;
+}
+
+.args { display: grid; gap: 14px; }
+@media (min-width: 620px) { .args { grid-template-columns: 1fr 1fr; } }
+
+.arg { border: 1px solid var(--rule); border-radius: 3px; padding: 16px; background: var(--card); }
+.arg h4 { margin: 0 0 8px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+.arg p { margin: 0; font-size: 14px; }
+
+.letter { font-family: var(--mono); font-size: 13px; line-height: 1.7; white-space: pre-wrap; background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: 18px; }
+
+/* ---------------------------------------------------------------- state */
+
+.notice { border: 1px solid var(--rule); border-left: 3px solid var(--crimson); background: var(--card); padding: 14px 16px; border-radius: 0 3px 3px 0; font-size: 14px; margin-bottom: 20px; }
+
+.working { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .verdict, .exhibit { animation: rise 0.32s ease-out both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
