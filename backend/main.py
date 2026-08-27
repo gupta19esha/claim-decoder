@@ -236,6 +236,8 @@ ADVOCATE_PROMPT = """You are arguing on behalf of {side} in a health insurance c
 
 Build the strongest honest case {side} could make, using only the clauses below. Do not invent clauses. Do not rely on anything not shown here.
 
+Never write "Clause 2" or any bracketed number in your position. Refer to a clause by what it is and its page, for example "the pre-existing disease clause on page 10".
+
 Return JSON only:
 {{
   "position": "two or three sentences making the argument in plain English",
@@ -267,6 +269,8 @@ Return JSON only:
 }}
 
 Rules:
+- Never write "Clause 2" or any bracketed number in the explanation. Those numbers are internal to this prompt and mean nothing to the reader. Refer to a clause by what it is and where it is, for example "the pre-existing disease clause on page 10".
+- Write for someone who has just had a claim rejected and is not a lawyer. No "pursuant to", no "the aforementioned".
 - If the clauses do not actually address the stated reason, return insufficient_information rather than guessing.
 - A clause that merely defines a term is not a deciding clause. The clause that imposes the exclusion, waiting period or limit is.
 - Judge only against the clauses shown. Never assume a provision that is not here.
