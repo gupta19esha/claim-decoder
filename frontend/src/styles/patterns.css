@@ -33,6 +33,88 @@
   max-width: var(--measure-lede);
 }
 
+/* ------------------------------------------------------------------ tabs */
+
+.tabs {
+  display: flex;
+  gap: var(--space-4);
+  margin: var(--space-14) 0 var(--space-12);
+}
+
+/* Not .btn: these switch a view rather than perform an action, and giving
+   them the solid treatment would make two primary buttons on one screen. */
+.tab {
+  font-family: inherit;
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: var(--weight-semibold);
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-bottom: var(--border-thick) solid transparent;
+  padding: var(--space-6) var(--space-2);
+  margin-right: var(--space-12);
+  cursor: pointer;
+}
+
+.tab:hover { color: var(--ink); }
+.tab.now { color: var(--ink); border-bottom-color: var(--ink); }
+.tab:focus-visible {
+  outline: var(--border-thick) solid var(--ink);
+  outline-offset: var(--space-2);
+}
+
+/* ------------------------------------------------------- bill auditor */
+
+.bill-row {
+  padding: var(--space-15) var(--space-18);
+  margin-bottom: var(--space-10);
+  border-left: var(--border-accent) solid var(--rule);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.bill-line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-14);
+  align-items: baseline;
+}
+
+.bill-desc { font-size: var(--text-control); }
+
+.bill-amt {
+  font-family: var(--font-mono);
+  font-size: var(--text-ui);
+  white-space: nowrap;
+}
+
+/* The IRDAI wording is the evidence, so it is set like the clause exhibit:
+   monospace, quoted, visibly not the app's own words. */
+.bill-item {
+  margin-top: var(--space-11);
+  padding-top: var(--space-10);
+  border-top: var(--border-hairline) solid var(--rule-soft);
+}
+
+.bill-item q {
+  display: block;
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-verbatim);
+  color: var(--ink-verbatim);
+}
+
+.scope {
+  margin-top: var(--space-22);
+  border-left: var(--border-accent) solid var(--ink-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-16) var(--space-18);
+}
+
+.scope p { margin: var(--space-6) 0 0; font-size: var(--text-ui); }
+.scope .hint { margin-top: var(--space-10); }
+
 /* ---------------------------------------------------------------- stages
 
    Analysis takes 20 to 40 seconds. A spinner for that long reads as broken,

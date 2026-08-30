@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { listPolicies, createCase, pollCase, createAppeal } from "./api";
+import {
+  listPolicies,
+  createCase,
+  pollCase,
+  createAppeal,
+  auditBill,
+} from "./api";
 
 const VERDICT = {
   well_supported: {
@@ -34,7 +40,62 @@ const STAGES = [
   "Weighing them against the clauses",
 ];
 
+const MODES = {
+  rejection: {
+    label: "Rejection letter",
+    blurb:
+      "Paste the rejection letter. See the clause the insurer is relying on, " +
+      "in the policy's own words, with the page you can check it on.",
+    foot:
+      "Clause text is quoted directly from the policy wording. This is not " +
+      "legal advice.",
+  },
+  bill: {
+    label: "Discharge bill",
+    blurb:
+      "Paste the itemised bill. See which lines the IRDAI says a hospital " +
+      "may not charge you for, quoted from the published list.",
+    foot:
+      "Item names are quoted directly from the IRDAI non-payable lists. This " +
+      "is not legal advice.",
+  },
+};
+
 export default function App() {
+  const [mode, setMode] = useState("rejection");
+  const m = MODES[mode];
+
+  return (
+    <div className="page">
+      <header className="masthead">
+        <div className="wrap">
+          <h1>Claim Decoder</h1>
+          <nav className="tabs" aria-label="What to check">
+            {Object.entries(MODES).map(([key, cfg]) => (
+              <button
+                key={key}
+                className={`tab${key === mode ? " now" : ""}`}
+                aria-current={key === mode ? "page" : undefined}
+                onClick={() => setMode(key)}
+              >
+                {cfg.label}
+              </button>
+            ))}
+          </nav>
+          <p>{m.blurb}</p>
+        </div>
+      </header>
+
+      <main className="wrap">
+        {mode === "rejection" ? <RejectionDecoder /> : <BillAuditor />}
+      </main>
+
+      <footer className="wrap foot">{m.foot}</footer>
+    </div>
+  );
+}
+
+function RejectionDecoder() {
   const [insurers, setInsurers] = useState([]);
   const [insurerId, setInsurerId] = useState("");
   const [policyId, setPolicyId] = useState("");
@@ -99,18 +160,7 @@ export default function App() {
     rejectionText.trim().length >= 10 && insurerId && policyId && status !== "working";
 
   return (
-    <div className="page">
-      <header className="masthead">
-        <div className="wrap">
-          <h1>Claim Decoder</h1>
-          <p>
-            Paste the rejection letter. See the clause the insurer is relying on,
-            in the policy's own words, with the page you can check it on.
-          </p>
-        </div>
-      </header>
-
-      <main className="wrap">
+    <>
         {error && (
           <div className="card notice" role="alert">
             <strong>Something went wrong.</strong> {error}
@@ -252,13 +302,230 @@ export default function App() {
             )}
           </>
         )}
-      </main>
+    </>
+  );
+}
 
-      <footer className="wrap foot">
-        Clause text is quoted directly from the policy wording. This is not legal
-        advice.
-      </footer>
-    </div>
+/* --------------------------------------------------------- bill auditor */
+
+const rupees = (n) =>
+  n === null || n === undefined
+    ? null
+    : `₹${Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+
+/* The four IRDAI lists say different things and the difference changes what
+   the claimant should say. Only the first is money that should never have
+   been charged; the rest is money already inside a charge the bill has. */
+const CATEGORY = {
+  not_payable: {
+    heading: "Should not have been charged at all",
+    tone: "firm",
+    note: "The IRDAI lists these as never payable under any policy.",
+  },
+  subsume_room: {
+    heading: "Already covered by the room charge",
+    tone: "weak",
+    note: "Billing these separately charges you twice for the same thing.",
+  },
+  subsume_procedure: {
+    heading: "Already covered by the procedure charge",
+    tone: "weak",
+    note: "Billing these separately charges you twice for the same thing.",
+  },
+  subsume_treatment: {
+    heading: "Already covered by the cost of treatment",
+    tone: "weak",
+    note: "Billing these separately charges you twice for the same thing.",
+  },
+};
+
+function BillAuditor() {
+  const [billText, setBillText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const fileRef = useRef(null);
+
+  async function readFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    try {
+      // Read in the browser rather than uploading. Nothing about the bill
+      // reaches the server until the user presses the button, and a bill is
+      // health data.
+      setBillText(await file.text());
+    } catch {
+      setError("That file could not be read. Paste the bill text instead.");
+    }
+    e.target.value = "";
+  }
+
+  async function submit() {
+    setBusy(true);
+    setError(null);
+    try {
+      setResult(await auditBill(billText));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (result) {
+    return (
+      <BillResult
+        result={result}
+        onReset={() => {
+          setResult(null);
+          setBillText("");
+        }}
+      />
+    );
+  }
+
+  return (
+    <>
+      {error && (
+        <div className="card notice" role="alert">
+          <strong>Something went wrong.</strong> {error}
+        </div>
+      )}
+
+      <div className="field">
+        <label className="label" htmlFor="bill">
+          The itemised bill
+        </label>
+        <div className="hint">
+          One line per item, with the amount at the end of the line. Copy it
+          straight from the bill.
+        </div>
+        <textarea
+          className="textarea"
+          id="bill"
+          value={billText}
+          onChange={(e) => setBillText(e.target.value)}
+          disabled={busy}
+          placeholder={"ROOM RENT - SINGLE PRIVATE (4 DAYS)   24000.00\nGLOVES   450.00\nBABY FOOD   320.00"}
+        />
+      </div>
+
+      <div className="actions">
+        <button
+          className="btn"
+          onClick={submit}
+          disabled={billText.trim().length < 10 || busy}
+        >
+          {busy ? "Checking…" : "Check the bill"}
+        </button>
+        <button
+          className="btn ghost"
+          onClick={() => fileRef.current?.click()}
+          disabled={busy}
+        >
+          Upload a text file
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".txt,.csv,text/plain,text/csv"
+          onChange={readFile}
+          hidden
+        />
+      </div>
+
+      <ScopeNotice />
+    </>
+  );
+}
+
+/* Stated before the user runs it and again with the result. A bill auditor
+   that silently skips the largest deduction on most bills would be read as
+   having checked it. */
+function ScopeNotice({ reason }) {
+  return (
+    <section className="card scope">
+      <div className="eyebrow">What this does not check</div>
+      <p>
+        <strong>Room rent is not checked.</strong>{" "}
+        {reason ||
+          "Room rent limits are set in your Policy Schedule, not in the policy wording, so they cannot be checked from the policy alone."}
+      </p>
+      <p className="hint">
+        This checks the 146 items the IRDAI says a hospital may not bill to a
+        claim. It does not check sub-limits, deductibles, or whether the
+        treatment itself was covered.
+      </p>
+    </section>
+  );
+}
+
+function BillResult({ result, onReset }) {
+  const grouped = result.by_category || [];
+  const findings = result.findings || [];
+
+  return (
+    <>
+      <section className="card verdict firm">
+        <div className="eyebrow">Bill check</div>
+        <h2>
+          {findings.length === 0
+            ? "Nothing flagged"
+            : `${rupees(result.flagged_total)} should not have been billed to you`}
+        </h2>
+        <p className="verdict-sub">
+          {result.lines_flagged} of {result.lines_read} lines matched the IRDAI
+          non-payable lists.
+          {result.findings_without_amount > 0 &&
+            ` ${result.findings_without_amount} matched but had no readable amount, so they are not in the total.`}
+        </p>
+      </section>
+
+      {grouped.map((cat) => {
+        const meta = CATEGORY[cat.category] || {};
+        const rows = findings.filter((f) => f.category === cat.category);
+        return (
+          <section key={cat.category}>
+            <h3 className="section-head">
+              {meta.heading || cat.category_description}
+            </h3>
+            <p className="hint">{meta.note}</p>
+            {rows.map((f, i) => (
+              <article className="card bill-row" key={`${f.line_no}-${i}`}>
+                <div className="bill-line">
+                  <span className="bill-desc">{f.description}</span>
+                  <span className="bill-amt">
+                    {rupees(f.amount) || "no amount read"}
+                  </span>
+                </div>
+                <div className="bill-item">
+                  <span className="eyebrow">IRDAI list</span>
+                  <q>{f.item_name}</q>
+                </div>
+                <div className="exhibit-meta">
+                  <span>{f.category_description}</span>
+                  <span>line {f.line_no}</span>
+                </div>
+              </article>
+            ))}
+            <p className="provenance">
+              {rows.length} line{rows.length === 1 ? "" : "s"},{" "}
+              {rupees(cat.amount)}
+              {cat.amount_known ? "" : " from the lines with a readable amount"}
+            </p>
+          </section>
+        );
+      })}
+
+      <ScopeNotice reason={result.checks?.room_rent_reason} />
+
+      <div className="actions">
+        <button className="btn ghost" onClick={onReset}>
+          Check another bill
+        </button>
+      </div>
+    </>
   );
 }
 

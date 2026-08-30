@@ -32,6 +32,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+# Imported at module level on purpose. A missing module then fails the
+# container at startup, loudly, instead of 500ing one endpoint per request
+# while everything else looks healthy.
+import bill_audit
+
 app = FastAPI(title="Claim Decoder API", version="0.2.0")
 
 PROJECT = os.environ.get("GCP_PROJECT_ID", "project-37e668b0-6b36-4e1f-a02")
@@ -536,6 +541,60 @@ async def create_appeal(case_id: str, uid: str = Depends(current_user)):
                   "yourself:\n\n\"" + clauses[0]["clause_text"] + "\"")
 
     return {"letter_text": letter, "quotes_verified": not unverified}
+
+
+class BillAudit(BaseModel):
+    bill_text: str = Field(min_length=10)
+
+
+_IRDAI_ITEMS = None
+
+
+def irdai_items():
+    """
+    The 146 IRDAI non-payable items, cached for the life of the instance.
+
+    IRDAI-mandated and identical across insurers, so one canonical copy
+    serves every policy. This is why the bill auditor needs no policy_id and
+    no model: it is a lookup against a published list.
+    """
+    global _IRDAI_ITEMS
+    if _IRDAI_ITEMS is None:
+        sql = (f"SELECT item_name, category, category_description "
+               f"FROM `{PROJECT}.{DATASET}.irdai_non_payable_items`")
+        _IRDAI_ITEMS = [dict(r) for r in bq().query(sql).result()]
+    return _IRDAI_ITEMS
+
+
+@app.post("/api/bill/audit")
+async def audit_bill(body: BillAudit, uid: str = Depends(current_user)):
+    """
+    Check a discharge bill against the IRDAI non-payable lists.
+
+    Synchronous, because there is no model call to wait for. Every item name
+    returned is the row from BigQuery, unchanged, for the same reason clause
+    text is never paraphrased.
+
+    This does not check room rent. For four of six policies in the corpus the
+    room limit is not in the policy wording at all, it is in the customer's
+    Policy Schedule, so there is nothing generic to check it against.
+    """
+    try:
+        result = bill_audit.audit(body.bill_text, irdai_items())
+    except Exception as exc:
+        print("BILL AUDIT FAILED\n" + traceback.format_exc(),
+              file=sys.stderr, flush=True)
+        raise HTTPException(500, "The bill could not be read.") from exc
+
+    result["checks"] = {
+        "irdai_items": len(irdai_items()),
+        "room_rent_checked": False,
+        "room_rent_reason": (
+            "Room rent limits are set in your Policy Schedule, not in the "
+            "policy wording, so they cannot be checked from the policy alone."
+        ),
+    }
+    return result
 
 
 @app.get("/api/policies")

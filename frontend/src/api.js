@@ -33,6 +33,14 @@ export const getCase = (caseId) => request(`/api/cases/${caseId}`);
 export const createAppeal = (caseId) =>
   request(`/api/cases/${caseId}/appeal`, { method: "POST" });
 
+// The bill audit is a lookup against the IRDAI lists, not a model call, so it
+// answers immediately and needs no polling.
+export const auditBill = (billText) =>
+  request("/api/bill/audit", {
+    method: "POST",
+    body: JSON.stringify({ bill_text: billText }),
+  });
+
 // Analysis takes 10 to 30 seconds once the agents are real, so the result is
 // polled rather than awaited. Building it this way now means nothing changes
 // in the UI when the stub is replaced.
