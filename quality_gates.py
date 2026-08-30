@@ -315,8 +315,77 @@ def gate_continues_previous(recs):
     return findings
 
 
+# ------------------------------------- gate: a page number spliced mid-clause
+#
+# HDFC's Excl01 on page 30 reads "to the extent of Sum 30 Insured increase".
+# The printed page number was extracted as body text and dropped between two
+# words of a defined term. It survives verify_verbatim, because it really is
+# in the assembled page, and it has already gone out inside a drafted letter
+# to a grievance officer.
+#
+# Calibrated against the corpus rather than guessed:
+#
+#   - the number must sit between two alphabetic words, with neither
+#     neighbour a word that makes a number ordinary ("Rs 5000", "36 months",
+#     "Section 4", "aged 60")
+#   - it must equal the clause's own source_page, or its neighbours. A clause
+#     that began on the previous page carries the next page's number, because
+#     the marker sits at the break.
+#   - a clause carrying three or more bare numbers is an enumerated list, not
+#     a splice. HDFC's critical-illness table reads "HIV 19 Medullary Cystic
+#     Disease 45 Terminal Illness 20" and none of those is a defect.
+
+NUMERIC_CONTEXT = {
+    "rs", "inr", "rupees", "day", "days", "month", "months", "year", "years",
+    "hour", "hours", "week", "weeks", "percent", "per", "cent", "lakh",
+    "lakhs", "lac", "lacs", "crore", "crores", "age", "aged", "upto", "up",
+    "to", "of", "than", "least", "maximum", "minimum", "section", "clause",
+    "code", "excl", "exel", "list", "annexure", "point", "points", "times",
+    "sum", "insured", "no", "number", "sl", "sr", "item", "within", "after",
+    "before", "period", "plan", "option", "type", "level", "band", "and",
+    "or", "the", "a", "an", "is", "are", "was", "were", "shall",
+    "consecutive", "st", "nd", "rd", "th", "first", "second", "third",
+    "pre", "next", "last", "only", "such", "these", "any", "all", "each",
+}
+
+WEDGED_NUMBER = re.compile(r"(?<![\w/.-])(\d{1,3})(?![\w/.%-])")
+
+
+def _wedged_numbers(text):
+    out = []
+    for m in WEDGED_NUMBER.finditer(text):
+        before, after = text[:m.start()].rstrip(), text[m.end():].lstrip()
+        bw = re.search(r"([A-Za-z]+)\W*$", before)
+        aw = re.match(r"([A-Za-z]+)", after)
+        if not bw or not aw:
+            continue
+        if (bw.group(1).lower() in NUMERIC_CONTEXT
+                or aw.group(1).lower() in NUMERIC_CONTEXT):
+            continue
+        out.append((int(m.group(1)), m.start(), m.end()))
+    return out
+
+
+def gate_page_number_splice(rec):
+    text = re.sub(r"\s+", " ", rec.get("clause_text") or "")
+    page = rec.get("source_page")
+    if not text or not isinstance(page, int):
+        return None
+
+    wedged = _wedged_numbers(text)
+    if len(wedged) >= 3:
+        return None                       # enumerated list
+
+    for n, start, end in wedged:
+        if n in (page - 1, page, page + 1):
+            return ("page_number_splice",
+                    f"{n} spliced mid-clause: "
+                    f"...{text[max(0, start - 45):end + 35].strip()}...")
+    return None
+
+
 GATES = (gate_truncated, gate_contact_details, gate_starts_mid_sentence,
-         gate_masthead_fragment)
+         gate_masthead_fragment, gate_page_number_splice)
 SEQUENCE_GATES = (gate_continues_previous,)
 
 # Findings that block a load. no_terminal_punctuation is reported but does not
@@ -324,7 +393,7 @@ SEQUENCE_GATES = (gate_continues_previous,)
 # is headings and table rows.
 BLOCKING = {"truncated", "empty", "embedded_contact_details",
             "starts_mid_sentence", "continues_previous",
-            "masthead_fragment"}
+            "masthead_fragment", "page_number_splice"}
 
 
 # ------------------------------------------------------------------- runner
@@ -377,8 +446,8 @@ def main():
     counts = Counter(r.get("policy_id") for r in recs)
 
     kinds = ["truncated", "starts_mid_sentence", "continues_previous",
-             "embedded_contact_details", "masthead_fragment", "empty",
-             "no_terminal_punctuation"]
+             "embedded_contact_details", "masthead_fragment",
+             "page_number_splice", "empty", "no_terminal_punctuation"]
     print(f"{'policy':26s}{'clauses':>9s}" + "".join(f"{k[:17]:>19s}"
                                                      for k in kinds))
     print("-" * (35 + 19 * len(kinds)))

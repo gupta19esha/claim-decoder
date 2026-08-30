@@ -228,11 +228,27 @@ def audit(bill_text, items):
     flagged_total = sum(f["amount"] for f in findings
                         if f["amount"] is not None)
     missing_amounts = sum(1 for f in findings if f["amount"] is None)
+    bill_total = sum(l["amount"] for l in lines if l["amount"] is not None)
 
     return {
         "lines_read": len(lines),
         "lines_flagged": len(findings),
         "lines_not_flagged": len(clean),
+        # The lines that were read and left alone, returned so the reader can
+        # check them rather than take our word for it. A checker that only
+        # shows what it flagged asks to be trusted, and the whole argument of
+        # this product is that nobody should have to.
+        "not_flagged": [
+            {"line_no": l["line_no"], "description": l["description"],
+             "amount": l["amount"]}
+            for l in clean
+        ],
+        # Context for the flagged figure. Rs 6,670 against a bill of
+        # Rs 1,13,770 means something different from Rs 6,670 against
+        # Rs 15,000.
+        "bill_total": round(bill_total, 2),
+        "flagged_share": (round(flagged_total / bill_total, 4)
+                          if bill_total else None),
         "findings": sorted(findings, key=lambda f: (
             f["category"] != "not_payable", -(f["amount"] or 0))),
         "by_category": sorted(by_category.values(),

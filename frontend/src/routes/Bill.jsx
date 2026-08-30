@@ -34,6 +34,16 @@ const rupees = (n) =>
     ? null
     : `₹${Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 
+/* A figure needs its denominator. Rs 6,670 against a bill of Rs 1,13,770 is
+   a different fact from Rs 6,670 against Rs 15,000. */
+const pct = (share) =>
+  typeof share === "number" ? `${(share * 100).toFixed(1)}%` : "part";
+
+/* The billed line and the IRDAI item often carry the same words. */
+const same = (f) =>
+  (f.description || "").trim().toUpperCase() ===
+  (f.item_name || "").trim().toUpperCase();
+
 const SUBSUME = {
   subsume_room: "the room charge",
   subsume_procedure: "the procedure charge",
@@ -245,9 +255,16 @@ function Findings({ result, onReset }) {
             {rupees(result.flagged_total)} on this bill should not have been
             charged to your claim.
           </h1>
-          <p className="mt-4 max-w-[56ch] font-doc text-lg leading-relaxed opacity-90">
+          <p className="mt-4 max-w-[58ch] font-doc text-lg leading-relaxed opacity-90">
             {result.lines_flagged} of {result.lines_read} lines matched the
             IRDAI lists.
+            {typeof result.bill_total === "number" && result.bill_total > 0 && (
+              <>
+                {" "}
+                That is {pct(result.flagged_share)} of a bill totalling{" "}
+                {rupees(result.bill_total)}.
+              </>
+            )}
             {result.findings_without_amount > 0 &&
               ` ${result.findings_without_amount} matched but had no readable amount, so they are not in this total.`}
           </p>
@@ -291,6 +308,10 @@ function Findings({ result, onReset }) {
           ))}
         </section>
       )}
+
+      <NotFlagged rows={result.not_flagged || []} />
+
+      <BillLetter result={result} />
 
       <ScopeNote reason={result.checks?.room_rent_reason} />
 
@@ -351,6 +372,7 @@ function Row({ f }) {
     <li className="border border-rule bg-card md:grid md:grid-cols-12 md:items-start">
       <div className="flex items-baseline justify-between gap-4 px-5 py-4 md:col-span-5 md:border-r md:border-rule-soft">
         <span className="font-doc text-lg leading-snug text-ink">
+          <span className="folio mr-2 text-ink-soft">L{f.line_no}</span>
           {f.description}
         </span>
         <span className="font-quote text-base whitespace-nowrap text-ink">
@@ -359,12 +381,24 @@ function Row({ f }) {
       </div>
 
       <div className="border-t border-rule-soft px-5 py-4 md:col-span-7 md:border-t-0">
-        <span className="folio text-ink-soft">IRDAI list</span>
-        {/* Verbatim from the corpus. Never paraphrased, same rule as clause
-            text in the decoder. */}
-        <q className="mt-1 block font-quote text-[0.8125rem] leading-relaxed text-ink-verbatim">
-          {f.item_name}
-        </q>
+        {/* Showing "GLOVES / IRDAI list GLOVES" reads as a rendering fault,
+            not as evidence. When the billed line and the IRDAI wording are
+            the same the match is self-evident, so only the difference is
+            worth printing. The wording is still verbatim from the corpus
+            whenever it is shown — never paraphrased, same rule as clause text
+            in the decoder. */}
+        {same(f) ? (
+          <span className="font-doc text-base text-ink-soft">
+            Matches the IRDAI list exactly.
+          </span>
+        ) : (
+          <>
+            <span className="folio text-ink-soft">IRDAI list</span>
+            <q className="mt-1 block font-quote text-[0.8125rem] leading-relaxed text-ink-verbatim">
+              {f.item_name}
+            </q>
+          </>
+        )}
       </div>
     </li>
   );
@@ -433,6 +467,177 @@ function NothingFlagged({ result, onReset }) {
         </button>
       </div>
     </div>
+  );
+}
+
+/*
+  The lines that were not flagged.
+
+  Collapsed, because it is reference rather than argument, but present.
+  Showing only what was flagged asks the reader to trust that the rest was
+  correctly left alone, and the entire premise of this product is that nobody
+  should have to take our word for anything.
+*/
+function NotFlagged({ rows }) {
+  if (rows.length === 0) return null;
+  return (
+    <details className="mt-10 border border-rule-soft bg-card">
+      <summary className="cursor-pointer px-5 py-4 font-doc text-lg text-ink-2">
+        {rows.length} line{rows.length === 1 ? "" : "s"} checked and not flagged
+      </summary>
+      <ul className="border-t border-rule-soft">
+        {rows.map((l) => (
+          <li
+            key={l.line_no}
+            className="flex items-baseline justify-between gap-4 border-b border-rule-soft px-5 py-3 last:border-b-0"
+          >
+            <span className="font-doc text-base text-ink">
+              <span className="folio mr-2 text-ink-soft">L{l.line_no}</span>
+              {l.description}
+            </span>
+            <span className="font-quote text-base whitespace-nowrap text-ink-soft">
+              {rupees(l.amount) || "—"}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="border-t border-rule-soft px-5 py-3 font-doc text-base text-ink-soft">
+        None of these appears on the IRDAI lists. That does not make each one
+        correct, only that it is not an item a hospital is forbidden from
+        charging.
+      </p>
+    </details>
+  );
+}
+
+/*
+  The letter to the billing desk.
+
+  The rejection side produces a letter and this side stopped at a page, which
+  left the reader with a finding and no way to act on it. This is the thing
+  that actually recovers the money.
+
+  Composed in the browser from the findings with no model involved, for the
+  same reason the matching has none: every item name in it is the corpus row,
+  and a letter quoting an item the IRDAI list does not contain would be worse
+  than no letter.
+*/
+function billLetterText(result) {
+  const f = result.findings || [];
+  const never = f.filter((x) => x.category === "not_payable");
+  const twice = f.filter((x) => x.category !== "not_payable");
+  const money = (n) =>
+    typeof n === "number"
+      ? `Rs ${n.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`
+      : "amount not stated";
+  const sum = (rows) => rows.reduce((t, x) => t + (x.amount || 0), 0);
+  const line = (x) =>
+    `  Line ${x.line_no}: ${x.description} - ${money(x.amount)}\n` +
+    `      IRDAI list: "${x.item_name}"`;
+
+  const parts = [
+    "To\nThe Billing Department",
+    "",
+    "Subject: Request to review items billed against my insurance claim",
+    "",
+    "Dear Sir/Madam,",
+    "",
+    "I have checked the itemised bill issued to me against the IRDAI's " +
+      "published lists of items that may not be charged to a health " +
+      "insurance claim. The lines below appear on those lists. I request " +
+      "that the bill be revised accordingly.",
+  ];
+
+  if (never.length) {
+    parts.push(
+      "",
+      `A. Items that may not be charged to a claim at all (${money(sum(never))})`,
+      "",
+      never.map(line).join("\n")
+    );
+  }
+  if (twice.length) {
+    parts.push(
+      "",
+      `B. Items already included in a charge already billed (${money(sum(twice))})`,
+      "",
+      twice
+        .map(
+          (x) =>
+            `${line(x)}\n      Already included in ${
+              SUBSUME[x.category] || "another charge"
+            }.`
+        )
+        .join("\n")
+    );
+  }
+
+  parts.push(
+    "",
+    `Total queried: ${money(result.flagged_total)}.`,
+    "",
+    "Please confirm in writing whether these lines will be removed or " +
+      "adjusted, and issue a revised bill. I am happy to discuss any line " +
+      "you believe has been listed in error.",
+    "",
+    "Yours faithfully,"
+  );
+  return parts.join("\n");
+}
+
+function BillLetter({ result }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const text = billLetterText(result);
+
+  async function copy() {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <section className="mt-12">
+      {!open ? (
+        <div className="no-print border border-rule bg-card p-5 sm:p-6">
+          <h2 className="font-doc text-2xl leading-tight font-semibold">
+            Take it to the billing desk
+          </h2>
+          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink-2">
+            A letter listing each line above with the IRDAI wording beside it,
+            and a total. Deductions are argued line by line, so the list is the
+            argument.
+          </p>
+          <button
+            onClick={() => setOpen(true)}
+            className="mt-5 border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2"
+          >
+            Draft the letter
+          </button>
+        </div>
+      ) : (
+        <Arrive>
+          <h2 className="folio text-ink-soft">Draft letter</h2>
+          <div className="mt-3 border border-rule bg-card px-5 py-6 font-quote text-[0.8125rem] leading-[1.85] whitespace-pre-wrap text-ink-verbatim">
+            {text}
+          </div>
+          <div className="no-print mt-4 flex flex-wrap gap-3">
+            <button
+              onClick={copy}
+              className="border border-ink px-6 py-3 font-doc text-base font-semibold text-ink transition-colors hover:bg-paper-sunk"
+            >
+              {copied ? "Copied" : "Copy letter"}
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="border border-rule px-6 py-3 font-doc text-base text-ink-2 transition-colors hover:border-ink"
+            >
+              Print
+            </button>
+          </div>
+        </Arrive>
+      )}
+    </section>
   );
 }
 
