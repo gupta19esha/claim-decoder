@@ -318,7 +318,10 @@ def analyse(case: dict):
                 "explanation": ("No clauses were found for this policy. The "
                                 "policy wording may not be in the corpus yet."),
                 "arguments": {"insurer_position": "", "claimant_position": ""},
+                # No clause was retrieved, so there is nothing to quote and
+                # no letter that could be written honestly.
                 "appeal_available": False,
+                "letter_type": None,
             })
             return
 
@@ -375,7 +378,28 @@ def analyse(case: dict):
             },
             "rejection_type": parsed.get("rejection_type"),
             "considered_count": len(clauses),
-            "appeal_available": ruling.get("verdict") != "well_supported",
+            # A letter is always offered, but it is not always an appeal.
+            #
+            # This used to be False whenever the rejection held up, which
+            # meant the reader most in need of a next step was given none.
+            # Even on a well-supported rejection the insurer's own weakest
+            # point is often substantial — they may still have to prove
+            # non-disclosure, or prove the treatment was a direct
+            # complication of the excluded condition — and "go and check
+            # this" told the reader to find a document and then gave them
+            # nothing to do with it.
+            #
+            # So the action changes rather than disappearing. Contest the
+            # finding where it is contestable; where it is not, ask the
+            # insurer to substantiate the specific thing they are asserting.
+            # Never encourage a hopeless appeal.
+            "appeal_available": True,
+            "letter_type": (
+                "appeal"
+                if ruling.get("verdict") in ("weakly_supported",
+                                             "partially_supported")
+                else "substantiate"
+            ),
         })
         case["_corpus"] = [c["clause_text"] for c in clauses]
         case["_clauses"] = picked
@@ -511,6 +535,38 @@ Claim details:
 {claim}"""
 
 
+SUBSTANTIATE_PROMPT = """Write a formal letter to an Indian health insurer's grievance officer asking them to substantiate their rejection. This is NOT an appeal and must not read as one.
+
+The policy wording does support the insurer's decision, and the letter must not pretend otherwise. What it does is require them to prove the specific thing they are asserting, which they have stated but not evidenced. An insurer must be able to show the grounds for a repudiation on request.
+
+Rules:
+- Do not argue that the rejection is wrong. Do not ask for the claim to be paid.
+- Ask them to provide, in writing, the evidence for the specific point named below. Name that point plainly and put it as a numbered request.
+- Also ask them to confirm the clause number and the page of the policy wording they are relying on.
+- Quote the policy clause exactly as given below. Never rephrase a quotation.
+- Plain, firm, unemotional. No threats, no legal citations you cannot support.
+- Under 300 words.
+- End with "Yours faithfully," and nothing after it.
+- Do not invent facts about the claimant that are not given.
+
+Return plain text only, no JSON, no markdown.
+
+Why the claim was rejected:
+{reason}
+
+The finding, which went against the claimant:
+{explanation}
+
+The specific thing the insurer has asserted but not yet evidenced. Build the numbered request around this:
+{weak_point}
+
+The clause the insurer relies on, quote it exactly:
+{clause}
+
+Claim details:
+{claim}"""
+
+
 @app.post("/api/cases/{case_id}/appeal")
 async def create_appeal(case_id: str, uid: str = Depends(current_user)):
     case = CASES.get(case_id)
@@ -523,12 +579,30 @@ async def create_appeal(case_id: str, uid: str = Depends(current_user)):
     if not clauses:
         raise HTTPException(400, "No clause available to appeal against.")
 
-    letter = ask(APPEAL_PROMPT.format(
-        reason=case["input"]["rejection_text"][:1200],
-        explanation=case["result"].get("explanation", ""),
-        clause=clauses[0]["clause_text"],
-        claim=json.dumps(case["input"]["claim"], default=str),
-    ), as_json=False)
+    result = case["result"]
+    kind = result.get("letter_type") or "appeal"
+
+    if kind == "substantiate":
+        # The insurer's own advocate named the weakest part of their case.
+        # That is what they are asked to evidence, so the request is specific
+        # rather than a general demand for reconsideration.
+        weak = (result.get("arguments") or {}).get("insurer_weak_point")
+        letter = ask(SUBSTANTIATE_PROMPT.format(
+            reason=case["input"]["rejection_text"][:1200],
+            explanation=result.get("explanation", ""),
+            weak_point=weak or (
+                "the insurer has not shown that the facts they rely on are "
+                "established"),
+            clause=clauses[0]["clause_text"],
+            claim=json.dumps(case["input"]["claim"], default=str),
+        ), as_json=False)
+    else:
+        letter = ask(APPEAL_PROMPT.format(
+            reason=case["input"]["rejection_text"][:1200],
+            explanation=result.get("explanation", ""),
+            clause=clauses[0]["clause_text"],
+            claim=json.dumps(case["input"]["claim"], default=str),
+        ), as_json=False)
 
     # Any policy language the letter quotes must exist in the corpus. A letter
     # citing wording the policy does not contain is worse than no letter.
@@ -540,7 +614,8 @@ async def create_appeal(case_id: str, uid: str = Depends(current_user)):
                   "policy, so it has been withheld. Quote this clause "
                   "yourself:\n\n\"" + clauses[0]["clause_text"] + "\"")
 
-    return {"letter_text": letter, "quotes_verified": not unverified}
+    return {"letter_text": letter, "quotes_verified": not unverified,
+            "letter_type": kind}
 
 
 class BillAudit(BaseModel):

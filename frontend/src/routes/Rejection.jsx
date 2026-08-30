@@ -652,6 +652,38 @@ function NoClause({ policy, explanation }) {
   );
 }
 
+/*
+  The letter.
+
+  There is always one, but it is not always an appeal. When the wording
+  supports the insurer, an appeal would be a hopeless one and offering it
+  would be dishonest — so the action changes instead of disappearing, and the
+  copy says plainly which letter this is and what it does. The reader who has
+  just been told the rejection holds up is the one who most needs a next step.
+*/
+const LETTER = {
+  appeal: {
+    heading: "Put it to them in writing",
+    blurb:
+      "A short letter to the grievance officer, quoting the clause exactly " +
+      "as printed. You can send it as it is, or use it as a starting point.",
+    cta: "Draft the appeal",
+    drafting: "Drafting the appeal…",
+    label: "Draft appeal",
+  },
+  substantiate: {
+    heading: "Make them prove it",
+    blurb:
+      "The wording is on their side, so an appeal would not get far — but " +
+      "they have asserted something they have not yet evidenced. This letter " +
+      "asks them to produce that evidence in writing, and to confirm the " +
+      "clause and page they are relying on. It does not ask them to pay.",
+    cta: "Draft the letter",
+    drafting: "Drafting the letter…",
+    label: "Draft letter",
+  },
+};
+
 function Appeal({ result }) {
   const [letter, setLetter] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -659,6 +691,10 @@ function Appeal({ result }) {
   const [err, setErr] = useState(null);
 
   if (!result.appeal_available && !letter) return null;
+
+  // Which letter this is, and therefore what it is honestly called.
+  const kind = letter?.letter_type || result.letter_type || "appeal";
+  const copyFor = LETTER[kind] || LETTER.appeal;
 
   async function draft() {
     setBusy(true);
@@ -689,24 +725,22 @@ function Appeal({ result }) {
       {!letter ? (
         <div className="no-print border border-rule bg-card p-5 sm:p-6">
           <h2 className="font-doc text-2xl leading-tight font-semibold">
-            Put it to them in writing
+            {copyFor.heading}
           </h2>
-          <p className="mt-2 max-w-[56ch] font-doc text-lg leading-relaxed text-ink-2">
-            A short letter to the grievance officer, quoting the clause exactly
-            as printed. You can send it as it is, or use it as a starting
-            point.
+          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink-2">
+            {copyFor.blurb}
           </p>
           <button
             onClick={draft}
             disabled={busy}
             className="mt-5 border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2 disabled:opacity-40"
           >
-            {busy ? "Drafting…" : "Draft the letter"}
+            {busy ? copyFor.drafting : copyFor.cta}
           </button>
         </div>
       ) : (
         <Arrive>
-          <h2 className="folio text-ink-soft">Draft letter</h2>
+          <h2 className="folio text-ink-soft">{copyFor.label}</h2>
           {!letter.quotes_verified && (
             <p className="mt-3 border-l-[3px] border-ochre bg-ochre-tint px-5 py-4 font-doc text-base leading-relaxed">
               Part of the draft quoted wording that could not be matched to the
