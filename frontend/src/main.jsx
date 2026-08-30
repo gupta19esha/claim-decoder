@@ -12,13 +12,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./fonts.css";
 
 import "./theme.css";
-// Superseded screen styles, imported after the theme so they keep winning
-// until each screen is rebuilt.
-import "./styles/index.css";
 
 import Landing from "./routes/Landing.jsx";
 import Rejection from "./routes/Rejection.jsx";
-import { BillRoute } from "./App.jsx";
+import Bill from "./routes/Bill.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -26,7 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/rejection" element={<Rejection />} />
-        <Route path="/bill" element={<BillRoute />} />
+        <Route path="/bill" element={<Bill />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
