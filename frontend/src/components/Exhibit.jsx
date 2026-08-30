@@ -37,7 +37,7 @@ export default function Exhibit({
     <figure
       className="exhibit relative -mx-5 border-y-1 border-t-[3px] border-ink
                  bg-card sm:mx-0 sm:border-x sm:border-rule
-                 lg:grid lg:grid-cols-[7.5rem_1fr] lg:gap-x-6"
+                 lg:grid lg:grid-cols-[8rem_minmax(0,44rem)] lg:gap-x-8"
     >
       {/* The folio. In the margin on desktop, in the top rule on mobile —
           a printer's mark, not a badge. */}

@@ -104,14 +104,6 @@ function Shell({ mode, children }) {
   );
 }
 
-export function RejectionRoute() {
-  return (
-    <Shell mode="rejection">
-      <RejectionDecoder />
-    </Shell>
-  );
-}
-
 export function BillRoute() {
   return (
     <Shell mode="bill">

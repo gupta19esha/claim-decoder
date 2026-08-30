@@ -88,6 +88,35 @@ export default function Landing() {
           <p className="mt-8 max-w-[30ch] font-notice text-2xl leading-tight font-normal text-paper/85 sm:mt-10 sm:text-3xl lg:max-w-[34ch] lg:text-4xl">
             The rule is written down, in a document you are entitled to read.
           </p>
+
+          {/* Both routes sit above the fold. Someone who arrives already
+              convinced should not have to scroll past an argument to find the
+              way in — the persuasion below is for the undecided, not a toll
+              gate everyone pays. */}
+          <div className="mt-10 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:gap-4">
+            <Link
+              to="/rejection"
+              className="group flex items-baseline justify-between gap-6 border border-paper bg-paper px-6 py-5 text-ink transition-colors hover:bg-white sm:flex-1 sm:px-7"
+            >
+              <span className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+                My claim was rejected
+              </span>
+              <span aria-hidden="true" className="font-notice text-xl transition-transform group-hover:translate-x-1">
+                &rarr;
+              </span>
+            </Link>
+            <Link
+              to="/bill"
+              className="group flex items-baseline justify-between gap-6 border border-paper/50 px-6 py-5 text-paper transition-colors hover:border-paper hover:bg-white/5 sm:flex-1 sm:px-7"
+            >
+              <span className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+                Check my hospital bill
+              </span>
+              <span aria-hidden="true" className="font-notice text-xl transition-transform group-hover:translate-x-1">
+                &rarr;
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -109,56 +138,6 @@ export default function Landing() {
           </Settle>
         </div>
 
-        {/* -------------------------------------------------- two routes */}
-        <div className="mt-12 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-5">
-          <Settle>
-            <Link
-              to="/rejection"
-              className="group flex h-full flex-col justify-between border border-ink bg-ink p-6 text-paper transition-colors hover:bg-ink-2 sm:p-8"
-            >
-              <div>
-                <span className="folio text-paper/60">Route one</span>
-                <h3 className="mt-3 font-doc text-2xl leading-tight font-semibold sm:text-3xl">
-                  My claim was rejected
-                </h3>
-                <p className="mt-3 max-w-[34ch] font-doc text-base leading-relaxed text-paper/80">
-                  Check whether the policy wording actually supports the reason
-                  they gave.
-                </p>
-              </div>
-              <span className="folio mt-8 inline-flex items-center gap-2 text-paper">
-                Start
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                  &rarr;
-                </span>
-              </span>
-            </Link>
-          </Settle>
-
-          <Settle delay={0.06}>
-            <Link
-              to="/bill"
-              className="group flex h-full flex-col justify-between border border-rule bg-card p-6 transition-colors hover:border-ink sm:p-8"
-            >
-              <div>
-                <span className="folio text-ink-soft">Route two</span>
-                <h3 className="mt-3 font-doc text-2xl leading-tight font-semibold sm:text-3xl">
-                  Check my hospital bill
-                </h3>
-                <p className="mt-3 max-w-[34ch] font-doc text-base leading-relaxed text-ink-2">
-                  See which lines the IRDAI says a hospital may not charge to
-                  your claim. No policy needed.
-                </p>
-              </div>
-              <span className="folio mt-8 inline-flex items-center gap-2 text-ink">
-                Start
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                  &rarr;
-                </span>
-              </span>
-            </Link>
-          </Settle>
-        </div>
       </section>
 
       {/* --------------------------------------------------- the evidence */}

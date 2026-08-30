@@ -17,14 +17,15 @@ import "./theme.css";
 import "./styles/index.css";
 
 import Landing from "./routes/Landing.jsx";
-import { RejectionRoute, BillRoute } from "./App.jsx";
+import Rejection from "./routes/Rejection.jsx";
+import { BillRoute } from "./App.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/rejection" element={<RejectionRoute />} />
+        <Route path="/rejection" element={<Rejection />} />
         <Route path="/bill" element={<BillRoute />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
