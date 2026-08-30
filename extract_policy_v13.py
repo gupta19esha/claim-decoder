@@ -36,6 +36,7 @@ import re
 import sys
 import time
 import unicodedata
+from datetime import datetime, timezone
 
 import pdfplumber
 
@@ -44,6 +45,10 @@ import pdfplumber
 # parameters, so temperature must not be sent at all: passing it is an
 # error, not a warning. Override with --model if you want to try 3.7.
 MODEL = "gemini-3.6-flash"
+
+# Per-request ceiling in milliseconds. A chunk that has not answered in two
+# minutes is not going to.
+REQUEST_TIMEOUT_MS = 120_000
 
 PAGE_MARK = "[[page {n}]]"
 PAGE_MARK_RE = re.compile(r"\[\[page (\d+)\]\]")
@@ -251,6 +256,27 @@ def page_text(page, forced_gutter=None):
     return combined, "two_column", ratio, [left, right]
 
 
+# Repetition is the signal for furniture. Length is not.
+#
+# v13 capped a furniture line at 100 characters. That silently discarded the
+# longest footer line in three of the six policy documents: ICICI's
+# 115-character address band survived on 103 of 111 pages, was spliced into
+# 22 clauses and cut 10 of them off mid-sentence, including the definition of
+# Pre-existing Disease. HDFC (106) and Tata (113) had the same hole.
+#
+# Measured across all six documents: every line repeating on 50 percent or
+# more of pages is furniture — company names, registered addresses, UINs,
+# product names, page markers. Not one is body text. So the ceiling is not
+# what identifies furniture; repetition already does that.
+#
+# What the ceiling is for is over-deletion. Past some length a "line" is not a
+# printed line at all but a mis-assembled block, and deleting it costs more
+# than leaving it in. The longest single printed line in any of the six
+# documents is 158 characters, so 250 leaves about 58 percent headroom over
+# the worst real case while still refusing to delete a whole paragraph.
+FURNITURE_MAX_LEN = 250
+
+
 def learn_furniture(raw_pages, threshold=0.5):
     """
     Find the lines that repeat on most pages and drop them.
@@ -270,7 +296,7 @@ def learn_furniture(raw_pages, threshold=0.5):
             if line:
                 counts[line] = counts.get(line, 0) + 1
     return {k for k, c in counts.items()
-            if c >= max(2, n * threshold) and len(k) < 100}
+            if c >= max(2, n * threshold) and len(k) <= FURNITURE_MAX_LEN}
 
 
 def is_furniture(line, furniture, min_overlap=22):
@@ -293,7 +319,7 @@ def is_furniture(line, furniture, min_overlap=22):
         return False
     if key in furniture:
         return True
-    if len(key) > 90:
+    if len(key) > FURNITURE_MAX_LEN:
         return False
     for known in furniture:
         # A real clause line that merely starts with the insurer's name must
@@ -398,7 +424,33 @@ def classify_section(text, current):
     return current
 
 
-def build_chunks(pages, max_chars=6000):
+def build_chunks(pages, max_chars=6000, overlap_chars=1500):
+    """
+    Group pages into chunks, carrying a tail across every length flush.
+
+    A clause that spans a chunk boundary is invisible on both sides. The
+    chunk holding its opening ends mid-sentence, the chunk holding the rest
+    begins mid-sentence, and the extractor emits a truncated clause, a
+    headless fragment, or nothing. ICICI's definition of Pre-existing Disease
+    lost limb (b) exactly this way: limb (a) closed one chunk and limb (b)
+    opened the next. Removing the page footer that was also spliced into it
+    made the clause end cleanly and did not bring limb (b) back, because the
+    two defects are unrelated.
+
+    So a length flush carries the tail of the page it just closed into the
+    next chunk. A clause that began anywhere in that tail is then whole in
+    the second chunk. 1500 characters is the 95th percentile of clause length
+    in the existing corpus, where the median is 321 and p90 is 996, so it
+    covers all but the longest 5 percent of clauses while adding at most 1500
+    characters to a 6000 character chunk.
+
+    Section flushes do not carry. The carried text would be labelled with the
+    section it is leaving, and a clause almost never spans a change of
+    section.
+
+    The overlap duplicates text deliberately, so the extractor sees some
+    clauses twice. dedupe_records removes the copies afterwards.
+    """
     chunks = []
     current_section = "unknown"
     buffer, buffer_pages = [], []
@@ -413,6 +465,21 @@ def build_chunks(pages, max_chars=6000):
             "end_page": buffer_pages[-1],
         })
 
+    def carry_tail():
+        """The trailing overlap_chars of the page just closed."""
+        page_no = buffer_pages[-1]
+        last = buffer[-1]
+        body = last.split("\n", 1)[1] if "\n" in last else last
+        if len(body) > overlap_chars:
+            body = body[-overlap_chars:]
+            # Start on a line boundary. Text opening mid-word cannot match
+            # the source, so anything extracted from it would fail the
+            # verbatim check and be discarded.
+            nl = body.find("\n")
+            if 0 <= nl < 200:
+                body = body[nl + 1:]
+        return [PAGE_MARK.format(n=page_no) + "\n" + body], [page_no]
+
     for page_no, text in pages:
         if not text.strip():
             continue
@@ -423,7 +490,10 @@ def build_chunks(pages, max_chars=6000):
 
         if (section_changed or too_long) and buffer:
             flush(current_section)
-            buffer, buffer_pages = [], []
+            if too_long and not section_changed and overlap_chars > 0:
+                buffer, buffer_pages = carry_tail()
+            else:
+                buffer, buffer_pages = [], []
 
         current_section = new_section
         buffer.append(PAGE_MARK.format(n=page_no) + "\n" + text)
@@ -431,6 +501,113 @@ def build_chunks(pages, max_chars=6000):
 
     flush(current_section)
     return chunks
+
+
+def _sentence_start_distance(text):
+    """Characters from the end back to the start of the unfinished sentence."""
+    for m in reversed(list(re.finditer(r"[.!?]\s", text))):
+        return len(text) - m.end()
+    return len(text)
+
+
+def boundary_report(pages, max_chars=6000, overlap_chars=1500):
+    """
+    How many chunk boundaries fall inside a clause.
+
+    This is the only check that sees the pipeline's worst failure mode. When
+    a clause is split across two chunks the extractor does not usually emit
+    both halves: it emits one truncated clause, or it drops the far half
+    entirely. Nothing downstream catches either outcome. The verbatim check
+    passes on a fragment, because the fragment really is in the source. And a
+    clause that never reached the corpus leaves nothing to inspect at all.
+
+    Measured across the six original policy documents, 78 of 127 length
+    boundaries cut a clause mid-sentence, and only 11 of those 78 left any
+    trace in the corpus. HDFC Optima Secure cut a clause at 23 of its 23
+    length boundaries.
+
+    Boundaries are counted on unoverlapped chunking, because that is where
+    the cut happens. `recoverable` is how many of them the current overlap
+    window pulls whole into the following chunk. Section flushes are excluded
+    since they are not overlapped and a clause rarely spans a section.
+    """
+    plain = build_chunks(pages, max_chars, overlap_chars=0)
+    bounds = cut = recoverable = 0
+    unrecovered = []
+    for a, b in zip(plain, plain[1:]):
+        if a["section"] != b["section"]:
+            continue
+        bounds += 1
+        body = re.sub(r"[ \t]+", " ", PAGE_MARK_RE.sub("", a["text"])).strip()
+        if not body or body[-1] in ".!?":
+            continue
+        cut += 1
+        back = _sentence_start_distance(body)
+        if back <= overlap_chars:
+            recoverable += 1
+        else:
+            unrecovered.append((a["end_page"], back, body[-70:]))
+    return {"chunks": len(plain), "boundaries": bounds, "cut": cut,
+            "recoverable": recoverable, "unrecovered": unrecovered}
+
+
+def print_boundary_report(rep, overlap_chars):
+    """Printed on every run, dry or not. Free, and nobody should extract a
+    document without seeing it."""
+    share = f" ({rep['cut'] / rep['boundaries']:.0%})" if rep["boundaries"] else ""
+    print(f"  chunk boundaries: {rep['boundaries']}, "
+          f"cutting a clause mid-sentence: {rep['cut']}{share}")
+    if not rep["cut"]:
+        return
+    print(f"    recovered whole by the {overlap_chars} char overlap: "
+          f"{rep['recoverable']}")
+    if rep["unrecovered"]:
+        print(f"    NOT recovered: {len(rep['unrecovered'])}. These clauses "
+              f"will be truncated or lost.")
+        for page, back, tail in rep["unrecovered"][:3]:
+            print(f"      after page {page}: clause began {back} chars back "
+                  f"| ...{tail.strip()[-46:]!r}")
+        print(f"    Raise --overlap above {max(b for _, b, _ in rep['unrecovered'])} "
+              f"to cover them, or accept the loss.")
+
+
+def dedupe_records(records):
+    """
+    Remove the copies the chunk overlap creates. Returns (kept, dropped).
+
+    Records are compared on normalised clause_text. An exact repeat goes, and
+    so does a record whose text is wholly contained in another's, because
+    that record is a fragment of the longer one. That second rule is what
+    cleans up fragments left behind by the old non-overlapping chunking, not
+    just the duplicates the new overlap introduces.
+
+    Two guards. Containment only counts within one page of the container, so
+    a short clause that happens to be quoted inside a longer one elsewhere in
+    the document survives; the overlap only ever duplicates across adjacent
+    pages. And the longer record is kept whole rather than merged with the
+    shorter one's fields, because merging would let a number extracted from a
+    partial clause ride along on the complete one.
+    """
+    order = {id(r): i for i, r in enumerate(records)}
+    longest_first = sorted(
+        records, key=lambda r: -len(normalise(r.get("clause_text") or "")))
+
+    kept, dropped = [], []
+    for rec in longest_first:
+        text = normalise(rec.get("clause_text") or "")
+        page = rec.get("source_page")
+        if len(text) >= 25 and any(
+                text in normalise(k.get("clause_text") or "")
+                and isinstance(page, int)
+                and isinstance(k.get("source_page"), int)
+                and abs(page - k["source_page"]) <= 1
+                for k in kept):
+            dropped.append(rec)
+            continue
+        kept.append(rec)
+
+    kept.sort(key=lambda r: order[id(r)])
+    return kept, dropped
 
 
 # ------------------------------------------------------------------- annexure
@@ -573,7 +750,17 @@ def retry_delay_from(message, default):
     return default
 
 
-def call_gemini(client, types, chunk, model=MODEL, retries=3, rpm=4):
+def call_gemini(client, types, chunk, model=MODEL, retries=5, rpm=4):
+    """
+    Returns the parsed records, or None if every attempt failed.
+
+    None and [] must stay distinguishable. [] means the model read the chunk
+    and found no clause in it, which is a normal outcome for a cover page. A
+    failure that returns [] instead is a chunk silently dropped from the
+    corpus: the run reports success, the clause count looks plausible, and
+    the missing pages leave no trace. A DNS blip during one run cost two
+    consecutive waiting_period chunks of Star Health that way.
+    """
     prompt = EXTRACTION_PROMPT.format(section=chunk["section"], text=chunk["text"])
     for attempt in range(retries):
         throttle(rpm)
@@ -607,8 +794,15 @@ def call_gemini(client, types, chunk, model=MODEL, retries=3, rpm=4):
             else:
                 print(f"  error on attempt {attempt + 1}: {text[:200]}",
                       file=sys.stderr)
-                time.sleep(2 ** attempt)
-    return []
+                # A name-resolution or connection failure is the network
+                # being away, not the request being wrong. Backing off for
+                # seconds loses the chunk; a transient outage outlasts that.
+                offline = any(s in text for s in (
+                    "NameResolutionError", "getaddrinfo", "Max retries",
+                    "Server disconnected", "Connection aborted",
+                    "Temporary failure in name resolution"))
+                time.sleep(20 if offline else 2 ** attempt)
+    return None
 
 
 def longest_common_run(a, b):
@@ -682,6 +876,11 @@ def main():
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--gutter", type=float, default=None,
                     help="Force the column split as a fraction of page width.")
+    ap.add_argument("--overlap", type=int, default=1500,
+                    help="Characters carried from one chunk into the next so "
+                         "a clause spanning the boundary is whole in the "
+                         "second. Default %(default)s, the 95th percentile of "
+                         "clause length. 0 disables it.")
     ap.add_argument("--dry-run", action="store_true",
                     help="Parse, chunk and dump. No model calls, no cost.")
     ap.add_argument("--dump", default="dryrun_chunks.txt")
@@ -694,8 +893,10 @@ def main():
                          "Google Cloud project and draws on Cloud credits.")
     ap.add_argument("--project", default=None,
                     help="Google Cloud project id, for --vertex.")
-    ap.add_argument("--location", default="us-central1",
-                    help="Vertex region. Default %(default)s.")
+    ap.add_argument("--location", default="global",
+                    help="Vertex region. Default %(default)s. Newer Gemini "
+                         "models 404 on named regions, so 'global' is the "
+                         "only value that reliably works.")
     ap.add_argument("--rpm", type=int, default=4,
                     help="Requests per minute ceiling. Free tier allows 5, "
                          "so 4 is safe. Use 0 to disable pacing if you have "
@@ -727,7 +928,7 @@ def main():
         print(f"  WARNING: {len(empty)} pages with almost no text: {empty[:15]}")
         print("  If most pages look like this the PDF is scanned. Discard it.")
 
-    chunks = build_chunks(pages)
+    chunks = build_chunks(pages, overlap_chars=args.overlap)
     skip = {"ombudsman", "unknown"}
     kept = [c for c in chunks if c["section"] not in skip]
     print(f"  {len(chunks)} chunks, {len(kept)} after dropping {skip}")
@@ -735,6 +936,11 @@ def main():
     for c in kept:
         counts[c["section"]] = counts.get(c["section"], 0) + 1
     print(f"  sections: {counts}")
+
+    # Unconditional, before the dry-run and items-only branches, so it is
+    # impossible to extract a document without seeing this number.
+    boundary = boundary_report(pages, overlap_chars=args.overlap)
+    print_boundary_report(boundary, args.overlap)
 
     if args.limit:
         kept = kept[:args.limit]
@@ -783,9 +989,16 @@ def main():
         project = args.project or os.environ.get("GOOGLE_CLOUD_PROJECT")
         if not project:
             sys.exit("Pass --project YOUR_GCP_PROJECT_ID when using --vertex.")
-        client = genai.Client(vertexai=True, project=project,
-                              location=args.location)
-        print(f"Using Vertex AI, project {project}, region {args.location}")
+        # An explicit timeout is load-bearing. Without one the client blocks
+        # indefinitely on a network fault: a DNS outage mid-run left a socket
+        # waiting for an answer that was never coming, and the process sat
+        # there for three and a half hours. The retry loop in call_gemini
+        # cannot help, because control never comes back to it.
+        client = genai.Client(
+            vertexai=True, project=project, location=args.location,
+            http_options=types.HttpOptions(timeout=REQUEST_TIMEOUT_MS))
+        print(f"Using Vertex AI, project {project}, region {args.location}, "
+              f"timeout {REQUEST_TIMEOUT_MS // 1000}s")
     else:
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
@@ -796,12 +1009,20 @@ def main():
         mins = len(kept) / args.rpm
         print(f"{len(kept)} chunks at this pace takes about {mins:.0f} minutes")
 
-    records, rejected = [], 0
+    records, rejected, failed = [], 0, []
     for i, chunk in enumerate(kept, start=1):
         print(f"[{i}/{len(kept)}] {chunk['section']} "
               f"(pages {chunk['start_page']}-{chunk['end_page']})")
 
-        for clause in call_gemini(client, types, chunk, args.model, rpm=args.rpm):
+        returned = call_gemini(client, types, chunk, args.model, rpm=args.rpm)
+        if returned is None:
+            failed.append((i, chunk))
+            print(f"  CHUNK FAILED, every attempt errored. Pages "
+                  f"{chunk['start_page']}-{chunk['end_page']} are not in "
+                  f"this output.", file=sys.stderr)
+            continue
+
+        for clause in returned:
             ok, why = verify_verbatim(clause, chunk["text"])
             if not ok:
                 rejected += 1
@@ -817,6 +1038,15 @@ def main():
                 "section": chunk["section"],
             })
             records.append(clause)
+
+    extracted = len(records)
+    records, duplicates = dedupe_records(records)
+    if duplicates:
+        print(f"\nDropped {len(duplicates)} of {extracted} records as copies "
+              f"or fragments of a longer clause")
+        for d in duplicates[:5]:
+            print(f"    p{d.get('source_page')} "
+                  f"{str(d.get('clause_title'))[:52]}")
 
     with open(args.out, "w", encoding="utf-8") as f:
         for r in records:
@@ -838,6 +1068,60 @@ def main():
     for it in items:
         by_cat[it["category"]] = by_cat.get(it["category"], 0) + 1
     print(f"Wrote {len(items)} non-payable items to {args.items_out} {by_cat}")
+
+    # A manifest of what this run knew and the output cannot show. Failed
+    # chunks and boundary damage leave no trace in the .jsonl, so without
+    # this the pre-load check has no way to see them.
+    manifest_path = re.sub(r"\.jsonl$", "", args.out) + ".manifest.json"
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "policy_id": args.policy_id,
+            "insurer": args.insurer,
+            "policy_name": args.policy_name,
+            "source_pdf": os.path.basename(args.pdf),
+            "extracted_at": datetime.now(timezone.utc).isoformat(),
+            "model": args.model,
+            "overlap_chars": args.overlap,
+            "pages": len(pages),
+            # Pages actually sent to the model. Compared at gate time against
+            # the pages that produced clauses: a long run that was sent and
+            # came back empty is a whole section lost in silence.
+            "pages_sent": sorted({p for c in kept
+                                  for p in range(c["start_page"],
+                                                 c["end_page"] + 1)}),
+            "chunks_total": len(kept),
+            "chunks_failed": [
+                {"index": i, "section": c["section"],
+                 "start_page": c["start_page"], "end_page": c["end_page"]}
+                for i, c in failed],
+            "verbatim_rejected": rejected,
+            "verbatim_rejection_rate": (
+                rejected / max(1, rejected + extracted)),
+            "records_extracted": extracted,
+            "records_deduped": len(duplicates),
+            "records_written": len(records),
+            "boundary": {
+                "boundaries": boundary["boundaries"],
+                "cut": boundary["cut"],
+                "recoverable": boundary["recoverable"],
+                "unrecovered": [
+                    {"after_page": p, "chars_back": b, "tail": t.strip()[-70:]}
+                    for p, b, t in boundary["unrecovered"]],
+            },
+        }, f, indent=2, ensure_ascii=False)
+    print(f"Wrote run manifest to {manifest_path}")
+
+    if failed:
+        print(f"\n{'!' * 70}")
+        print(f"INCOMPLETE: {len(failed)} of {len(kept)} chunks failed every "
+              f"attempt and contributed nothing.")
+        for i, c in failed:
+            print(f"    chunk {i}: {c['section']} "
+                  f"pages {c['start_page']}-{c['end_page']}")
+        print("Those pages are absent from the output. Do not load this file;"
+              " re-run the policy.")
+        print("!" * 70)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

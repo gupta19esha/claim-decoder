@@ -1,0 +1,300 @@
+/*
+  Patterns: the app-specific compositions built on the components.
+
+  The exhibit is the signature element. Verbatim clause text set in
+  monospace, page number on a tab, an explicit invitation to go and check.
+  Everything else is deliberately quiet so the exhibit carries the weight.
+
+  Second element is the pivot block: the one fact that would flip the
+  decision. It is the most actionable thing on the page and gets the only
+  warm colour in the system.
+*/
+
+/* -------------------------------------------------------------- masthead */
+
+.masthead {
+  border-bottom: var(--border-thick) solid var(--ink);
+  padding: var(--space-28) 0 var(--space-18);
+  background: var(--surface-card);
+}
+
+.masthead h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-hero);
+  margin: 0;
+}
+
+.masthead p {
+  margin: var(--space-8) 0 0;
+  color: var(--ink-soft);
+  font-size: var(--text-body);
+  max-width: var(--measure-lede);
+}
+
+/* ---------------------------------------------------------------- stages
+
+   Analysis takes 20 to 40 seconds. A spinner for that long reads as broken,
+   so the stages are named and stepped through. */
+
+.stages {
+  list-style: none;
+  margin: var(--space-26) 0 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-hint);
+}
+
+.stages li {
+  color: var(--ink-pending);
+  padding: var(--space-4) 0 var(--space-4) var(--space-22);
+  position: relative;
+}
+
+.stages li::before { content: "○"; position: absolute; left: 0; }
+.stages li.done { color: var(--ink-soft); }
+.stages li.done::before { content: "●"; }
+.stages li.now { color: var(--ink); }
+.stages li.now::before { content: "▸"; }
+
+/* --------------------------------------------------------------- verdict */
+
+.verdict {
+  border-top: var(--border-accent) solid var(--ink);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  padding: var(--space-24);
+}
+
+.verdict.weak  { border-top-color: var(--weak); }
+.verdict.firm  { border-top-color: var(--firm); }
+.verdict.mixed { border-top-color: var(--mixed); }
+
+.verdict h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: var(--weight-regular);
+  margin: var(--space-6) 0 var(--space-4);
+  letter-spacing: var(--tracking-title);
+}
+
+.verdict-sub {
+  margin: 0 0 var(--space-16);
+  color: var(--ink-soft);
+  font-size: var(--text-body);
+}
+
+.explain {
+  margin: 0 0 var(--space-20);
+  font-size: var(--text-lead);
+}
+
+/* ----------------------------------------------------------------- meter */
+
+.meter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-11);
+  padding-top: var(--space-15);
+  border-top: var(--border-hairline) solid var(--rule-soft);
+}
+
+.meter-bar {
+  flex: 1;
+  height: var(--space-4);
+  background: var(--rule-soft);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+
+.meter-bar span {
+  display: block;
+  height: 100%;
+  background: var(--ink-2);
+}
+
+.meter-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* ----------------------------------------- pivot, the actionable thing */
+
+.pivot {
+  margin-top: var(--space-16);
+  background: var(--weak-bg);
+  border: var(--border-hairline) solid var(--pivot-border);
+  border-left: var(--border-accent) solid var(--weak);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-16) var(--space-18);
+}
+
+.pivot .eyebrow { color: var(--weak); }
+
+.pivot p {
+  margin: var(--space-5) 0 0;
+  font-size: var(--text-control);
+  color: var(--pivot-ink);
+}
+
+/* ------------------------------------------------ exhibit, the signature */
+
+.exhibit {
+  position: relative;
+  border-left: var(--border-accent) solid var(--ink);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-20) var(--space-22);
+  margin-bottom: var(--space-14);
+}
+
+.exhibit-tab {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  padding: var(--space-4) var(--space-10);
+  border-radius: 0 var(--radius-sm) 0 var(--radius-sm);
+  letter-spacing: var(--tracking-tab);
+}
+
+.exhibit h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+  margin: 0 0 var(--space-12);
+  padding-right: var(--space-80);
+}
+
+.exhibit-body p {
+  font-family: var(--font-mono);
+  font-size: var(--text-verbatim);
+  line-height: var(--leading-verbatim);
+  margin: 0 0 var(--space-11);
+  color: var(--ink-verbatim);
+}
+
+.exhibit-body p:last-child { margin-bottom: 0; }
+
+.exhibit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-top: var(--space-15);
+}
+
+.exhibit-meta span {
+  font-size: var(--text-label);
+  background: var(--surface-chip);
+  color: var(--ink-2);
+  padding: var(--space-3) var(--space-8);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+}
+
+.exhibit-check {
+  margin-top: var(--space-13);
+  padding-top: var(--space-11);
+  border-top: var(--border-hairline) solid var(--rule-soft);
+  font-size: var(--text-caption);
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------ arguments */
+
+.args { display: grid; gap: var(--space-14); }
+
+/* Literal breakpoint: media queries cannot read custom properties. */
+@media (min-width: 620px) {
+  .args { grid-template-columns: 1fr 1fr; }
+}
+
+.arg { padding: var(--space-17); }
+.arg.insurer  { border-top: var(--border-thick) solid var(--accent-insurer); }
+.arg.claimant { border-top: var(--border-thick) solid var(--accent-claimant); }
+
+.arg h4 {
+  margin: 0 0 var(--space-9);
+  font-size: var(--text-label-lg);
+  letter-spacing: var(--tracking-arg);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: var(--weight-semibold);
+}
+
+.arg p {
+  margin: 0;
+  font-size: var(--text-argument);
+}
+
+/* The !important flags override .arg p above and are carried over from the
+   stylesheet this replaces. Both would go away if .rebut stopped being a
+   descendant of .arg. */
+.rebut {
+  margin-top: var(--space-12) !important;
+  padding-top: var(--space-11);
+  border-top: var(--border-hairline) dashed var(--rule);
+  font-size: var(--text-rebuttal) !important;
+  color: var(--ink-soft);
+}
+
+.rebut span {
+  display: block;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-rebut);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-3);
+}
+
+.provenance {
+  margin-top: var(--space-16);
+  font-size: var(--text-caption);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------- letter */
+
+.letter {
+  font-family: var(--font-mono);
+  font-size: var(--text-verbatim);
+  line-height: var(--leading-letter);
+  white-space: pre-wrap;
+  padding: var(--space-20);
+  color: var(--ink-verbatim);
+}
+
+/* --------------------------------------------------------------- footer */
+
+.foot {
+  padding: var(--space-22) var(--space-20) var(--space-34);
+  border-top: var(--border-hairline) solid var(--rule-soft);
+  font-size: var(--text-caption);
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------------- motion */
+
+@media (prefers-reduced-motion: no-preference) {
+  .verdict, .pivot, .exhibit {
+    animation: rise var(--duration-rise) var(--ease-rise) both;
+  }
+
+  .pivot { animation-delay: var(--delay-pivot); }
+  .exhibit { animation-delay: var(--delay-exhibit); }
+
+  .meter-bar span {
+    transition: width var(--duration-meter) var(--ease-rise);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(var(--space-7)); }
+    to { opacity: 1; transform: none; }
+  }
+}

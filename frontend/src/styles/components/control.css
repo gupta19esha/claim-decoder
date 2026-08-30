@@ -1,0 +1,39 @@
+/*
+  Form controls: input, select, textarea.
+
+  One component with three tags. They are styled identically on purpose so a
+  form reads as a single column of fields rather than three kinds of box, so
+  the shared base carries everything and only the textarea adds to it.
+
+  Addressed by class only. A bare <input> or <select> is unstyled, which is
+  the intent: styling should follow from the component being used, not from
+  the tag happening to appear.
+*/
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: var(--space-11) var(--space-12);
+  border: var(--border-hairline) solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface-card);
+  font-family: inherit;
+  font-size: var(--text-control);
+  color: var(--ink);
+}
+
+/* Tall enough to show a paragraph of a rejection letter without scrolling,
+   which is roughly what people paste. */
+.textarea {
+  min-height: 145px;
+  resize: vertical;
+  line-height: var(--leading-control);
+}
+
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  background: var(--surface-disabled);
+  color: var(--ink-soft);
+}

@@ -1,0 +1,13 @@
+/*
+  Notice: an inline message, currently only ever an error or a withheld
+  quotation. Takes the card surface and adds the accent bar that every
+  attention-carrying block in this app uses on its left edge.
+*/
+
+.notice {
+  border-left: var(--border-accent) solid var(--firm);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-13) var(--space-16);
+  font-size: var(--text-ui);
+  margin-bottom: var(--space-20);
+}

@@ -1,0 +1,38 @@
+[
+  [
+    "icici_elevate",
+    75,
+    "monetary_cap",
+    4500,
+    null,
+    "unsubstantiated (null)",
+    null
+  ],
+  [
+    "niva_reassure_30",
+    15,
+    "percent_cap",
+    100.0,
+    null,
+    "unsubstantiated (null)",
+    null
+  ],
+  [
+    "niva_reassure_30",
+    15,
+    "percent_cap",
+    100.0,
+    null,
+    "model reports the clause is ambiguous",
+    null
+  ],
+  [
+    "niva_reassure_30",
+    17,
+    "percent_cap",
+    100.0,
+    null,
+    "model reports the clause is ambiguous",
+    null
+  ]
+]

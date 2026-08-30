@@ -1,0 +1,44 @@
+/*
+  Button.
+
+  Two variants: solid (default) and `.ghost`. Addressed by class only, so a
+  <button> that is not meant to look like one — a disclosure toggle, an icon
+  affordance — starts from nothing rather than from this.
+*/
+
+.btn {
+  font-family: inherit;
+  font-size: var(--text-control);
+  padding: var(--space-12) var(--space-24);
+  border: var(--border-hairline) solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--action-bg);
+  color: var(--action-fg);
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--action-bg-hover);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn.ghost:hover:not(:disabled) {
+  background: var(--surface-ghost);
+}
+
+/* Button group. */
+.actions {
+  display: flex;
+  gap: var(--space-10);
+  flex-wrap: wrap;
+  margin-top: var(--space-22);
+}

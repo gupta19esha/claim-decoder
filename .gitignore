@@ -4,3 +4,10 @@ dist/
 *.pdf
 .firebase/
 __pycache__/
+# transient run artefacts
+logs/
+*.log
+_*.jsonl
+_*.txt
+dryrun_chunks.txt
+*_dryrun*.txt

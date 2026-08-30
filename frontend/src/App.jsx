@@ -112,7 +112,7 @@ export default function App() {
 
       <main className="wrap">
         {error && (
-          <div className="notice" role="alert">
+          <div className="card notice" role="alert">
             <strong>Something went wrong.</strong> {error}
           </div>
         )}
@@ -122,11 +122,14 @@ export default function App() {
         ) : (
           <>
             <div className="field">
-              <label htmlFor="rejection">What the insurer told you</label>
+              <label className="label" htmlFor="rejection">
+                What the insurer told you
+              </label>
               <div className="hint">
                 Paste it word for word. Wording matters more than a summary.
               </div>
               <textarea
+                className="textarea"
                 id="rejection"
                 value={rejectionText}
                 onChange={(e) => setRejectionText(e.target.value)}
@@ -137,8 +140,9 @@ export default function App() {
 
             <div className="grid-2">
               <div className="field">
-                <label htmlFor="insurer">Insurer</label>
+                <label className="label" htmlFor="insurer">Insurer</label>
                 <select
+                  className="select"
                   id="insurer"
                   value={insurerId}
                   disabled={status === "working"}
@@ -157,8 +161,9 @@ export default function App() {
               </div>
 
               <div className="field">
-                <label htmlFor="policy">Policy</label>
+                <label className="label" htmlFor="policy">Policy</label>
                 <select
+                  className="select"
                   id="policy"
                   value={policyId}
                   onChange={(e) => setPolicyId(e.target.value)}
@@ -174,12 +179,13 @@ export default function App() {
               </div>
             </div>
 
-            <details className="extras">
+            <details className="card extras">
               <summary>Add claim details for a sharper answer</summary>
               <div className="grid-2">
                 <div className="field">
-                  <label htmlFor="treatment">Treatment</label>
+                  <label className="label" htmlFor="treatment">Treatment</label>
                   <input
+                    className="input"
                     id="treatment"
                     value={treatment}
                     onChange={(e) => setTreatment(e.target.value)}
@@ -187,8 +193,9 @@ export default function App() {
                   />
                 </div>
                 <div className="field">
-                  <label htmlFor="amount">Amount claimed</label>
+                  <label className="label" htmlFor="amount">Amount claimed</label>
                   <input
+                    className="input"
                     id="amount"
                     type="number"
                     value={amount}
@@ -197,8 +204,9 @@ export default function App() {
                   />
                 </div>
                 <div className="field">
-                  <label htmlFor="start">Policy started on</label>
+                  <label className="label" htmlFor="start">Policy started on</label>
                   <input
+                    className="input"
                     id="start"
                     type="date"
                     value={policyStart}
@@ -206,8 +214,11 @@ export default function App() {
                   />
                 </div>
                 <div className="field">
-                  <label htmlFor="admission">Date of admission</label>
+                  <label className="label" htmlFor="admission">
+                    Date of admission
+                  </label>
                   <input
+                    className="input"
                     id="admission"
                     type="date"
                     value={admission}
@@ -222,7 +233,7 @@ export default function App() {
             </details>
 
             <div className="actions">
-              <button onClick={submit} disabled={!canSubmit}>
+              <button className="btn" onClick={submit} disabled={!canSubmit}>
                 {status === "working" ? "Checking…" : "Check the rejection"}
               </button>
             </div>
@@ -289,7 +300,7 @@ function Result({ result, onReset }) {
 
   return (
     <>
-      <section className={`verdict ${v.tone}`}>
+      <section className={`card verdict ${v.tone}`}>
         <div className="eyebrow">Verdict</div>
         <h2>{v.headline}</h2>
         <p className="verdict-sub">{v.sub}</p>
@@ -313,7 +324,7 @@ function Result({ result, onReset }) {
 
       <h3 className="section-head">The clause this turns on</h3>
       {result.deciding_clauses.map((c, i) => (
-        <article className="exhibit" key={c.clause_id || i}>
+        <article className="card exhibit" key={c.clause_id || i}>
           <div className="exhibit-tab">page {c.source_page}</div>
           <h4>{c.clause_title || "Untitled clause"}</h4>
           <div className="exhibit-body">
@@ -345,7 +356,7 @@ function Result({ result, onReset }) {
 
       <h3 className="section-head">How each side would argue it</h3>
       <div className="args">
-        <div className="arg insurer">
+        <div className="card arg insurer">
           <h4>The insurer's case</h4>
           <p>{result.arguments.insurer_position}</p>
           {result.arguments.insurer_weak_point && (
@@ -354,7 +365,7 @@ function Result({ result, onReset }) {
             </p>
           )}
         </div>
-        <div className="arg claimant">
+        <div className="card arg claimant">
           <h4>Your case</h4>
           <p>{result.arguments.claimant_position}</p>
           {result.arguments.claimant_weak_point && (
@@ -372,31 +383,33 @@ function Result({ result, onReset }) {
         </p>
       )}
 
-      {err && <div className="notice">{err}</div>}
+      {err && <div className="card notice">{err}</div>}
 
       {letter && (
         <>
           <h3 className="section-head">Draft appeal</h3>
           {!letter.quotes_verified && (
-            <div className="notice">
+            <div className="card notice">
               Part of the draft quoted wording that could not be matched to the
               policy, so it was withheld.
             </div>
           )}
-          <div className="letter">{letter.letter_text}</div>
+          <div className="card letter">{letter.letter_text}</div>
           <div className="actions">
-            <button onClick={copy}>{copied ? "Copied" : "Copy letter"}</button>
+            <button className="btn" onClick={copy}>
+              {copied ? "Copied" : "Copy letter"}
+            </button>
           </div>
         </>
       )}
 
       <div className="actions">
         {result.appeal_available && !letter && (
-          <button onClick={getAppeal} disabled={busy}>
+          <button className="btn" onClick={getAppeal} disabled={busy}>
             {busy ? "Drafting…" : "Draft an appeal letter"}
           </button>
         )}
-        <button className="ghost" onClick={onReset}>
+        <button className="btn ghost" onClick={onReset}>
           Check another rejection
         </button>
       </div>

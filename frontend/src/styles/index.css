@@ -1,0 +1,25 @@
+/*
+  Claim Decoder stylesheet entry point.
+
+  Import order is the cascade. Everything here has single-class or element
+  specificity, so a later file wins a tie. Keep the layers in this order:
+
+    tokens      custom properties only, no selectors that paint
+    base        reset, document defaults, page shell, focus ring
+    components  reusable pieces: card, typography, control, button, field,
+                notice. card comes first because field and notice override
+                properties it sets.
+    patterns    app-specific compositions built on the components
+*/
+
+@import "./tokens.css";
+@import "./base.css";
+
+@import "./components/card.css";
+@import "./components/typography.css";
+@import "./components/control.css";
+@import "./components/button.css";
+@import "./components/field.css";
+@import "./components/notice.css";
+
+@import "./patterns.css";

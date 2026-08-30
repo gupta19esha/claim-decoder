@@ -1,0 +1,42 @@
+/*
+  Typographic components: the small uppercase labels that organise the page.
+
+  Three sizes of the same idea, deliberately kept distinct: `.label` sits
+  above a control, `.eyebrow` sits above a headline inside a card, and
+  `.section-head` rules off a whole section.
+*/
+
+.label {
+  display: block;
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-5);
+}
+
+.hint {
+  font-size: var(--text-hint);
+  color: var(--ink-soft);
+  margin-bottom: var(--space-7);
+}
+
+.eyebrow {
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: var(--weight-semibold);
+}
+
+.section-head {
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: var(--weight-semibold);
+  border-bottom: var(--border-hairline) solid var(--rule);
+  padding-bottom: var(--space-7);
+  margin: var(--space-38) 0 var(--space-16);
+}
