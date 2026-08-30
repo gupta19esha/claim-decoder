@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
   listPolicies,
   createCase,
@@ -61,37 +62,61 @@ const MODES = {
   },
 };
 
-export default function App() {
-  const [mode, setMode] = useState("rejection");
+/*
+  Route shells. These still wear the superseded stylesheet: the landing has
+  been rebuilt, and these two screens are next. Each deploy stays usable in
+  the meantime, which is the point of going screen by screen.
+*/
+function Shell({ mode, children }) {
   const m = MODES[mode];
-
   return (
     <div className="page">
       <header className="masthead">
         <div className="wrap">
-          <h1>Claim Decoder</h1>
+          <Link
+            to="/"
+            style={{ textDecoration: "none", color: "inherit" }}
+            aria-label="Claim Decoder home"
+          >
+            <h1>Claim Decoder</h1>
+          </Link>
           <nav className="tabs" aria-label="What to check">
             {Object.entries(MODES).map(([key, cfg]) => (
-              <button
+              <Link
                 key={key}
+                to={key === "rejection" ? "/rejection" : "/bill"}
                 className={`tab${key === mode ? " now" : ""}`}
                 aria-current={key === mode ? "page" : undefined}
-                onClick={() => setMode(key)}
+                style={{ textDecoration: "none", display: "inline-block" }}
               >
                 {cfg.label}
-              </button>
+              </Link>
             ))}
           </nav>
           <p>{m.blurb}</p>
         </div>
       </header>
 
-      <main className="wrap">
-        {mode === "rejection" ? <RejectionDecoder /> : <BillAuditor />}
-      </main>
+      <main className="wrap">{children}</main>
 
       <footer className="wrap foot">{m.foot}</footer>
     </div>
+  );
+}
+
+export function RejectionRoute() {
+  return (
+    <Shell mode="rejection">
+      <RejectionDecoder />
+    </Shell>
+  );
+}
+
+export function BillRoute() {
+  return (
+    <Shell mode="bill">
+      <BillAuditor />
+    </Shell>
   );
 }
 

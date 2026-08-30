@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/*
+  Claim Decoder theme.
+
+  The material is an Indian policy wording: dense, official, two-column, set
+  in a typeface nobody chose for pleasure. The product borrows that document
+  authority rather than running from it, because its entire claim is that it
+  quotes a real document instead of summarising one.
+
+  COLOUR HAS ONE JOB HERE
+
+  There is exactly one saturated colour in the product, and it means "you may
+  have a case". Everything else is ink, paper and rules.
+
+  This corrects an inversion in the previous build, where the loudest colour
+  in the system fired on well_supported — the rejection holds, the worst
+  outcome for the user — and the encouraging outcome got a muted amber. The
+  strongest signal was reserved for the moment there was nothing to fight.
+
+    contest   the only saturated colour. A weak rejection, money wrongly
+              billed, the amount worth arguing for.
+    upheld    graphite. When the rejection holds the page goes quiet rather
+              than red.
+    insurer   oxblood, used in exactly one place: the insurer's side of the
+              two-sided argument. Their case is coloured, yours is inked.
+    ochre     "go and check this". At most once per screen.
+
+  THE EXHIBIT IS ACHROMATIC ON PURPOSE
+
+  Someone will print a clause and hand it to a grievance officer. The exhibit
+  therefore carries no colour at all: it is built from rules, weight, mono and
+  a printer's folio, so a black and white photocopy loses nothing. See the
+  @media print block at the foot of this file.
+*/
+
+@theme {
+  /* ------------------------------------------------------------- paper */
+  --color-paper: #faf9f6;
+  --color-paper-sunk: #f4f2ed;
+  --color-paper-chip: #f1eee7;
+  --color-card: #ffffff;
+
+  /* --------------------------------------------------------------- ink */
+  --color-ink: #10203a;
+  --color-ink-2: #2a3c5a;
+  --color-ink-soft: #5d6d87;
+  /* Verbatim text sits a shade off the primary ink so a long mono block
+     reads as quoted material rather than as the app talking. */
+  --color-ink-verbatim: #22314c;
+
+  --color-rule: #dcd7cc;
+  --color-rule-soft: #ebe7de;
+
+  /* ------------------------------------------- the one saturated colour */
+  --color-contest: #1f4436;
+  --color-contest-deep: #0f2a21;
+  --color-contest-tint: #e7efe9;
+
+  /* ----------------------------------------------- quiet, and adversary */
+  --color-upheld: #3d3d39;
+  --color-upheld-tint: #efeeea;
+  --color-insurer: #7d2b2b;
+  --color-ochre: #a1541a;
+  --color-ochre-tint: #fdf3e7;
+
+  /* -------------------------------------------------------------- type */
+  /* Named by role, not by classification, and deliberately not --font-display
+     or --font-mono: the superseded stylesheet still sets those on :root and
+     is imported after this file, so it would win and silently drag Georgia
+     back into the landing headlines.
+     notice = the landing voice, a public notice pasted on the front.
+     doc    = everything inside the tool.
+     quote  = verbatim material and folios. */
+  --font-notice: "Inter Tight Variable", system-ui, -apple-system, sans-serif;
+  --font-doc: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+  --font-quote: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  --text-folio: 0.6875rem;
+  --text-folio--line-height: 1.2;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-doc);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* One ring everywhere. A keyboard user must never meet an element that
+     forgot it. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-contest-tint);
+  }
+}
+
+@layer components {
+  /* Small uppercase label, used for eyebrows and folios. Not called
+     .eyebrow: the superseded stylesheet defines that with a dark ink colour
+     and would override the light-on-green landing labels. */
+  .folio {
+    font-family: var(--font-quote);
+    font-size: var(--text-folio);
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+}
+
+/*
+  Print. Constraint: the exhibit must survive being printed in black and
+  white and handed to a grievance officer, so it must not depend on colour.
+  Everything that is not the clause is removed, the exhibit takes the full
+  measure, and the page reference is forced to print.
+*/
+@media print {
+  .no-print { display: none !important; }
+
+  body { background: #fff; }
+
+  .exhibit {
+    break-inside: avoid;
+    border: 1px solid #000 !important;
+    border-top-width: 3px !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .exhibit .exhibit-folio {
+    color: #000 !important;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+  }
+}

@@ -1,15 +1,43 @@
 {
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "comment": "Vite fingerprints every asset filename, so they can be cached forever. Without this they inherit the default one-hour max-age and a returning visitor re-downloads the fonts on every session.",
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "comment": "index.html must never be cached. It is the only file that names the current bundle hashes, so a cached copy pins the browser to a deploy that no longer exists. Firebase defaults it to max-age=3600, which meant every visitor ran an hour-old app after each deploy — and I spent three deploys debugging a stale page because of it.",
+        "source": "/index.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "comment": "The SPA rewrite means any unmatched path also serves index.html, so it needs the same treatment.",
+        "source": "**/!(*.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
       }
     ]
   }
