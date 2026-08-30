@@ -135,6 +135,75 @@ def is_contact_clause(rec):
     return bool(CONTACT_EXEMPT.search((rec.get("clause_text") or "")[:220]))
 
 
+# --------------------------------- gate: masthead furniture, no address in it
+#
+# The address gate above scores an email or two postal-address signals, which
+# catches ICICI's footer because that footer is an address. It does not catch
+# a masthead fragment, and two shapes of one were live in the corpus being
+# quoted to users under "quoted word for word":
+#
+#   ... 05. Tympanoplasty MPANY LIMITED | POLICY WORDINGS 06. Hysterectomy ...
+#   ... twelve months h And Allied Insurance Co Ltd. 10 / 25 C. The within ...
+#
+# Both are a page header sliced by the column gutter: the company name loses
+# its first letters, and a "10 / 25" page stamp rides along. Nothing in either
+# is an address, so nothing fired.
+#
+# Three signals, all chosen against the corpus rather than imagined:
+#
+#   pipe        mastheads separate fields with it, policy prose does not.
+#   page stamp  "10 / 25" with spaces around the slash. The spaces matter:
+#               "24/36 months" and "IRDAI/HLT/CIR/PRO/84/5/" are ordinary and
+#               must not fire.
+#   name tail   COMPANY LIMITED and INSURANCE CO LTD, including the truncated
+#               "MPANY LIMITED" the gutter actually produces.
+#
+# A caps-run rule was tried and thrown away: across the corpus it produced ten
+# hits and not one was real. Policy text is full of legitimate acronym runs —
+# "IVF, ZIFT, GIFT, ICSI", "CBC, FBS, TSH" — and CIN is cervical
+# intraepithelial neoplasia as often as it is a corporate identity number.
+
+MASTHEAD_SIGNALS = (
+    ("pipe", re.compile(r"\|")),
+    # The spaces around the slash are the whole discriminator and must be
+    # required, not optional: "10 / 25" is a page stamp, while "5/50 HPFs"
+    # (a mitotic count) and "2/3 years" are ordinary policy text.
+    ("page_stamp", re.compile(r"\s\d{1,3}\s+/\s+\d{1,3}(?=\s|$)")),
+    ("name_tail", re.compile(
+        r"\b(?:[A-Z]*MPANY|COMPANY)\s+LIMITED\b|"
+        r"\bINSURANCE\s+CO(?:MPANY)?\.?\s+LTD\b|"
+        r"\bPOLICY\s+WORDINGS\b", re.IGNORECASE)),
+)
+
+
+def gate_masthead_fragment(rec):
+    """Page furniture spliced into a clause that carries no address at all."""
+    text = re.sub(r"\s+", " ", rec.get("clause_text") or "")
+    if not text:
+        return None
+    # Contact clauses legitimately carry the insurer's name, helpline and
+    # postal address. Star's "Customer Service" clause really does say
+    # "Insurance Company Limited"; that is the clause doing its job.
+    if is_contact_clause(rec):
+        return None
+
+    hit = []
+    for name, pat in MASTHEAD_SIGNALS:
+        m = pat.search(text)
+        if not m:
+            continue
+        # "Policy wordings" in ordinary mixed-case prose is not a masthead:
+        # every policy in the corpus says "Policy means these Policy wordings".
+        if name == "name_tail" and m.group(0) not in m.group(0).upper():
+            continue
+        hit.append((name, text[max(0, m.start() - 45):m.end() + 35]))
+
+    if not hit:
+        return None
+    kinds = ", ".join(k for k, _ in hit)
+    return ("masthead_fragment", f"{kinds}: ...{hit[0][1].strip()}...")
+
+
 def gate_contact_details(rec):
     text = rec.get("clause_text") or ""
     if not text:
@@ -246,14 +315,16 @@ def gate_continues_previous(recs):
     return findings
 
 
-GATES = (gate_truncated, gate_contact_details, gate_starts_mid_sentence)
+GATES = (gate_truncated, gate_contact_details, gate_starts_mid_sentence,
+         gate_masthead_fragment)
 SEQUENCE_GATES = (gate_continues_previous,)
 
 # Findings that block a load. no_terminal_punctuation is reported but does not
 # fail: 18 percent of the corpus ends without a full stop and almost all of it
 # is headings and table rows.
 BLOCKING = {"truncated", "empty", "embedded_contact_details",
-            "starts_mid_sentence", "continues_previous"}
+            "starts_mid_sentence", "continues_previous",
+            "masthead_fragment"}
 
 
 # ------------------------------------------------------------------- runner
@@ -306,7 +377,8 @@ def main():
     counts = Counter(r.get("policy_id") for r in recs)
 
     kinds = ["truncated", "starts_mid_sentence", "continues_previous",
-             "embedded_contact_details", "empty", "no_terminal_punctuation"]
+             "embedded_contact_details", "masthead_fragment", "empty",
+             "no_terminal_punctuation"]
     print(f"{'policy':26s}{'clauses':>9s}" + "".join(f"{k[:17]:>19s}"
                                                      for k in kinds))
     print("-" * (35 + 19 * len(kinds)))
