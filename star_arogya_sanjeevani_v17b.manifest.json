@@ -1,0 +1,56 @@
+{
+  "policy_id": "star_arogya_sanjeevani",
+  "insurer": "Star Health",
+  "policy_name": "Arogya Sanjeevani",
+  "source_pdf": "Policy_Arogya_Sanjeevani_Insurance_Policy_V_12_84d133b97f.pdf",
+  "extracted_at": "2026-08-30T23:40:58.042427+00:00",
+  "model": "gemini-3.6-flash",
+  "overlap_chars": 1500,
+  "pages": 26,
+  "pages_sent": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26
+  ],
+  "chunks_total": 20,
+  "chunks_failed": [],
+  "verbatim_rejected": 6,
+  "verbatim_rejection_rate": 0.04081632653061224,
+  "records_extracted": 141,
+  "records_deduped": 31,
+  "records_written": 110,
+  "boundary": {
+    "boundaries": 10,
+    "cut": 6,
+    "recoverable": 5,
+    "unrecovered": [
+      {
+        "after_page": 23,
+        "chars_back": 1795,
+        "tail": "ORTUARY CHARGES 67 AMBULANCE\n34 WALKING AIDS CHARGES 68 VASOFIX SAFETY"
+      }
+    ]
+  }
+}

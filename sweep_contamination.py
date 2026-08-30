@@ -22,6 +22,7 @@ Counts first. Fixes later.
 """
 
 import json
+import os
 import re
 import sys
 from collections import Counter, defaultdict
@@ -29,7 +30,7 @@ from collections import Counter, defaultdict
 sys.path.insert(0, ".")
 from quality_gates import gate_masthead_fragment  # noqa: E402
 
-CORPUS = "clauses_v16_all.jsonl"
+CORPUS = os.environ.get("SWEEP_CORPUS", "clauses_v16_all.jsonl")
 
 # Words that make a following or preceding number ordinary rather than
 # stray: amounts, durations, enumerations, references.

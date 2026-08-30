@@ -276,6 +276,11 @@ def page_text(page, forced_gutter=None):
 # the worst real case while still refusing to delete a whole paragraph.
 FURNITURE_MAX_LEN = 250
 
+# An exact substring shared with a known furniture line, at least this long,
+# is conclusive on its own. Twenty-five characters of verbatim overlap does
+# not happen by accident between a masthead and a real clause line.
+CONTAINMENT_MIN = 25
+
 
 def learn_furniture(raw_pages, threshold=0.5):
     """
@@ -322,6 +327,22 @@ def is_furniture(line, furniture, min_overlap=22):
     if len(key) > FURNITURE_MAX_LEN:
         return False
     for known in furniture:
+        # Containment first. A prefix comparison cannot see a fragment
+        # truncated at its START, and that is exactly what the gutter
+        # produces: Star's masthead arrives as "mpany limited policy
+        # wordings" against a learned "ompany limited policy wordings", which
+        # share no first character and so no common prefix at all. One being
+        # a substring of the other is far stronger evidence than a shared
+        # prefix, so it carries a lower bar.
+        # One direction only. A fragment of the masthead is contained IN the
+        # known furniture line; that is what the gutter produces. The reverse
+        # containment — a line that CONTAINS the furniture text — is ordinary
+        # clause text mentioning the insurer, and matching it deleted ICICI's
+        # definition '"Company" means ICICI Lombard General Insurance Company
+        # Limited.' along with real rows from Tata's benefit notes.
+        if len(key) >= CONTAINMENT_MIN and key in known:
+            return True
+
         # A real clause line that merely starts with the insurer's name must
         # not be mistaken for a header, so the candidate has to be about the
         # same length as the known fragment, not merely start like it.
@@ -336,6 +357,41 @@ def is_furniture(line, furniture, min_overlap=22):
 def _furniture_key(line):
     """Normalise away page numbers so footers with a page count still match."""
     return re.sub(r"[\d\W_]+", " ", line).strip().lower()
+
+
+def learn_page_number_offset(raw_pages, threshold=0.3):
+    """
+    Work out how the printed page number relates to the PDF index.
+
+    A line containing nothing but a number is the printed folio. It is never
+    learned as furniture, because its value differs on every page, and no
+    regex in FURNITURE_PATTERNS matches a bare number. So it survived, and
+    when the column crop dropped it between two lines of a clause the result
+    was HDFC's Excl01 reading "to the extent of Sum 30 Insured increase" —
+    the page number wedged inside a defined term, quoted to users as policy
+    wording and carried into a drafted letter to a grievance officer.
+
+    The offset is learned rather than assumed, because front matter means the
+    printed number rarely equals the PDF index. If no offset is consistent
+    across the document, None is returned and nothing is stripped.
+    """
+    offsets = {}
+    for i, text in raw_pages:
+        for line in text.split("\n"):
+            s = line.strip()
+            if s.isdigit() and len(s) <= 4:
+                offsets[int(s) - i] = offsets.get(int(s) - i, 0) + 1
+    if not offsets:
+        return None
+    off, n = max(offsets.items(), key=lambda kv: kv[1])
+    return off if n >= max(3, len(raw_pages) * threshold) else None
+
+
+def is_page_number_line(line, page_no, offset):
+    if offset is None:
+        return False
+    s = line.strip()
+    return s.isdigit() and len(s) <= 4 and int(s) - page_no == offset
 
 
 def _edge_keys(segments, n=2):
@@ -366,20 +422,34 @@ def read_pdf(path, forced_gutter=None):
             edges.append(_edge_keys(segments))
 
     furniture = learn_furniture(raw)
+    folio_offset = learn_page_number_offset(raw)
     pages = []
     for (i, text), edge in zip(raw, edges):
-        # Exact furniture matches are dropped wherever they appear. Fuzzy
-        # prefix matches are only allowed at a column's first or last lines,
-        # which is the only place a header or footer band can land. v9 applied
-        # the fuzzy rule everywhere and ate seven real rows out of the
-        # benefits table on pages 22 and 23.
+        # Exact furniture matches are dropped wherever they appear.
+        #
+        # Fuzzy prefix matches used to be allowed only at a column's first or
+        # last lines, because v9 applied the rule everywhere and ate seven
+        # real rows out of a benefits table. But a full-width masthead sliced
+        # by the gutter does not always land at an edge: Star's
+        # "MPANY LIMITED | POLICY WORDINGS" landed mid-column, between items
+        # 05 and 06 of a list of specified diseases.
+        #
+        # So fuzzy matching now applies everywhere, with the overlap
+        # requirement raised well above the edge threshold when the line is
+        # not at an edge. A masthead fragment shares dozens of characters
+        # with a known furniture line; a real table row shares a handful.
         kept = []
         for l in text.split("\n"):
             k = _furniture_key(l)
             if k and k in furniture:
                 continue
-            if k and k in edge and is_furniture(l, furniture):
+            if is_page_number_line(l, i, folio_offset):
                 continue
+            if k:
+                at_edge = k in edge
+                if is_furniture(l, furniture,
+                                min_overlap=22 if at_edge else 44):
+                    continue
             kept.append(l)
         pages.append((i, strip_furniture("\n".join(kept))))
     return pages, diagnostics, furniture
