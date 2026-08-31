@@ -7,6 +7,10 @@ Last substantially revised 31 Aug 2026, after a week of corpus repair. The
 sections marked **NEW** did not exist before that and contain the findings
 most likely to be re-discovered the hard way.
 
+**If you read only one section, read "OPEN: text lost in column assembly".
+It is the one defect still in the corpus that nothing in the pipeline can
+see.**
+
 ---
 
 ## What this is
@@ -34,7 +38,7 @@ whole. Both of those failed silently for months. See "The silent-loss family".
 |---|---|---|
 | Frontend | React + Vite, plain CSS | `https://project-37e668b0-6b36-4e1f-a02.web.app` |
 | Backend | FastAPI on Cloud Run | `https://claim-decoder-api-793807740598.asia-south1.run.app` |
-| Data | BigQuery, 965 clauses + embeddings | dataset `claims` |
+| Data | BigQuery, 972 clauses + embeddings | dataset `claims` |
 | Models | Gemini via Vertex AI | `gemini-3.6-flash` |
 | Repo | private | `github.com/gupta19esha/claim-decoder` |
 
@@ -47,16 +51,16 @@ waiting period, and correctly reasons that 14 months of coverage is short of it.
 
 ### Corpus
 
-965 clauses across five insurers and six policies.
+972 clauses across five insurers and six policies.
 
 | Policy | Clauses |
 |---|---|
-| ICICI Lombard Elevate | 223 |
+| ICICI Lombard Elevate | 227 |
 | Niva Bupa ReAssure | 167 |
-| HDFC Ergo Optima Secure | 164 |
+| HDFC Ergo Optima Secure | 165 |
 | Niva Bupa ReAssure 3.0 | 153 |
 | Tata AIG Medicare Select | 135 |
-| Star Health Arogya Sanjeevani | 123 |
+| Star Health Arogya Sanjeevani | 125 |
 
 Plus 146 IRDAI non-payable items in `irdai_non_payable_items`. IRDAI-mandated
 and identical across insurers, so one canonical copy serves all. Do not
@@ -66,8 +70,9 @@ BigQuery tables: `claims.clauses`, `claims.clauses_embedded` (768 dims,
 `text-embedding-004` via connection `vertex_conn`), `claims.embedder`,
 `claims.irdai_non_payable_items`.
 
-Backups from the 31 Aug rebuild: `clauses_backup_20260831` (the original 953),
-`clauses_embedded_backup_20260831`, `clauses_backup_v15_20260831`.
+Backups, oldest first: `clauses_backup_20260831` (the original 953),
+`clauses_embedded_backup_20260831`, `clauses_backup_v15_20260831`,
+`clauses_backup_v16_20260831` (the 965 that preceded the furniture fixes).
 
 ---
 
@@ -186,7 +191,46 @@ chunks of Star Health while the run reported success.
 *Fix:* `call_gemini` returns `None` on exhaustion, never `[]`. Failed chunks
 are listed by section and page range and the process exits 2.
 
-**4. Pages sent to the model that produce nothing.** Between 19% and 41% of
+**4. A bare page number spliced into a clause.** HDFC's Excl01 read "to the
+extent of Sum 30 Insured increase", the printed folio dropped between two
+words of a defined term. It went out inside a drafted appeal letter to a
+grievance officer before anyone noticed. 24 clauses across HDFC and ICICI.
+
+*Cause:* a line containing only a number matches no pattern in
+`FURNITURE_PATTERNS`, and `learn_furniture` cannot learn it because the value
+differs on every page. It was the one piece of page furniture with no
+detector at all.
+*Fix:* `learn_page_number_offset` learns the relationship between the printed
+folio and the PDF index **per document**, then `is_page_number_line` strips
+matching lines. The offset must be learned, not assumed: front matter means
+the printed number rarely equals the PDF index. HDFC and ICICI came out at
+offset 0; the other four documents have no bare-number folios at all and the
+function correctly returns None, stripping nothing.
+
+**5. A masthead sliced by the gutter, mid-column.** Star's
+"MPANY LIMITED | POLICY WORDINGS" sat between items 05 and 06 of the
+specified-disease list, and a page stamp "10 / 25" sat inside the 30-day
+waiting period clause. 4 clauses.
+
+*Cause:* two separate blind spots. `is_furniture` compared by common
+**prefix**, which cannot see a fragment truncated at its start — "mpany
+limited policy wordings" shares no first character with the learned "ompany
+limited policy wordings". And fuzzy matching only ran at column edges,
+because v9 applied it everywhere and ate seven real rows from a benefits
+table; these fragments land mid-column.
+*Fix:* containment matching at `CONTAINMENT_MIN = 25` characters, plus fuzzy
+matching everywhere with the overlap requirement raised from 22 to 44
+off-edge.
+
+**Containment is one-directional, and the direction is load-bearing.** The
+first version tested `key in known or known in key` and deleted real content:
+ICICI's definition `"Company" means ICICI Lombard General Insurance Company
+Limited.` and rows from Tata's benefit notes. A clause may legitimately
+*contain* the insurer's name; a furniture fragment is contained *in* the
+furniture. Only `key in known` is safe. If you ever loosen this, re-run the
+newly-removed-lines check across all six documents before trusting it.
+
+**6. Pages sent to the model that produce nothing.** Between 19% and 41% of
 sent pages produce no clause. Scattered pages are normal; a long contiguous run
 is a section that vanished. HDFC's plan charts are 19 consecutive pages of it.
 *Cause:* `extract_text()` linearises tables and destroys row/column
@@ -198,6 +242,66 @@ star 4, tata 5, icici 6, niva 9, niva30 17, hdfc 19, so the default ceiling of
 
 ---
 
+## OPEN: text lost in column assembly — the one defect nothing can see
+
+**Status: unfixed, in the corpus now, and there is no gate for it.**
+
+HDFC's Excl01 sub-clause iii reads
+
+    "as defined under the period for the same would be reduced"
+
+Every other insurer's copy of the same IRDAI-mandated clause reads
+
+    "as defined under the applicable norms on portability stipulated by
+     IRDAI, then waiting period for the same would be reduced"
+
+Eighty-seven characters gone, and what remains still parses as a sentence, so
+nothing looks wrong.
+
+**Where it is lost.** Not in chunking, not in furniture stripping, not in the
+model. `read_pdf` already returns page 31 with the words missing, and the
+string "portability" appears nowhere on page 30 in either the column-cropped
+or the uncropped extraction. It is gone at the pdfplumber text layer, before
+any of our machinery runs. The furniture fixes of 31 Aug removed 24 page-
+number splices and 4 masthead fragments and moved this count by zero, which
+is the proof that it is a different defect: `page_text` crops two columns at
+a learned gutter, and when the crop misplaces or drops a span, the two halves
+are joined into a sentence that reads cleanly.
+
+**Why nothing catches it.** Every gate we have detects something ADDED — a
+page number, a masthead, an address, a truncation. An omission leaves nothing
+behind. There is no shape to match, no residue, no length anomaly big enough
+to trip a threshold. `verify_verbatim` passes, because the shortened text
+really is what the extracted page says.
+
+**The only detector we have, and its exact limit.** `excl_diff.py` works by
+redundancy: Excl01 to Excl18 are IRDAI-mandated and near-identical across
+insurers, so a span two or more insurers carry and one lacks is an omission.
+That covers **eighteen clause codes and nothing else**. For every
+insurer-specific clause — coverages, optional covers, conditions, definitions,
+sub-limits, the great majority of the corpus — **we have no way of knowing
+whether words are missing.** Assume some are.
+
+Current reading, 31 Aug 2026: 24 omissions across Excl01 (8), Excl02 (12),
+Excl16 (3), Excl18 (1). Fourteen of the Excl02 ones are the specified-disease
+enumeration, which genuinely varies between insurers, so treat those as
+suspect rather than certain. The high-confidence ones carry four or five
+witnesses.
+
+Two notes for whoever picks this up. `excl_diff.py` diffs every copy against
+every other rather than against a chosen reference, and it has to: with the
+longest copy as reference, ICICI's 3908-character Excl01 buried everything in
+noise, and with the medoid as reference HDFC — the defective copy — was
+itself the medoid for Excl01 and a reference is never diffed against itself.
+Both designs silently reported the defect as absent.
+
+The work, if it is ever worth doing, is in `page_text`: compare the
+column-cropped assembly against the uncropped `extract_text()` per page and
+flag pages where the crop loses tokens. That would generalise beyond the
+eighteen codes. It is bounded and it is not a demo blocker.
+
+---
+
 ## NEW — the mandatory gate
 
 **`python preload_check.py <file>.jsonl` sits between extraction and BigQuery.
@@ -206,8 +310,9 @@ only on a clean pass, so the check and the load are the same command and
 cannot be skipped by forgetting.
 
 Checks: `truncated`, `starts_mid_sentence`, `continues_previous`,
-`embedded_contact_details`, `empty`, plus manifest-derived `chunk_failed`,
-`boundary_unrecovered`, `verbatim_rejection_rate` and `silent_page_run`.
+`embedded_contact_details`, `masthead_fragment`, `page_number_splice`,
+`empty`, plus manifest-derived `chunk_failed`, `boundary_unrecovered`,
+`verbatim_rejection_rate` and `silent_page_run`.
 `no_terminal_punctuation` is reported but does not block — 18% of the corpus
 ends without a full stop and nearly all of it is headings and table rows.
 
@@ -223,6 +328,15 @@ for a clean file. `bq load` appends by default — pass `--replace` when swappin
 a corpus, or it silently doubles.
 
 Gate calibration details worth keeping:
+- `masthead_fragment` scores a pipe, a page stamp with spaces around the
+  slash, and a company-name tail including the truncated "MPANY LIMITED".
+  A caps-run rule was tried and thrown away: ten hits, none real. Policy text
+  is full of legitimate acronym runs, and CIN is cervical intraepithelial
+  neoplasia at least as often as a corporate identity number.
+- `page_number_splice` requires the number to sit between two words neither of
+  which makes a number ordinary, to match the clause's own page or a
+  neighbour, and the clause to carry fewer than three bare numbers — three or
+  more means an enumerated list, not a splice.
 - Dangling-word detection is case-sensitive. `"...13 Hepatitis A"` is complete;
   `"...endorsements or"` is not.
 - A clause ending on a bare URL is fine. Grievance clauses end
@@ -365,6 +479,53 @@ achieve nothing, because the pages are already being sent and come back empty.
 
 ---
 
+## NEW — the v17 build, and how to repeat it
+
+31 Aug 2026. Corpus went 965 → 972 clauses.
+
+**Only three policies were re-extracted: HDFC, ICICI and Star.** Niva, Niva
+3.0 and Tata were not, and this was deliberate rather than lazy. Neither
+furniture fix changes their page text — verified at page level before
+spending anything, which is free — so re-running them would have cost credits
+to reproduce what we already had while swapping a known-good file for a
+differently-sampled one. **Extraction is not deterministic. Never re-extract
+a policy you have no reason to re-extract.**
+
+That non-determinism is the main hazard in this process. Star's first re-run
+lost pages 3 and 22 outright — 19 clauses, none of them absorbed elsewhere,
+including a `limit` clause carrying room sub-limits. A second run recovered
+page 22. Page 3 survives stripping with 2761 characters and sits in a kept
+chunk, so nothing was broken; the model simply did not return it on either
+run.
+
+**`build_v17.py` is the assembler and the pattern to copy.** For each
+re-extracted policy it takes the new run, finds what the new run dropped that
+the old one had, and carries those clauses forward — **but only if they pass
+the gates**. That last condition is what stopped the four
+masthead-contaminated Star clauses returning through the side door: the
+`masthead_fragment` gate refused them by name. Two HDFC clauses were refused
+the same way, on `page_number_splice` and `truncated`.
+
+Per policy: HDFC 164 → 165, ICICI 223 → 227, Star 123 → 125 (110 extracted,
+15 recovered). Zero failed chunks, verbatim rejection 0.3 to 0.7 percent.
+
+**Sweep, before and after** (`sweep_contamination.py`, free, no model calls):
+
+| shape | before | after |
+|---|---|---|
+| page-number splice | 24 | **0** |
+| masthead fragment | 4 | **0** |
+| other stray numbers | 9 | 9 |
+
+The nine survivors are legitimate and were judged individually: "RAI stage 3",
+"3 occasions", "30 mm of Hg", "2/3 years". Omissions were 24 before and 24
+after, for the reason set out in the column-assembly section above.
+
+Backups from this build: `clauses_backup_v16_20260831`, and the earlier
+`clauses_backup_20260831` and `clauses_backup_v15_20260831`.
+
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,
@@ -401,6 +562,12 @@ achieve nothing, because the pages are already being sent and come back empty.
 - **The appeal-letter verbatim check only inspects quoted spans** of 25+
   characters. An unquoted paraphrase of policy wording passes untouched, and
   the verdict `explanation` and both advocate positions are never checked.
+- **A letter is now always offered, but it is not always an appeal.**
+  `letter_type` is `appeal` on a contestable verdict and `substantiate` when
+  the rejection holds, where the letter asks the insurer to evidence the
+  specific point their own advocate named as weakest. It is explicitly told
+  not to argue the rejection is wrong and not to ask for payment, so it can
+  never read as a hopeless appeal.
 
 ---
 
