@@ -526,6 +526,64 @@ Backups from this build: `clauses_backup_v16_20260831`, and the earlier
 
 ---
 
+## NEW — the mobile layout, and the one rule that holds it
+
+7 Sep 2026. The narrow viewport had never been checked on any screen. It
+overflowed horizontally, and the cause was a single missing wrapping rule
+rather than anything structural — no grid, no fixed width, no absolute
+positioning was at fault, and the layout needed no reworking.
+
+**Every overflow came from text we did not write.** Policy wordings carry
+runs no default rule will break. Measured against the real corpus at 320px,
+four clauses push the exhibit past its measure:
+
+| clause | over |
+|---|---|
+| niva_reassure_30 6.2.4 p41 | +235px |
+| tata_medicare_select B7 p16 | +87px |
+| niva_reassure 8.8 p33 | +48px |
+| icici_elevate 34.1.9 p78 | +16px |
+
+6.2.4 carries
+`https://transactions.nivabupa.com/cashlessclaims/pages/intimation-claim.aspx`,
+76 characters with no break opportunity the renderer will take, and it
+overflows at **414px too** — this was never only a small-phone problem.
+
+The worse surface is the pasted-letter preview on the waiting screen, because
+its content is whatever the insurer wrote. A claim reference of the shape
+`CLM/HDFC/2026/0098871/PREAUTH/REV02` is enough, so the rejection route broke
+for a large share of real users regardless of policy.
+
+*Fix:* `.wrap-verbatim` in `theme.css`, applied to the four surfaces that
+render text the app did not author — the clause text, the clause title, the
+pasted-letter preview and the drafted letter — plus the bill's line
+descriptions and IRDAI item names. It sets `overflow-wrap: break-word` and
+`min-width: 0`.
+
+**The alternatives are all wrong here, and the reason matters.**
+`word-break: break-all` breaks every word rather than only the ones that do
+not fit, and a quoted clause stops reading as a document. `hyphens: auto`
+inserts a hyphen character into text that is quoted verbatim and will be read
+against the printed page — we do not add characters to it. `overflow-x:
+hidden` clips the far end of a clause, which is the one thing this product
+must never do. `break-word` inserts nothing and moves nothing.
+
+**`npm run verify:mobile` is the gate.** It walks every screen at 320, 375 and
+414, requires the document to be no wider than the viewport, and names the
+elements responsible when it is not. The API is stubbed from
+`verify_mobile_fixtures.mjs`, so it needs no backend and no credentials and
+reaches the finding screens deterministically. It exits non-zero, so it can
+gate a deploy. `ENGINE=webkit` runs it under Safari's engine and `ORIGIN=`
+points it at the deployed site. Verified passing on both engines, at all three
+widths, against the live site.
+
+There is a companion check worth knowing about: rendering all 972 clause texts
+through the real exhibit styling and measuring each one. That is how the four
+clauses above were named rather than guessed at. Character counts do not
+answer this — only the renderer knows where it will agree to break a URL.
+
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,

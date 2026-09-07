@@ -371,7 +371,7 @@ function Row({ f }) {
   return (
     <li className="border border-rule bg-card md:grid md:grid-cols-12 md:items-start">
       <div className="flex items-baseline justify-between gap-4 px-5 py-4 md:col-span-5 md:border-r md:border-rule-soft">
-        <span className="font-doc text-lg leading-snug text-ink">
+        <span className="wrap-verbatim font-doc text-lg leading-snug text-ink">
           <span className="folio mr-2 text-ink-soft">L{f.line_no}</span>
           {f.description}
         </span>
@@ -394,7 +394,7 @@ function Row({ f }) {
         ) : (
           <>
             <span className="folio text-ink-soft">IRDAI list</span>
-            <q className="mt-1 block font-quote text-[0.8125rem] leading-relaxed text-ink-verbatim">
+            <q className="wrap-verbatim mt-1 block font-quote text-[0.8125rem] leading-relaxed text-ink-verbatim">
               {f.item_name}
             </q>
           </>
@@ -491,7 +491,7 @@ function NotFlagged({ rows }) {
             key={l.line_no}
             className="flex items-baseline justify-between gap-4 border-b border-rule-soft px-5 py-3 last:border-b-0"
           >
-            <span className="font-doc text-base text-ink">
+            <span className="wrap-verbatim font-doc text-base text-ink">
               <span className="folio mr-2 text-ink-soft">L{l.line_no}</span>
               {l.description}
             </span>
@@ -618,7 +618,7 @@ function BillLetter({ result }) {
       ) : (
         <Arrive>
           <h2 className="folio text-ink-soft">Draft letter</h2>
-          <div className="mt-3 border border-rule bg-card px-5 py-6 font-quote text-[0.8125rem] leading-[1.85] whitespace-pre-wrap text-ink-verbatim">
+          <div className="wrap-verbatim mt-3 border border-rule bg-card px-5 py-6 font-quote text-[0.8125rem] leading-[1.85] whitespace-pre-wrap text-ink-verbatim">
             {text}
           </div>
           <div className="no-print mt-4 flex flex-wrap gap-3">

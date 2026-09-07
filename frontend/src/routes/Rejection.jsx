@@ -476,7 +476,7 @@ function WaitingStep({ letter, policy, stage }) {
               <span className="folio text-ink-soft">{policy.insurer}</span>
             )}
           </div>
-          <p className="max-h-[22rem] overflow-hidden px-5 py-5 font-quote text-[0.8125rem] leading-[1.8] whitespace-pre-wrap text-ink-verbatim">
+          <p className="wrap-verbatim max-h-[22rem] overflow-hidden px-5 py-5 font-quote text-[0.8125rem] leading-[1.8] whitespace-pre-wrap text-ink-verbatim">
             {letter.slice(0, 900)}
             {letter.length > 900 ? "…" : ""}
           </p>
@@ -747,7 +747,7 @@ function Appeal({ result }) {
               policy, so it was withheld. What remains is safe to send.
             </p>
           )}
-          <div className="mt-3 border border-rule bg-card px-5 py-6 font-quote text-[0.8125rem] leading-[1.85] whitespace-pre-wrap text-ink-verbatim">
+          <div className="wrap-verbatim mt-3 border border-rule bg-card px-5 py-6 font-quote text-[0.8125rem] leading-[1.85] whitespace-pre-wrap text-ink-verbatim">
             {letter.letter_text}
           </div>
           <div className="no-print mt-4 flex flex-wrap gap-3">

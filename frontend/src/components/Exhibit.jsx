@@ -57,12 +57,12 @@ export default function Exhibit({
 
       <div className="px-5 pt-5 pb-6 lg:col-start-2 lg:row-start-1 lg:py-6 lg:pr-6">
         {title && (
-          <figcaption className="mb-4 font-doc text-lg leading-snug font-semibold text-ink sm:text-xl">
+          <figcaption className="wrap-verbatim mb-4 font-doc text-lg leading-snug font-semibold text-ink sm:text-xl">
             {title}
           </figcaption>
         )}
 
-        <blockquote className="space-y-3 font-quote text-[0.8125rem] leading-[1.8] text-ink-verbatim">
+        <blockquote className="wrap-verbatim space-y-3 font-quote text-[0.8125rem] leading-[1.8] text-ink-verbatim">
           {parts.map((p, i) => (
             <p key={i} className={i > 0 ? "pl-4 -indent-4" : undefined}>
               {p}

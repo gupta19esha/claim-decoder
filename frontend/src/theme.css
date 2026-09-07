@@ -115,6 +115,42 @@
     letter-spacing: 0.11em;
     text-transform: uppercase;
   }
+
+  /*
+    Every surface that renders text WE DID NOT WRITE: the clause quoted from
+    the corpus, the letter the reader pasted, the drafted letter quoting the
+    clause back. All of it is laid out at whatever intrinsic width its longest
+    unbreakable run demands, and policy wording is full of runs that no
+    default rule will break.
+
+    Measured on a 320px viewport against the real corpus: clause 6.2.4 of Niva
+    Bupa ReAssure 3.0 carries
+    "https://transactions.nivabupa.com/cashlessclaims/pages/intimation-claim.aspx"
+    and pushed the clause box 235px past its 280px measure. It overflows at
+    414px too. Three further clauses overflow at 320: tata B7, niva 8.8,
+    icici 34.1.9. The pasted-letter preview is worse, because its content is
+    whatever the insurer wrote — a claim reference like
+    CLM/HDFC/2026/0098871/PREAUTH/REV02 is enough.
+
+    break-word, deliberately, and not the alternatives:
+      word-break: break-all  breaks every word, not just the ones that do not
+                             fit, and turns a quoted clause into a ragged
+                             block that no longer reads as a document.
+      hyphens: auto          inserts a hyphen character. This text is quoted
+                             verbatim and someone will read it against the
+                             printed page; we do not add characters to it.
+      overflow-x: hidden     hides the symptom and silently clips the far end
+                             of a clause, which is the one thing this product
+                             must never do.
+    break-word inserts nothing and moves nothing. It only permits a break
+    inside a run that cannot fit on a line by itself.
+  */
+  .wrap-verbatim {
+    overflow-wrap: break-word;
+    /* Flex and grid children default to min-width:auto, which refuses to
+       shrink below the content's intrinsic width and defeats the above. */
+    min-width: 0;
+  }
 }
 
 /*
