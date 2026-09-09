@@ -19,7 +19,7 @@ export default function Shell({ steps, current, foot, children }) {
           <div className="flex items-baseline justify-between py-4">
             <Link
               to="/"
-              className="font-doc text-lg font-semibold tracking-tight text-ink hover:underline"
+              className="font-doc text-body font-semibold tracking-tight text-ink hover:underline"
             >
               Claim Decoder
             </Link>
@@ -63,7 +63,7 @@ export default function Shell({ steps, current, foot, children }) {
       </main>
 
       <footer className="no-print border-t border-rule">
-        <div className="mx-auto max-w-6xl px-5 py-6 font-doc text-sm leading-relaxed text-ink-soft sm:px-8">
+        <div className="mx-auto max-w-6xl px-5 py-8 font-doc text-aside text-ink-soft sm:px-8">
           {foot}
         </div>
       </footer>

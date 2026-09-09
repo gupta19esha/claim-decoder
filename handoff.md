@@ -941,6 +941,95 @@ another failed on the same element.
 
 ---
 
+## NEW — the type scale everywhere, and depth in the neutrals
+
+9 Sep 2026, after the result screen proved the scale.
+
+### The scale, on all five screens
+
+Landing, paste, policy, waiting and the bill now use the role-named tokens
+from `30a3912`. Two structural changes came with it:
+
+**The bill's number is the moment.** It used to be buried mid-sentence in a
+headline — "₹3,170 on this bill should not have been charged to your claim" —
+so the thing the reader came for was a fragment of a paragraph. Split: the
+amount alone at verdict scale, the sentence beneath at lead. Big and quiet;
+no celebration, because someone reading it is unwell or caring for someone
+who is.
+
+**The landing's three figures came down** from 5xl/6xl to screen scale. They
+were the second-loudest thing on the page and argued with the claim above
+them. One moment per screen, and on the landing it is the claim.
+
+### Why the page read flat, measured
+
+| | before | after |
+|---|---|---|
+| surface span, card → deepest | **5.9 L\*** | **13.9 L\*** |
+| paper → sunk (what the exhibit relies on) | **2.4 L\*** | **4.4 L\*** |
+| ink-verbatim → ink-2 (two tokens, one job) | 4.9 L\* apart | 13.3 apart |
+
+2.4 L\* is at the edge of perceptibility for a large flat field. The exhibit's
+"sheet laid on a desk" was working on almost nothing.
+
+**Deepening the surfaces spends the text-contrast budget, and that is the
+thing to understand before touching these values.** The obvious move for
+recession — a paler grey — measured 4.28:1 on paper and 3.83:1 on sunk,
+under the AA floor. So `ink-soft` got slightly *darker*, not lighter, and
+text recession comes from the ground stepping down beneath it plus size and
+weight. `ink-soft` cannot go lighter while asides sit on `paper-sunk`.
+
+`paper-deep` (L\* 86.1) is the exhibit band. `ink-soft` measures 3.20:1 there
+and cannot be used, so that band's label steps up to `ink-2` — the budget
+being spent, made concrete.
+
+### No second hue, and why
+
+The question was asked and the answer was no. The measured cause of flatness
+was a 5.9 L\* surface span; adding hue to a depth problem gives a coloured
+flat page. The system already carried four hues (contest, upheld, insurer,
+ochre) — it was never a one-colour system, it was one dominant plus three
+restricted, and a fifth is where it starts reading as a dashboard.
+
+Decisive: **`contest-deep` and `contest-tint` were defined and never used.**
+The one saturated colour had a three-rung ramp with only the middle rung in
+service. `contest-deep` is now the landing hero — the front door is the
+deepest green and the verdict band sits a step above it. Depth within the one
+colour rather than a new meaning to learn.
+
+### `npm run verify:palette` — and it caught the bug it was built for
+
+Deepening the surfaces nearly shipped two invisible defects:
+
+- `rule-soft` was L\* 91.7 against a new `paper-sunk` of L\* 92.8. A hairline
+  **lighter than the surface it is drawn on** — it would simply disappear.
+- `ochre-tint` was 1.02:1 against the new paper: a callout ground
+  indistinguishable from the page behind it.
+
+Neither is visible in a diff, neither breaks a layout, neither shows up in an
+overflow or stability gate. They are arithmetic, so they are checkable. 40
+checks, no browser:
+
+1. every rule clears 1.2:1 on every ground it is drawn on
+2. the neutral ramp keeps its depth — adjacent surfaces ≥2.0 L\* apart, span
+   ≥10
+3. every declared text-on-ground pair clears AA at 4.5:1
+4. every callout ground is ≥1.08:1 against the page
+
+**The rule and text pairs are declared, not inferred.** The first version
+checked every rule against every surface and failed instantly on `rule-soft`
+against `paper-deep` — correct arithmetic about a combination the design does
+not use and cannot satisfy, since a soft hairline and the deepest paper stock
+are 1.01:1 apart at any honest value. A stylesheet cannot tell you what sits
+on what. Writing the pair down is the moment someone has to think about it.
+
+It also failed `rule` on `paper-deep` at 1.1996:1 — genuinely under, not a
+rounding artefact — so `rule` went from `#cdc5b0` to `#c9c0a9`.
+
+**Eight gates now.** `verify:palette` is the cheapest of them: no browser, no
+API, no model, runs in under a second. Run it after any colour change.
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,

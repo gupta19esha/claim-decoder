@@ -117,7 +117,7 @@ export default function Bill() {
       {error && (
         <div
           role="alert"
-          className="mb-8 border-l-[3px] border-insurer bg-card px-5 py-4 font-doc text-base"
+          className="mb-8 border-l-[3px] border-insurer bg-card px-5 py-4 font-doc text-body"
         >
           <strong className="font-semibold">Something went wrong.</strong>{" "}
           {error}
@@ -127,6 +127,10 @@ export default function Bill() {
       {result ? (
         <Findings
           result={result}
+          /* The band runs flush to the step rule, which means pulling it up
+             over Shell's own top padding — so it must not do that when the
+             error banner is above it. */
+          flush={!error}
           onReset={() => {
             setResult(null);
             setText("");
@@ -152,10 +156,10 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-12">
       <div className="lg:col-span-7">
-        <h1 className="font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl">
+        <h1 className="font-doc text-screen font-semibold text-balance lg:text-screen-lg">
           What did the hospital charge you?
         </h1>
-        <p className="mt-3 max-w-[54ch] font-doc text-lg leading-relaxed text-ink-2">
+        <p className="mt-4 max-w-[54ch] font-doc text-lead text-ink-2 lg:text-lead-lg">
           Paste the itemised bill, one line per item, with the amount at the
           end of the line. We check every line against the 146 items the IRDAI
           says a hospital may not bill to a claim.
@@ -164,7 +168,7 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
         {/* The scope limit, plainly, before the check runs. Stated again with
             the result. A checker that silently skips the largest deduction on
             most bills would be read as having checked it. */}
-        <p className="mt-4 max-w-[54ch] font-doc text-lg leading-relaxed text-ink">
+        <p className="mt-4 max-w-[54ch] font-doc text-body text-ink">
           <strong className="font-semibold">Room rent is not checked.</strong>{" "}
           Your room limit is set in your Policy Schedule, not in the policy
           wording, so there is nothing generic to check it against.
@@ -190,14 +194,14 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
           <button
             onClick={run}
             disabled={text.trim().length < 10 || busy}
-            className="border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
+            className="border border-ink bg-ink px-7 py-4 font-doc text-lead font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
           >
             {busy ? "Checking…" : "Check the bill"}
           </button>
           <button
             onClick={() => fileRef.current?.click()}
             disabled={busy}
-            className="border border-rule px-6 py-4 font-doc text-lg text-ink-2 transition-colors hover:border-ink"
+            className="border border-rule px-6 py-4 font-doc text-body text-ink-2 transition-colors hover:border-ink"
           >
             Upload a text file
           </button>
@@ -211,7 +215,7 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
           {!text && (
             <button
               onClick={() => setText(SAMPLE)}
-              className="font-doc text-base text-ink-soft underline hover:text-ink"
+              className="font-doc text-aside text-ink-soft underline hover:text-ink"
             >
               Use an example bill
             </button>
@@ -221,12 +225,12 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
 
       <aside className="mt-10 lg:col-span-4 lg:col-start-9 lg:mt-0">
         <h2 className="folio text-ink-soft">What this checks</h2>
-        <p className="mt-3 font-doc text-base leading-relaxed text-ink-2">
+        <p className="mt-3 font-doc text-body text-ink-2">
           The IRDAI publishes four lists of items a hospital may not charge to
           your claim. They are the same for every insurer in India, so this
           works whoever you are with, and you do not need your policy.
         </p>
-        <p className="mt-3 font-doc text-base leading-relaxed text-ink-2">
+        <p className="mt-3 font-doc text-body text-ink-2">
           It does not check sub-limits, deductibles, or whether the treatment
           itself was covered. If your claim was refused outright, the{" "}
           <Link to="/rejection" className="text-ink underline">
@@ -234,7 +238,7 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
           </Link>{" "}
           is the other half of this.
         </p>
-        <p className="mt-3 font-doc text-base leading-relaxed text-ink-soft">
+        <p className="mt-3 font-doc text-aside text-ink-soft">
           Your bill is sent to be checked and not stored. A file you choose is
           read in this browser, not uploaded.
         </p>
@@ -245,7 +249,7 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
 
 /* --------------------------------------------------------- the findings */
 
-function Findings({ result, onReset }) {
+function Findings({ result, onReset, flush = true }) {
   const findings = result.findings || [];
   const never = findings.filter((f) => f.category === "not_payable");
   const twice = findings.filter((f) => f.category !== "not_payable");
@@ -253,7 +257,8 @@ function Findings({ result, onReset }) {
   const sum = (rows) =>
     rows.reduce((t, f) => t + (typeof f.amount === "number" ? f.amount : 0), 0);
 
-  if (findings.length === 0) return <NothingFlagged result={result} onReset={onReset} />;
+  if (findings.length === 0)
+    return <NothingFlagged result={result} onReset={onReset} flush={flush} />;
 
   const byCharge = Object.keys(SUBSUME)
     .map((k) => ({ key: k, rows: twice.filter((f) => f.category === k) }))
@@ -263,14 +268,32 @@ function Findings({ result, onReset }) {
     <div>
       {/* Calm authority, not celebration. The reader is stressed and possibly
           ill; a number this size deserves a plain statement. */}
-      <Arrive>
-        <section className="bg-contest px-5 py-8 text-paper sm:px-8 sm:py-10">
-          <p className="folio opacity-70">What was checked</p>
-          <h1 className="mt-3 max-w-[24ch] font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl lg:text-5xl">
-            {rupees(result.flagged_total)} on this bill should not have been
-            charged to your claim.
-          </h1>
-          <p className="mt-4 max-w-[58ch] font-doc text-lg leading-relaxed opacity-90">
+      {/*
+        THE ONE MOMENT ON THIS SCREEN, AND IT IS THE NUMBER.
+
+        It used to be buried mid-sentence in a headline — "Rs 3,170 on this
+        bill should not have been charged to your claim" — so the thing the
+        reader came for was a fragment of a paragraph. Split: the amount alone
+        at verdict scale, the sentence beneath it at lead.
+
+        Big and quiet. No celebration, no exclamation, nothing that treats a
+        hospital bill as a win. Someone reading this is unwell or looking
+        after someone who is.
+      */}
+      <section
+        className={
+          "-mx-5 bg-contest px-5 py-14 text-paper sm:-mx-8 sm:px-8 sm:py-16 lg:py-24 " +
+          (flush ? "-mt-8 sm:-mt-12" : "")
+        }
+      >
+        <p className="folio opacity-60">What was checked</p>
+        <p className="mt-6 font-doc text-verdict font-medium tabular-nums lg:mt-8 lg:text-verdict-lg">
+          {rupees(result.flagged_total)}
+        </p>
+        <h1 className="mt-6 max-w-[26ch] font-doc text-lead font-normal text-balance opacity-90 lg:mt-8 lg:text-lead-lg">
+          on this bill should not have been charged to your claim.
+        </h1>
+        <p className="mt-6 max-w-[58ch] font-doc text-body opacity-75">
             {result.lines_flagged} of {result.lines_read} lines matched the
             IRDAI lists.
             {typeof result.bill_total === "number" && result.bill_total > 0 && (
@@ -280,11 +303,10 @@ function Findings({ result, onReset }) {
                 {rupees(result.bill_total)}.
               </>
             )}
-            {result.findings_without_amount > 0 &&
-              ` ${result.findings_without_amount} matched but had no readable amount, so they are not in this total.`}
-          </p>
-        </section>
-      </Arrive>
+          {result.findings_without_amount > 0 &&
+            ` ${result.findings_without_amount} matched but had no readable amount, so they are not in this total.`}
+        </p>
+      </section>
 
       {never.length > 0 && (
         <Group
@@ -297,16 +319,16 @@ function Findings({ result, onReset }) {
 
       {twice.length > 0 && (
         <section className="mt-12">
-          <h2 className="font-doc text-2xl leading-tight font-semibold sm:text-3xl">
+          <h2 className="font-doc text-section font-semibold lg:text-section-lg">
             Charged to you twice
           </h2>
-          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink-2">
+          <p className="mt-2 max-w-[62ch] font-doc text-body text-ink-2">
             These are not forbidden in themselves. They are already inside a
             charge you have paid, so billing them again as separate lines
             charges you for the same thing twice. Ask for each to be folded
             back into the charge it belongs to.
           </p>
-          <p className="mt-2 font-doc text-lg text-ink-soft">
+          <p className="mt-2 font-doc text-aside text-ink-soft">
             {rupees(sum(twice))} across {twice.length} line
             {twice.length === 1 ? "" : "s"}.
           </p>
@@ -354,16 +376,16 @@ function Group({ heading, argument, total, rows, nested }) {
       <h2
         className={
           nested
-            ? "font-doc text-xl leading-tight font-semibold"
-            : "font-doc text-2xl leading-tight font-semibold sm:text-3xl"
+            ? "font-doc text-section font-semibold"
+            : "font-doc text-section font-semibold lg:text-section-lg"
         }
       >
         {heading}
       </h2>
-      <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink-2">
+      <p className="mt-2 max-w-[62ch] font-doc text-body text-ink-2">
         {argument}
       </p>
-      <p className="mt-2 font-doc text-lg text-ink-soft">
+      <p className="mt-2 font-doc text-aside text-ink-soft">
         {rupees(total)} across {rows.length} line{rows.length === 1 ? "" : "s"}.
       </p>
 
@@ -386,11 +408,11 @@ function Row({ f }) {
   return (
     <li className="border border-rule bg-card md:grid md:grid-cols-12 md:items-start">
       <div className="flex items-baseline justify-between gap-4 px-5 py-4 md:col-span-5 md:border-r md:border-rule-soft">
-        <span className="wrap-verbatim font-doc text-lg leading-snug text-ink">
+        <span className="wrap-verbatim font-doc text-body text-ink">
           <span className="folio mr-2 text-ink-soft">L{f.line_no}</span>
           {f.description}
         </span>
-        <span className="font-quote text-base whitespace-nowrap text-ink">
+        <span className="font-quote text-body whitespace-nowrap text-ink">
           {rupees(f.amount) || "—"}
         </span>
       </div>
@@ -403,7 +425,7 @@ function Row({ f }) {
             whenever it is shown — never paraphrased, same rule as clause text
             in the decoder. */}
         {same(f) ? (
-          <span className="font-doc text-base text-ink-soft">
+          <span className="font-doc text-aside text-ink-soft">
             Matches the IRDAI list exactly.
           </span>
         ) : (
@@ -425,16 +447,21 @@ function Row({ f }) {
   scope attached would read as "your bill is fine", which is not what it
   means.
 */
-function NothingFlagged({ result, onReset }) {
+function NothingFlagged({ result, onReset, flush = true }) {
   return (
     <div>
       <Arrive>
-        <section className="bg-paper-sunk px-5 py-8 sm:px-8 sm:py-10">
+        <section
+          className={
+            "-mx-5 bg-paper-sunk px-5 py-14 sm:-mx-8 sm:px-8 sm:py-16 lg:py-20 " +
+            (flush ? "-mt-8 sm:-mt-12" : "")
+          }
+        >
           <p className="folio text-ink-soft">What was checked</p>
-          <h1 className="mt-3 max-w-[24ch] font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl">
+          <h1 className="mt-6 max-w-[22ch] font-doc text-screen font-semibold text-balance lg:mt-8 lg:text-screen-lg">
             Nothing on this bill matched the IRDAI lists.
           </h1>
-          <p className="mt-4 max-w-[58ch] font-doc text-lg leading-relaxed text-ink-2">
+          <p className="mt-6 max-w-[58ch] font-doc text-lead text-ink-2 lg:text-lead-lg">
             All {result.lines_read} lines we could read were checked against
             all {result.checks?.irdai_items || 146} items. None of them is an
             item a hospital is forbidden from charging to your claim.
@@ -445,14 +472,14 @@ function NothingFlagged({ result, onReset }) {
       <div className="mt-8 lg:grid lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-7">
           <h2 className="folio text-ink-soft">What this does not mean</h2>
-          <p className="mt-3 font-doc text-lg leading-relaxed text-ink">
+          <p className="mt-1.5 font-doc text-body text-ink">
             It does not mean the bill is correct. It means none of the lines is
             on the one list that is the same for every insurer in India. A bill
             can still be wrong in ways this cannot see: a room charge above
             your eligible category, a sub-limit on a procedure, a deductible,
             or a charge for treatment your policy does not cover at all.
           </p>
-          <p className="mt-3 font-doc text-lg leading-relaxed text-ink-2">
+          <p className="mt-4 font-doc text-body text-ink-2">
             If lines were missed, it is usually the format. This reads one item
             per line with the amount at the end. If your bill pasted as a
             single block, try re-pasting it with the line breaks intact.
@@ -462,7 +489,7 @@ function NothingFlagged({ result, onReset }) {
         <div className="mt-6 lg:col-span-5 lg:mt-0">
           <div className="border-l-[3px] border-ochre bg-ochre-tint px-5 py-4">
             <p className="folio text-ochre">Worth doing next</p>
-            <p className="mt-2 font-doc text-lg leading-relaxed text-ink">
+            <p className="mt-1.5 font-doc text-body text-ink">
               Ask the hospital for the itemised bill in full if you were given
               a summary. Deductions are usually made line by line, so a summary
               hides exactly what this checks.
@@ -497,7 +524,7 @@ function NotFlagged({ rows }) {
   if (rows.length === 0) return null;
   return (
     <details className="mt-10 border border-rule-soft bg-card">
-      <summary className="cursor-pointer px-5 py-4 font-doc text-lg text-ink-2">
+      <summary className="cursor-pointer px-5 py-4 font-doc text-body text-ink-2">
         {rows.length} line{rows.length === 1 ? "" : "s"} checked and not flagged
       </summary>
       <ul className="border-t border-rule-soft">
@@ -506,17 +533,17 @@ function NotFlagged({ rows }) {
             key={l.line_no}
             className="flex items-baseline justify-between gap-4 border-b border-rule-soft px-5 py-3 last:border-b-0"
           >
-            <span className="wrap-verbatim font-doc text-base text-ink">
+            <span className="wrap-verbatim font-doc text-body text-ink">
               <span className="folio mr-2 text-ink-soft">L{l.line_no}</span>
               {l.description}
             </span>
-            <span className="font-quote text-base whitespace-nowrap text-ink-soft">
+            <span className="font-quote text-aside whitespace-nowrap text-ink-soft">
               {rupees(l.amount) || "—"}
             </span>
           </li>
         ))}
       </ul>
-      <p className="border-t border-rule-soft px-5 py-3 font-doc text-base text-ink-soft">
+      <p className="border-t border-rule-soft px-5 py-3 font-doc text-aside text-ink-soft">
         None of these appears on the IRDAI lists. That does not make each one
         correct, only that it is not an item a hospital is forbidden from
         charging.
@@ -615,17 +642,17 @@ function BillLetter({ result }) {
     <section className="mt-12">
       {!open ? (
         <div className="no-print border border-rule bg-card p-5 sm:p-6">
-          <h2 className="font-doc text-2xl leading-tight font-semibold">
+          <h2 className="font-doc text-section font-semibold lg:text-section-lg">
             Take it to the billing desk
           </h2>
-          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink-2">
+          <p className="mt-2 max-w-[62ch] font-doc text-body text-ink-2">
             A letter listing each line above with the IRDAI wording beside it,
             and a total. Deductions are argued line by line, so the list is the
             argument.
           </p>
           <button
             onClick={() => setOpen(true)}
-            className="mt-5 border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2"
+            className="mt-5 border border-ink bg-ink px-7 py-4 font-doc text-lead font-semibold text-paper transition-colors hover:bg-ink-2"
           >
             Draft the letter
           </button>
@@ -661,7 +688,7 @@ function ScopeNote({ reason }) {
     <section className="mt-12 border-t border-rule pt-6">
       <h2 className="folio text-ink-soft">What was not checked</h2>
       <div className="mt-3 lg:grid lg:grid-cols-12 lg:gap-12">
-        <p className="font-doc text-lg leading-relaxed text-ink lg:col-span-7">
+        <p className="font-doc text-body text-ink lg:col-span-7">
           <strong className="font-semibold">Room rent.</strong>{" "}
           {reason ||
             "Room rent limits are set in your Policy Schedule, not in the policy wording, so they cannot be checked from the policy alone."}{" "}
@@ -669,7 +696,7 @@ function ScopeNote({ reason }) {
           insurer may also deduct a proportion of every associated charge — and
           that deduction is often larger than everything on this page.
         </p>
-        <p className="mt-3 font-doc text-lg leading-relaxed text-ink-2 lg:col-span-5 lg:mt-0">
+        <p className="mt-3 font-doc text-body text-ink-2 lg:col-span-5 lg:mt-0">
           Also unchecked: sub-limits on specific procedures, your deductible,
           and whether the treatment itself is covered. Your Policy Schedule is
           the document that settles all three.

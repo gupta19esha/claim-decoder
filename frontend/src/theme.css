@@ -35,34 +35,78 @@
 */
 
 @theme {
-  /* ------------------------------------------------------------- paper */
-  --color-paper: #faf9f6;
-  --color-paper-sunk: #f4f2ed;
-  --color-paper-chip: #f1eee7;
-  --color-card: #ffffff;
+  /*
+    THE SURFACES ARE A RAMP, AND THE RAMP IS THE DEPTH.
+
+    They used to span 5.9 L* from card to chip, and paper to sunk was 2.4 —
+    at the edge of perceptibility for a large flat field. The exhibit's "sheet
+    laid on a desk" was working on almost nothing, and the page read as one
+    undifferentiated field because it very nearly was.
+
+    Now the span is 13.9 L* and no two adjacent steps are closer than 2.7.
+    Warmer as it goes darker, the way a stack of paper actually reads.
+
+    DEEPENING THE SURFACES SPENDS THE TEXT-CONTRAST BUDGET. Every step down
+    costs contrast for anything drawn on it, which is why ink-soft below got
+    slightly darker rather than lighter: the obvious move — a paler grey for
+    recession — measured 4.28:1 on paper and 3.83:1 on sunk, under the AA
+    floor. Text recession here comes from the ground stepping down beneath it
+    and from size and weight, not from paler ink.
+
+    verify:palette holds all of this. Change a value and run it.
+  */
+  --color-card: #ffffff;      /* L* 100.0 */
+  --color-paper: #f9f7f2;     /* L*  97.3 */
+  --color-paper-sunk: #efeae0; /* L*  92.8  the ground the exhibit sits on */
+  --color-paper-chip: #e8e2d5; /* L*  90.0 */
+  --color-paper-deep: #ded7c7; /* L*  86.1  the deepest paper stock */
 
   /* --------------------------------------------------------------- ink */
-  --color-ink: #10203a;
-  --color-ink-2: #2a3c5a;
-  --color-ink-soft: #5d6d87;
+  /*
+    Four rungs, evenly spread. ink-verbatim and ink-2 used to sit 4.9 L*
+    apart — two tokens doing one job and a wasted rung of the ladder. They are
+    13.3 apart now.
+  */
+  --color-ink: #0e1c33;       /* L* 10.3   15.9:1 on paper */
   /* Verbatim text sits a shade off the primary ink so a long mono block
      reads as quoted material rather than as the app talking. */
-  --color-ink-verbatim: #22314c;
+  --color-ink-verbatim: #1c2b45; /* L* 17.5 */
+  --color-ink-2: #35496a;     /* L* 30.8    8.5:1 */
+  /* The floor. It cannot go lighter: asides sit on paper-sunk, and 4.6:1
+     there is what is left of the AA budget after the surfaces deepened. */
+  --color-ink-soft: #5f6a7d;  /* L* 44.5    5.1:1 on paper, 4.6:1 on sunk */
 
-  --color-rule: #dcd7cc;
-  --color-rule-soft: #ebe7de;
+  /*
+    Rules darkened because they now cross darker grounds. The old rule-soft
+    was L* 91.7 against a sunk of 92.8 — a hairline LIGHTER than the surface
+    it is drawn on, which simply disappears. That is arithmetic, so
+    verify:palette asserts it rather than trusting an eye.
+  */
+  --color-rule: #c9c0a9;      /* L* 77.9 */
+  --color-rule-soft: #ddd6c5; /* L* 85.8 */
 
   /* ------------------------------------------- the one saturated colour */
+  /*
+    Still one hue with a job: "you may have a case". The ramp was always
+    three rungs and only the middle one was ever used, so the deep is now in
+    service as depth WITHIN green rather than as a new meaning — the landing
+    hero and the verdict band were previously the same flat field.
+  */
   --color-contest: #1f4436;
   --color-contest-deep: #0f2a21;
-  --color-contest-tint: #e7efe9;
+  --color-contest-tint: #dfe8e1;
 
   /* ----------------------------------------------- quiet, and adversary */
+  /*
+    Both tints darkened to clear the new paper. ochre-tint was #fdf3e7,
+    which against a paper of L* 97.3 is 1.02:1 — a callout ground
+    indistinguishable from the page behind it.
+  */
   --color-upheld: #3d3d39;
-  --color-upheld-tint: #efeeea;
+  --color-upheld-tint: #e7e5dd;
   --color-insurer: #7d2b2b;
-  --color-ochre: #a1541a;
-  --color-ochre-tint: #fdf3e7;
+  --color-ochre: #8a4715;
+  --color-ochre-tint: #f7ead6;
 
   /* -------------------------------------------------------------- type */
   /* Named by role, not by classification, and deliberately not --font-display

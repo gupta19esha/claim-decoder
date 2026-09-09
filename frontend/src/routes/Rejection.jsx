@@ -178,7 +178,7 @@ export default function Rejection() {
       {error && (
         <div
           role="alert"
-          className="mb-8 border-l-[3px] border-insurer bg-card px-5 py-4 font-doc text-base"
+          className="mb-8 border-l-[3px] border-insurer bg-card px-5 py-4 font-doc text-body"
         >
           <strong className="font-semibold">Something went wrong.</strong>{" "}
           {error}
@@ -229,10 +229,10 @@ function PasteStep({ letter, setLetter, policies, onNext }) {
           above it, so the caveats are readable without pushing the textarea
           below the fold. */}
       <div className="lg:col-span-7">
-        <h1 className="font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl">
+        <h1 className="font-doc text-screen font-semibold text-balance lg:text-screen-lg">
           What did the insurer tell you?
         </h1>
-        <p className="mt-3 max-w-[52ch] font-doc text-lg leading-relaxed text-ink-2">
+        <p className="mt-4 max-w-[52ch] font-doc text-lead text-ink-2 lg:text-lead-lg">
           Paste the rejection letter, the email, or the SMS. Word for word —
           the wording is what we check against, so a summary will not do.
         </p>
@@ -259,12 +259,12 @@ function PasteStep({ letter, setLetter, policies, onNext }) {
           <button
             onClick={onNext}
             disabled={!ready}
-            className="border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
+            className="border border-ink bg-ink px-7 py-4 font-doc text-lead font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
           >
             Continue
           </button>
           {!ready && (
-            <span className="font-doc text-base text-ink-soft">
+            <span className="font-doc text-aside text-ink-soft">
               Paste the letter to continue.
             </span>
           )}
@@ -277,21 +277,21 @@ function PasteStep({ letter, setLetter, policies, onNext }) {
       <aside className="mt-10 lg:col-span-4 lg:col-start-9 lg:mt-0">
         <div className="border-l-[3px] border-ochre bg-ochre-tint px-5 py-4">
           <p className="folio text-ochre">Before you start</p>
-          <p className="mt-2 font-doc text-base leading-relaxed text-ink">
+          <p className="mt-1.5 font-doc text-body text-ink">
             We hold the full wording for six policies. If yours is not one of
             them we cannot check your rejection yet.
           </p>
           <ul className="mt-3 space-y-1">
             {policies.map((p) => (
-              <li key={p.policy_id} className="font-doc text-base text-ink-2">
+              <li key={p.policy_id} className="font-doc text-body text-ink-2">
                 {p.insurer} — {p.policy_name}
               </li>
             ))}
             {policies.length === 0 && (
-              <li className="font-doc text-base text-ink-soft">Loading…</li>
+              <li className="font-doc text-body text-ink-soft">Loading…</li>
             )}
           </ul>
-          <p className="mt-3 font-doc text-base leading-relaxed text-ink-2">
+          <p className="mt-4 font-doc text-aside text-ink-2">
             Not listed?{" "}
             <Link to="/bill" className="text-ink underline">
               The bill checker
@@ -362,10 +362,10 @@ function PolicyStep({
 
   return (
     <div>
-      <h1 className="font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl">
+      <h1 className="font-doc text-screen font-semibold text-balance lg:text-screen-lg">
         Which policy is this?
       </h1>
-      <p className="mt-3 max-w-[56ch] font-doc text-lg leading-relaxed text-ink-2">
+      <p className="mt-4 max-w-[56ch] font-doc text-lead text-ink-2 lg:text-lead-lg">
         You do not need the policy document. The insurer's name is on the
         letter you just pasted — match it below.
       </p>
@@ -387,12 +387,12 @@ function PolicyStep({
                   : "border-rule bg-card hover:border-ink")
               }
             >
-              <span className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+              <span className="font-doc text-section font-semibold">
                 {p.insurer}
               </span>
               <span
                 className={
-                  "mt-1 font-doc text-base " +
+                  "mt-1 font-doc text-body " +
                   (chosen ? "text-paper/80" : "text-ink-2")
                 }
               >
@@ -413,10 +413,10 @@ function PolicyStep({
       {/* The 3px rule is the weight this system gives a block that carries the
           argument, and that is exactly what this is. */}
       <section className="mt-8 border-t-[3px] border-ink bg-card px-5 py-5 sm:px-6 sm:py-6">
-        <h2 className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+        <h2 className="font-doc text-section font-semibold lg:text-section-lg">
           When did the policy start, and when were you admitted?
         </h2>
-        <p className="mt-2 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
+        <p className="mt-2 max-w-[62ch] font-doc text-body text-ink-2">
           A waiting period is counted in months from the day your policy
           started, so these two dates are what decide whether one had run out
           by the time you were admitted. Without both, the answer has to hedge.
@@ -444,7 +444,7 @@ function PolicyStep({
       </section>
 
       <details className="mt-4 border border-rule-soft bg-card">
-        <summary className="cursor-pointer px-5 py-4 font-doc text-lg text-ink-2">
+        <summary className="cursor-pointer px-5 py-4 font-doc text-body text-ink-2">
           Add the treatment and the amount claimed
         </summary>
         <div className="grid gap-5 border-t border-rule-soft px-5 py-5 sm:grid-cols-2">
@@ -468,7 +468,7 @@ function PolicyStep({
               className="w-full border border-rule bg-paper px-3 py-3 font-doc text-base"
             />
           </Field>
-          <p className="font-doc text-base text-ink-soft sm:col-span-2">
+          <p className="font-doc text-aside text-ink-soft sm:col-span-2">
             These sharpen how the answer is written. They do not decide it —
             the dates above are what a waiting period turns on.
           </p>
@@ -480,18 +480,18 @@ function PolicyStep({
           onClick={submit}
           disabled={!policy}
           aria-describedby={held ? "dates-warning" : undefined}
-          className="border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
+          className="border border-ink bg-ink px-7 py-4 font-doc text-lead font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
         >
           {held ? "Check it anyway" : "Check the rejection"}
         </button>
         <button
           onClick={onBack}
-          className="font-doc text-lg text-ink-2 underline hover:text-ink"
+          className="font-doc text-body text-ink-2 underline hover:text-ink"
         >
           Back to the letter
         </button>
         {!policy && (
-          <span className="font-doc text-base text-ink-soft">
+          <span className="font-doc text-aside text-ink-soft">
             Choose your insurer to continue.
           </span>
         )}
@@ -508,13 +508,13 @@ function PolicyStep({
           className="mt-4 max-w-[62ch] border-l-[3px] border-ochre bg-ochre-tint px-5 py-4"
         >
           <p className="folio text-ochre">Without the dates</p>
-          <p className="mt-2 font-doc text-base leading-relaxed text-ink">
+          <p className="mt-1.5 font-doc text-body text-ink">
             You have not given {missing.join(" or ")}. We cannot work out how
             long you had been covered by the time you were admitted, and a
             waiting period turns on exactly that — so the answer will most
             likely come back as not enough to judge.
           </p>
-          <p className="mt-2 font-doc text-base leading-relaxed text-ink-2">
+          <p className="mt-3 font-doc text-aside text-ink-2">
             Add them above, or press the button again to go ahead without them.
           </p>
         </div>
@@ -526,7 +526,7 @@ function PolicyStep({
           help. */}
       <section className="mt-10 border-t border-rule-soft pt-5">
         <h2 className="folio text-ink-soft">None of these is my insurer</h2>
-        <p className="mt-2 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
+        <p className="mt-1.5 max-w-[62ch] font-doc text-body text-ink-2">
           Then we cannot check this rejection yet. We hold only the six
           wordings above, and guessing against a policy that is not yours would
           produce a confident answer about the wrong document — which is worse
@@ -562,10 +562,10 @@ function WaitingStep({ letter, policy, stage }) {
   return (
     <div className="lg:grid lg:grid-cols-12 lg:gap-12">
       <div className="lg:col-span-5">
-        <h1 className="font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl">
+        <h1 className="font-doc text-screen font-semibold text-balance lg:text-screen-lg">
           Reading your policy.
         </h1>
-        <p className="mt-3 max-w-[46ch] font-doc text-lg leading-relaxed text-ink-2">
+        <p className="mt-4 max-w-[46ch] font-doc text-lead text-ink-2 lg:text-lead-lg">
           This takes about half a minute. Three readings are made of the same
           clauses — the insurer's, yours, and a neutral one — and then they are
           weighed against each other.
@@ -582,7 +582,7 @@ function WaitingStep({ letter, policy, stage }) {
                 key={s}
                 aria-current={state === "now" ? "step" : undefined}
                 className={
-                  "flex items-baseline gap-3 border-b border-rule-soft py-3 font-doc text-lg " +
+                  "flex items-baseline gap-3 border-b border-rule-soft py-3 font-doc text-body " +
                   (state === "now"
                     ? "text-ink"
                     : state === "done"
@@ -766,12 +766,15 @@ function Finding({ result, policy, letter, policies = [] }) {
           difference between #ffffff and #faf9f6 is five values and invisible;
           against #f4f2ed the same sheet is an object. Surface, not
           elevation — a shadow would not survive the photocopier. */}
-      <div className="-mx-5 mt-16 bg-paper-sunk px-5 py-12 sm:-mx-8 sm:px-8 lg:mt-24 lg:py-16">
+      <div className="-mx-5 mt-16 bg-paper-deep px-5 py-12 sm:-mx-8 sm:px-8 lg:mt-24 lg:py-16">
         {noClauses ? (
           <NoClause policy={policy} explanation={result.explanation} />
         ) : (
           <>
-            <h2 className="folio mb-5 text-ink-soft">
+            {/* ink-2, not ink-soft: on paper-deep the soft ink is 3.20:1
+                and fails AA. The deeper ground buys the sheet its presence
+                and pays for it here. */}
+            <h2 className="folio mb-5 text-ink-2">
               {clauses.length > 1
                 ? "The clauses this turns on"
                 : "The clause this turns on"}

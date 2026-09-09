@@ -73,7 +73,12 @@ export default function Landing() {
       </header>
 
       {/* ---------------------------------------------------- the premise */}
-      <section className="bg-contest text-paper">
+      {/* contest-deep, and this is the only place it appears. The landing
+          hero and the verdict band were previously the same flat green on two
+          different screens; the front door is now the deeper field and the
+          finding sits a step above it. Depth within the one saturated colour,
+          not a second colour with a second meaning to learn. */}
+      <section className="bg-contest-deep text-paper">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24 lg:py-32">
           {/* Deliberately not animated. This is the first thing a stressed
               person sees, and it must be on the screen the instant the page
@@ -82,7 +87,7 @@ export default function Landing() {
               below the fold is safe because the reader is scrolling, so the
               tab is demonstrably alive. */}
           <p className="folio mb-8 text-paper/70">If your claim was rejected</p>
-          <h1 className="max-w-[16ch] font-notice text-[2.5rem] leading-[1.02] font-medium tracking-[-0.03em] text-balance sm:text-6xl lg:text-[5.25rem]">
+          <h1 className="max-w-[16ch] font-notice text-verdict font-medium text-balance lg:text-verdict-lg">
             A rejection has to point to a rule.
           </h1>
           <p className="mt-8 max-w-[30ch] font-notice text-2xl leading-tight font-normal text-paper/85 sm:mt-10 sm:text-3xl lg:max-w-[34ch] lg:text-4xl">
@@ -98,7 +103,7 @@ export default function Landing() {
               to="/rejection"
               className="group flex items-baseline justify-between gap-6 border border-paper bg-paper px-6 py-5 text-ink transition-colors hover:bg-white sm:flex-1 sm:px-7"
             >
-              <span className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+              <span className="font-doc text-section font-semibold lg:text-section-lg">
                 My claim was rejected
               </span>
               <span aria-hidden="true" className="font-notice text-xl transition-transform group-hover:translate-x-1">
@@ -109,7 +114,7 @@ export default function Landing() {
               to="/bill"
               className="group flex items-baseline justify-between gap-6 border border-paper/50 px-6 py-5 text-paper transition-colors hover:border-paper hover:bg-white/5 sm:flex-1 sm:px-7"
             >
-              <span className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+              <span className="font-doc text-section font-semibold lg:text-section-lg">
                 Check my hospital bill
               </span>
               <span aria-hidden="true" className="font-notice text-xl transition-transform group-hover:translate-x-1">
@@ -124,12 +129,12 @@ export default function Landing() {
       <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
         <div className="lg:grid lg:grid-cols-12 lg:gap-12">
           <Settle className="lg:col-span-5">
-            <h2 className="font-doc text-2xl leading-snug font-semibold text-balance sm:text-3xl">
+            <h2 className="font-doc text-section font-semibold text-balance lg:text-section-lg">
               This shows you the wording, not our opinion of it.
             </h2>
           </Settle>
           <Settle delay={0.06} className="mt-5 lg:col-span-6 lg:col-start-7 lg:mt-0">
-            <p className="font-doc text-lg leading-relaxed text-ink-2 sm:text-xl">
+            <p className="font-doc text-lead text-ink-2 lg:text-lead-lg">
               Paste what the insurer sent you. You get back the clause they are
               relying on, quoted exactly, with the page number in your policy
               where you can check it. If the wording does not support what they
@@ -149,14 +154,17 @@ export default function Landing() {
           <dl className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-6">
             {FIGURES.map((f, i) => (
               <Settle key={f.label} delay={i * 0.06}>
-                <dt className="font-notice text-5xl leading-none font-medium tracking-tight tabular-nums sm:text-6xl">
+                {/* These were 5xl/6xl and were the second-loudest thing on
+                    the page, arguing with the claim above them. One moment per
+                    screen: the claim is it, and the evidence supports it. */}
+                <dt className="font-notice text-screen font-medium tabular-nums lg:text-screen-lg">
                   {f.n}
                 </dt>
                 <dd className="mt-3">
-                  <span className="font-doc text-lg font-semibold">
+                  <span className="font-doc text-body font-semibold">
                     {f.label}
                   </span>
-                  <span className="mt-1 block font-doc text-base text-ink-soft">
+                  <span className="mt-1 block font-doc text-aside text-ink-soft">
                     {f.sub}
                   </span>
                 </dd>
@@ -169,7 +177,7 @@ export default function Landing() {
             delay={0.2}
             className="mt-10 border-l-[3px] border-ochre bg-ochre-tint px-5 py-4 sm:mt-12"
           >
-            <p className="font-doc text-base leading-relaxed text-ink sm:text-lg">
+            <p className="font-doc text-body text-ink">
               <strong className="font-semibold">
                 Six policies is all we hold today.
               </strong>{" "}
@@ -192,10 +200,10 @@ export default function Landing() {
             <Settle as="li" key={s.n} delay={i * 0.06}>
               <DrawnRule className="mb-5" />
               <span className="folio text-ink-soft tabular-nums">{s.n}</span>
-              <h3 className="mt-3 font-doc text-xl leading-snug font-semibold sm:text-2xl">
+              <h3 className="mt-3 font-doc text-section font-semibold">
                 {s.h}
               </h3>
-              <p className="mt-2 max-w-[42ch] font-doc text-base leading-relaxed text-ink-2">
+              <p className="mt-2 max-w-[42ch] font-doc text-body text-ink-2">
                 {s.p}
               </p>
             </Settle>
@@ -204,19 +212,19 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------------------------- the exhibit */}
-      <section className="border-t border-rule bg-card">
+      <section className="border-t border-rule bg-paper-deep">
         <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
           <div className="lg:grid lg:grid-cols-12 lg:gap-12">
             <Settle className="lg:col-span-4">
-              <h2 className="font-doc text-2xl leading-snug font-semibold text-balance sm:text-3xl">
+              <h2 className="font-doc text-section font-semibold text-balance lg:text-section-lg">
                 This is what you get back.
               </h2>
-              <p className="mt-4 max-w-[38ch] font-doc text-base leading-relaxed text-ink-2 sm:text-lg">
+              <p className="mt-4 max-w-[38ch] font-doc text-body text-ink-2">
                 Not a summary. The clause itself, as printed, with the page it
                 sits on. Print it and hand it to a grievance officer — it is
                 built to survive a photocopier.
               </p>
-              <p className="mt-4 font-doc text-sm text-ink-soft">
+              <p className="mt-4 font-doc text-aside text-ink-soft">
                 Example below: the pre-existing disease exclusion from ICICI
                 Lombard Elevate.
               </p>
@@ -241,7 +249,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
           <Settle
             as="h2"
-            className="max-w-[20ch] font-notice text-3xl leading-[1.08] font-medium tracking-[-0.02em] text-balance sm:text-5xl lg:text-6xl"
+            className="max-w-[20ch] font-notice text-screen font-medium text-balance lg:text-screen-lg"
           >
             Three people we spoke to found the clause themselves, and still let
             it go.
@@ -249,7 +257,7 @@ export default function Landing() {
           <Settle
             as="p"
             delay={0.06}
-            className="mt-6 max-w-[52ch] font-doc text-lg leading-relaxed text-ink-2 sm:text-xl"
+            className="mt-6 max-w-[52ch] font-doc text-lead text-ink-2 lg:text-lead-lg"
           >
             Understanding the clause was never the hard part. Believing it was
             worth the effort was. If the wording does not support what they
@@ -258,7 +266,7 @@ export default function Landing() {
           <Settle delay={0.12} className="mt-10">
             <Link
               to="/rejection"
-              className="inline-block border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2"
+              className="inline-block border border-ink bg-ink px-7 py-4 font-doc text-lead font-semibold text-paper transition-colors hover:bg-ink-2"
             >
               Check a rejection
             </Link>
@@ -267,7 +275,7 @@ export default function Landing() {
       </section>
 
       <footer className="border-t border-rule">
-        <div className="mx-auto max-w-6xl px-5 py-8 font-doc text-sm leading-relaxed text-ink-soft sm:px-8">
+        <div className="mx-auto max-w-6xl px-5 py-8 font-doc text-aside text-ink-soft sm:px-8">
           Clause text is quoted directly from the insurer's published policy
           wording. Item names are quoted from the IRDAI non-payable lists. This
           is not legal advice, and we are not a broker or an insurer.
