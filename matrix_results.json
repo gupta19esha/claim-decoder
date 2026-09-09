@@ -1,0 +1,458 @@
+[
+  {
+    "key": "a",
+    "label": "all four, 6 years of cover (past the 36-month window)",
+    "sent": {
+      "rejection_text": "We regret to inform you that your claim under policy Optima Secure has been repudiated. The insured was admitted for treatment of a condition which is pre-existing in nature. As per Exclusion Excl01 of the policy wording, treatment of a pre-existing disease and its direct complications is excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us. The claim is therefore not payable.",
+      "insurer_id": "hdfc_ergo",
+      "policy_id": "hdfc_optima_secure",
+      "claim": {
+        "treatment": "Angioplasty",
+        "amount": 285000,
+        "policy_start_date": "2020-01-15",
+        "admission_date": "2026-06-10"
+      }
+    },
+    "result": {
+      "case_id": "ff83edef-c82a-47a9-b373-46c932206ef8",
+      "status": "complete",
+      "verdict": "weakly_supported",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "1.a",
+          "clause_title": "Pre-Existing Diseases",
+          "clause_text": "a. Pre-Existing Diseases: Code – Excl01\ni. Expenses related to the treatment of a pre-existing disease (PED) and its direct complications\nshall be excluded until the expiry of 36 months (Unless specified otherwise in the Policy\nSchedule) of continuous coverage after the date of inception of the first policy with insurer.\nii. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum\nInsured increase.\niii. If the Insured Person is continuously covered without any break as defined under the\nperiod for the same would be reduced to the extent of prior coverage.\niv. Coverage under the Policy after the expiry of 36 months for any pre-existing disease is subject\nto the same being declared at the time of application and accepted by Insurer.",
+          "insurer": "HDFC Ergo",
+          "source_page": 30,
+          "exclusion_code": "Excl01",
+          "waiting_period_days": 1080,
+          "monetary_cap": null,
+          "percent_cap": null
+        },
+        {
+          "clause_id": "1.6",
+          "clause_title": "Moratorium Period",
+          "clause_text": "After completion of sixty continuous months of coverage (including portability and migration)\nin health insurance policy, no policy and claim shall be contestable by the insurer on grounds\nof non-disclosure, misrepresentation, except on grounds of established fraud. This period of\nsixty continuous months is called as moratorium period. The moratorium would be applicable\nfor the sums insured of the first policy. Wherever, the sum insured is enhanced, completion\nof sixty continuous months would be applicable from the date of enhancement of sums insured\nonly on the enhanced limits.",
+          "insurer": "HDFC Ergo",
+          "source_page": 37,
+          "exclusion_code": null,
+          "waiting_period_days": 1800,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The insurer rejected the claim under the pre-existing diseases clause on page 30, which excludes expenses related to pre-existing conditions until 36 months of continuous coverage have elapsed. However, the policy was continuously active from January 15, 2020, until the admission date of June 10, 2026, amounting to over 76 months of continuous coverage. Since the 36-month waiting period expired well before the hospital admission, this exclusion cannot justify the claim rejection. Furthermore, because coverage exceeded 60 continuous months, the moratorium period clause on page 37 protects the policyholder from claim contests based on non-disclosure, unless the insurer establishes intentional fraud.",
+      "what_would_change_it": "Evidence that the policy suffered a break in continuity during its term, reducing the active continuous coverage period prior to admission to under 36 months.",
+      "arguments": {
+        "insurer_position": "Under the pre-existing diseases clause on page 30 and the pre-existing disease definition on page 7, expenses related to the treatment of a pre-existing disease and its direct complications are excluded from coverage until 36 months of continuous coverage have elapsed. The insurer asserts that the angioplasty treatment relates to a pre-existing cardiac condition subject to these standard exclusion terms. Furthermore, coverage for any pre-existing condition after the 36-month period is subject to the condition having been declared at the time of application and accepted by the insurer.",
+        "claimant_position": "The claimant has maintained continuous coverage since January 15, 2020, meaning over 76 months elapsed prior to the June 10, 2026 admission. Under the pre-existing diseases clause on page 30 and the waiting period clause on page 11, the mandatory 36-month waiting period for pre-existing conditions has long expired. Furthermore, under the moratorium period clause on page 37, the policy has passed sixty continuous months of coverage, rendering the claim incontestable on grounds of non-disclosure or pre-existing conditions.",
+        "insurer_weak_point": "The policy was incepted on January 15, 2020, and admission occurred on June 10, 2026, meaning over 6 years (76 months) of continuous coverage have passed, far exceeding the 36-month waiting period as well as the 60-month moratorium period.",
+        "claimant_weak_point": "The insurer could argue that under the pre-existing diseases clause on page 30, coverage after 36 months is contingent on the condition having been declared at application, or attempt to prove established fraud to bypass the moratorium period."
+      },
+      "rejection_type": "pre_existing",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "appeal"
+    },
+    "seconds": 45
+  },
+  {
+    "key": "b",
+    "label": "all four, 17 months of cover (inside the window)",
+    "sent": {
+      "rejection_text": "We regret to inform you that your claim under policy Optima Secure has been repudiated. The insured was admitted for treatment of a condition which is pre-existing in nature. As per Exclusion Excl01 of the policy wording, treatment of a pre-existing disease and its direct complications is excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us. The claim is therefore not payable.",
+      "insurer_id": "hdfc_ergo",
+      "policy_id": "hdfc_optima_secure",
+      "claim": {
+        "treatment": "Angioplasty",
+        "amount": 285000,
+        "policy_start_date": "2025-01-01",
+        "admission_date": "2026-06-10"
+      }
+    },
+    "result": {
+      "case_id": "6c0e1f1d-9be5-4517-a736-67436b6566ae",
+      "status": "complete",
+      "verdict": "well_supported",
+      "confidence": 0.85,
+      "deciding_clauses": [
+        {
+          "clause_id": "1.a",
+          "clause_title": "Pre-Existing Diseases",
+          "clause_text": "a. Pre-Existing Diseases: Code – Excl01\ni. Expenses related to the treatment of a pre-existing disease (PED) and its direct complications\nshall be excluded until the expiry of 36 months (Unless specified otherwise in the Policy\nSchedule) of continuous coverage after the date of inception of the first policy with insurer.\nii. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum\nInsured increase.\niii. If the Insured Person is continuously covered without any break as defined under the\nperiod for the same would be reduced to the extent of prior coverage.\niv. Coverage under the Policy after the expiry of 36 months for any pre-existing disease is subject\nto the same being declared at the time of application and accepted by Insurer.",
+          "insurer": "HDFC Ergo",
+          "source_page": 30,
+          "exclusion_code": "Excl01",
+          "waiting_period_days": 1080,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The pre-existing diseases exclusion clause on page 30 excludes coverage for pre-existing conditions and their direct complications until 36 months of continuous coverage have elapsed from the policy inception date. With your policy commencing on January 1, 2025, and admission occurring in June 2026, only 17 months of continuous coverage had passed at the time of your angioplasty. Provided the insurer has medical evidence that your cardiac condition was diagnosed or treated prior to policy inception, the rejection under the 36-month waiting period is supported by the policy wording. However, the exclusion cannot stand if the condition arose for the first time after your policy began.",
+      "what_would_change_it": "Medical evidence showing the heart condition was first diagnosed after January 1, 2025, or a policy schedule showing ported prior coverage credits or an opted reduced 12-month waiting period.",
+      "arguments": {
+        "insurer_position": "Under the pre-existing disease clause on page 7 and the waiting period clause on page 11, pre-existing conditions and their treatments are excluded from coverage until all mandatory waiting periods are completed. The pre-existing diseases exclusion clause on page 30 mandates a waiting period of 36 months of continuous coverage from the policy inception date before expenses related to pre-existing diseases and their direct complications become payable. Because the policy commenced on January 1, 2025, and the angioplasty took place in June 2026, only 17 months of coverage had elapsed, rendering the claim non-payable under the policy terms.",
+        "claimant_position": "If the angioplasty treatment arose from underlying chronic conditions such as high blood pressure or cholesterol, it is covered under the ABCD Chronic Care clause on page 69 after a 30-day waiting period, which was fully satisfied between policy inception on January 1, 2025, and admission in June 2026. Furthermore, if the policyholder transferred prior continuous coverage credits under the portability clause on page 7 or elected a reduced waiting period under the PED waiting period modification clause on page 26, the standard 36-month exclusion period is reduced or waived. Consequently, the insurer cannot summarily reject the claim under the standard pre-existing disease exclusion without accounting for these specific coverage terms.",
+        "insurer_weak_point": "The insurer bears the burden of proving that the insured's cardiac condition requiring angioplasty was actually diagnosed, treated, or advised upon prior to policy inception to qualify as a pre-existing disease.",
+        "claimant_weak_point": "The insurer may argue that angioplasty is a procedure for coronary artery disease rather than direct management of blood pressure or cholesterol, and that the claimant has provided no evidence of an opted PED modification or ported prior continuous coverage to shorten the 36-month waiting period."
+      },
+      "rejection_type": "pre_existing",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 66
+  },
+  {
+    "key": "c",
+    "label": "dates only, 17 months (no treatment, no amount)",
+    "sent": {
+      "rejection_text": "We regret to inform you that your claim under policy Optima Secure has been repudiated. The insured was admitted for treatment of a condition which is pre-existing in nature. As per Exclusion Excl01 of the policy wording, treatment of a pre-existing disease and its direct complications is excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us. The claim is therefore not payable.",
+      "insurer_id": "hdfc_ergo",
+      "policy_id": "hdfc_optima_secure",
+      "claim": {
+        "treatment": null,
+        "amount": null,
+        "policy_start_date": "2025-01-01",
+        "admission_date": "2026-06-10"
+      }
+    },
+    "result": {
+      "case_id": "f4ba9074-0259-4d42-af40-d1167e8013ef",
+      "status": "complete",
+      "verdict": "well_supported",
+      "confidence": 0.9,
+      "deciding_clauses": [
+        {
+          "clause_id": "1.a",
+          "clause_title": "Pre-Existing Diseases",
+          "clause_text": "a. Pre-Existing Diseases: Code – Excl01\ni. Expenses related to the treatment of a pre-existing disease (PED) and its direct complications\nshall be excluded until the expiry of 36 months (Unless specified otherwise in the Policy\nSchedule) of continuous coverage after the date of inception of the first policy with insurer.\nii. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum\nInsured increase.\niii. If the Insured Person is continuously covered without any break as defined under the\nperiod for the same would be reduced to the extent of prior coverage.\niv. Coverage under the Policy after the expiry of 36 months for any pre-existing disease is subject\nto the same being declared at the time of application and accepted by Insurer.",
+          "insurer": "HDFC Ergo",
+          "source_page": 30,
+          "exclusion_code": "Excl01",
+          "waiting_period_days": 1080,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The pre-existing disease exclusion on page 30 requires 36 months of continuous coverage before expenses for a pre-existing condition are covered. Since your policy started on January 1, 2025, and your hospital admission occurred on June 10, 2026, only about 17 months of continuous coverage had elapsed. Because this is less than the standard 36-month waiting period, the insurer's decision to reject the claim is supported by the standard policy terms.",
+      "what_would_change_it": "Check your policy schedule or submission documents to see if you ported from an earlier continuous policy or selected an optional cover that officially reduced your pre-existing disease waiting period to 12 or 24 months.",
+      "arguments": {
+        "insurer_position": "Under the pre-existing disease exclusion on page 30 and the pre-existing disease definition on page 7, expenses related to the treatment of a pre-existing condition and its direct complications are excluded until 36 months of continuous coverage have elapsed from the policy inception date. Since the policy commenced on January 1, 2025, and the insured was admitted on June 10, 2026, only approximately 17 months of coverage have been completed. Consequently, as established by the waiting period definition on page 11, the treatment falls squarely within the excluded 36-month waiting period and the claim was rightly repudiated.",
+        "claimant_position": "Under the pre-existing diseases clause on page 30, the 36-month waiting period is not absolute and must be reduced by prior continuous coverage as recognized under the portability clause on page 7 and the migration clause on page 6. Additionally, the policy allows the waiting period to be shortened to 12 or 24 months under the PED waiting period modification clause on page 26, or to just 30 days for specified conditions under the ABCD chronic care clause on page 69. Because over 17 months of continuous coverage elapsed between policy inception and admission, a blanket rejection based on a 36-month requirement fails to account for these contractual modifications and credit transfer provisions.",
+        "insurer_weak_point": "The insured may argue that the insurer has not provided medical evidence proving the condition was diagnosed or treated within 36 months prior to inception, or that the waiting period was reduced via portability credits or optional cover modifications.",
+        "claimant_weak_point": "The insurer will object that the policyholder has not demonstrated prior continuous coverage from a ported policy or selected the optional PED modification/chronic care covers in their policy schedule, leaving the default 36-month waiting period intact."
+      },
+      "rejection_type": "pre_existing",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 47
+  },
+  {
+    "key": "d",
+    "label": "treatment and amount only, no dates",
+    "sent": {
+      "rejection_text": "We regret to inform you that your claim under policy Optima Secure has been repudiated. The insured was admitted for treatment of a condition which is pre-existing in nature. As per Exclusion Excl01 of the policy wording, treatment of a pre-existing disease and its direct complications is excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us. The claim is therefore not payable.",
+      "insurer_id": "hdfc_ergo",
+      "policy_id": "hdfc_optima_secure",
+      "claim": {
+        "treatment": "Angioplasty",
+        "amount": 285000,
+        "policy_start_date": null,
+        "admission_date": null
+      }
+    },
+    "result": {
+      "case_id": "977fbe06-d304-48db-861d-b3c2238e96b7",
+      "status": "complete",
+      "verdict": "insufficient_information",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "1.a",
+          "clause_title": "Pre-Existing Diseases",
+          "clause_text": "a. Pre-Existing Diseases: Code – Excl01\ni. Expenses related to the treatment of a pre-existing disease (PED) and its direct complications\nshall be excluded until the expiry of 36 months (Unless specified otherwise in the Policy\nSchedule) of continuous coverage after the date of inception of the first policy with insurer.\nii. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum\nInsured increase.\niii. If the Insured Person is continuously covered without any break as defined under the\nperiod for the same would be reduced to the extent of prior coverage.\niv. Coverage under the Policy after the expiry of 36 months for any pre-existing disease is subject\nto the same being declared at the time of application and accepted by Insurer.",
+          "insurer": "HDFC Ergo",
+          "source_page": 30,
+          "exclusion_code": "Excl01",
+          "waiting_period_days": 1080,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The insurer rejected the claim based on the pre-existing diseases exclusion clause on page 30, which excludes treatments related to pre-existing conditions until 36 months of continuous coverage have elapsed. However, the claim details provided do not include the policy start date, the hospital admission date, or any medical records confirming when the cardiac condition was first diagnosed or treated. Without these essential dates and medical evidence, it is impossible to verify whether the condition was pre-existing or if the required 36-month waiting period has already been satisfied. As a result, the dispute cannot be adjudicated on the available record.",
+      "what_would_change_it": "Providing medical records showing the initial diagnosis date along with the policy start date and admission date to verify whether the condition was pre-existing and whether 36 months of continuous coverage had elapsed.",
+      "arguments": {
+        "insurer_position": "Under the pre-existing disease definition on page 7 and the pre-existing diseases exclusion clause on page 30, expenses relating to the treatment of a pre-existing condition and its direct complications are excluded until 36 months of continuous coverage have elapsed. Because the angioplasty was required for a condition diagnosed or treated prior to policy commencement, it remains excluded from coverage during this mandatory waiting period. Consequently, the rejection of the claim is fully justified under the policy terms.",
+        "claimant_position": "Under the pre-existing disease definition on page 7, an illness is only considered a pre-existing disease if it was diagnosed, or medical advice or treatment was received, within the 36 months prior to policy commencement. Furthermore, under the pre-existing diseases clause on page 30, the 36-month waiting period must be reduced to the extent of any prior continuous coverage or optional PED waiting period modifications as described on page 26. The insurer cannot reject the angioplasty claim without establishing that the underlying cardiac condition was actually diagnosed or treated in the 36-month pre-policy window and that no reduced waiting period applies.",
+        "insurer_weak_point": "The claim details lack medical evidence and policy dates establishing that the cardiac condition requiring angioplasty was actually diagnosed or treated prior to the policy commencement date.",
+        "claimant_weak_point": "The insurer may present medical records showing that the claimant was diagnosed with or treated for the underlying cardiac disease within the 36 months prior to policy inception and that the required waiting period has not elapsed."
+      },
+      "rejection_type": "pre_existing",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 50
+  },
+  {
+    "key": "e",
+    "label": "nothing filled",
+    "sent": {
+      "rejection_text": "We regret to inform you that your claim under policy Optima Secure has been repudiated. The insured was admitted for treatment of a condition which is pre-existing in nature. As per Exclusion Excl01 of the policy wording, treatment of a pre-existing disease and its direct complications is excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us. The claim is therefore not payable.",
+      "insurer_id": "hdfc_ergo",
+      "policy_id": "hdfc_optima_secure",
+      "claim": {
+        "treatment": null,
+        "amount": null,
+        "policy_start_date": null,
+        "admission_date": null
+      }
+    },
+    "result": {
+      "case_id": "b17e21b7-6101-476b-b1f6-a24b255045b9",
+      "status": "complete",
+      "verdict": "insufficient_information",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "1.a",
+          "clause_title": "Pre-Existing Diseases",
+          "clause_text": "a. Pre-Existing Diseases: Code – Excl01\ni. Expenses related to the treatment of a pre-existing disease (PED) and its direct complications\nshall be excluded until the expiry of 36 months (Unless specified otherwise in the Policy\nSchedule) of continuous coverage after the date of inception of the first policy with insurer.\nii. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum\nInsured increase.\niii. If the Insured Person is continuously covered without any break as defined under the\nperiod for the same would be reduced to the extent of prior coverage.\niv. Coverage under the Policy after the expiry of 36 months for any pre-existing disease is subject\nto the same being declared at the time of application and accepted by Insurer.",
+          "insurer": "HDFC Ergo",
+          "source_page": 30,
+          "exclusion_code": "Excl01",
+          "waiting_period_days": 1080,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The pre-existing diseases exclusion clause on page 30 excludes coverage for pre-existing conditions until 36 months of continuous policy coverage have elapsed. However, essential claim details such as the specific diagnosis, policy start date, admission date, and prior continuous coverage history are completely missing. Without knowing these dates and the exact medical condition, it cannot be verified whether the 36-month waiting period applies or has already been fulfilled. Consequently, there is insufficient factual information to evaluate whether the insurer's rejection is valid under the policy.",
+      "what_would_change_it": "Providing the policy start date and admission date proving that 36 months of continuous coverage had elapsed before the hospitalization.",
+      "arguments": {
+        "insurer_position": "Under the pre-existing disease definition clause on page 7, any condition diagnosed or for which medical advice or treatment was received within 36 months prior to policy commencement is classified as a pre-existing disease. Furthermore, the pre-existing diseases exclusion clause on page 30 explicitly excludes expenses related to the treatment of a pre-existing disease and its direct complications until 36 months of continuous coverage have elapsed after policy inception. As the treatment pertained to a pre-existing condition prior to the expiry of this 36-month continuous coverage requirement, the claim is excluded from policy coverage.",
+        "claimant_position": "The insurer's blanket rejection under a 36-month waiting period fails to account for continuous prior coverage credits that reduce the waiting period under the pre-existing diseases clause on page 30, the renewal clause on page 7, and the portability clause on page 7. Furthermore, the policy permits reduced waiting periods of 12 or 24 months under the PED waiting period modification clause on page 26, as well as coverage after just 30 days for specified conditions under the ABCD chronic care clause on page 69. Enforcing a full 36-month exclusion is therefore improper without establishing that no prior coverage credits, optional modifications, or specific condition exceptions apply.",
+        "insurer_weak_point": "The insured may argue that the policyholder opted for the PED waiting period modification clause on page 26 to reduce the waiting period to 12 or 24 months, or that they are entitled to credit for prior continuous coverage under portability or renewal provisions.",
+        "claimant_weak_point": "The insurer may demonstrate that the claimant had no prior continuous policy coverage, did not select the optional PED waiting period reduction at inception, and received treatment for a condition not covered under the chronic care clause."
+      },
+      "rejection_type": "pre_existing",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 45
+  },
+  {
+    "key": "f",
+    "label": "sub-limit, Star Arogya Sanjeevani, cataract",
+    "sent": {
+      "rejection_text": "Your claim for cataract surgery has been partially settled. As per policy terms the amount payable for cataract is subject to a sub-limit. The balance amount is not payable and stands deducted.",
+      "insurer_id": "star_health",
+      "policy_id": "star_arogya_sanjeevani",
+      "claim": {
+        "treatment": "Cataract surgery",
+        "amount": 95000,
+        "policy_start_date": "2023-04-01",
+        "admission_date": "2026-05-20"
+      }
+    },
+    "result": {
+      "case_id": "6ca8e8a9-608e-45df-8f0c-20dad079e8f8",
+      "status": "complete",
+      "verdict": "well_supported",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "3",
+          "clause_title": "Cataract Treatment",
+          "clause_text": "3. Cataract Treatment: The Company shall\nindemnify medical expenses incurred for\ntreatment of Cataract, subject to a limit\nof 25% of Sum Insured or Rs.40,000/-,\nwhichever is lower, per each eye in one\nPolicy Year.",
+          "insurer": "Star Health",
+          "source_page": 9,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": 40000,
+          "percent_cap": 25.0
+        },
+        {
+          "clause_id": null,
+          "clause_title": "Cataract Treatment",
+          "clause_text": "Up to 25% of Sum Insured or Rs.40,000/-, whichever is lower, per eye, under one\nCataract Treatment\npolicy year.",
+          "insurer": "Star Health",
+          "source_page": 22,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": 40000,
+          "percent_cap": 25.0
+        }
+      ],
+      "explanation": "The insurer's decision to cap the payout for cataract surgery is supported by the policy terms. Under the cataract treatment provisions on page 9 and page 22, expenses for cataract surgery are strictly capped at 25% of the sum insured or Rs. 40,000 per eye in a single policy year, whichever is lower. Because the total bill of Rs. 95,000 exceeds this maximum allowable sub-limit, the insurer is not required to pay the remaining balance.",
+      "what_would_change_it": "Proof that the surgery was conducted on both eyes during the policy year, which would allow the claimant to claim up to Rs. 40,000 separately for each eye.",
+      "arguments": {
+        "insurer_position": "The insurer rightfully partially settled the claim for cataract surgery in accordance with the cataract treatment clause on page 9 and page 22, which caps expenses for cataract treatment at 25% of the Sum Insured or Rs. 40,000, whichever is lower, per eye in a policy year. Under the sub-limit clause on page 8 and the other expenses clause on page 8, the insurer is expressly not liable to pay any amount exceeding this pre-defined limit. Consequently, the claimed amount of Rs. 95,000 was correctly restricted to the maximum allowable sub-limit under the policy.",
+        "claimant_position": "The claimant's cataract surgery is a covered procedure under the surgery or surgical procedure clause on page 7, having satisfied the 24-month waiting period required under the specified disease / procedure waiting period clause on page 11. Under the cataract treatment clause on page 9, the insurer is obligated to indemnify medical expenses incurred up to 25% of the Sum Insured or Rs. 40,000 per eye, subject only to the 5% deduction under the co-payment clause on page 10. The claimant is therefore entitled to the full admissible payout up to the policy sub-limit rather than any further reduced settlement.",
+        "insurer_weak_point": "The insured may argue that if the surgery involved both eyes or if the sum insured calculation allows for higher coverage, restricting the claim strictly to the Rs. 40,000 cap without clarifying the per-eye application creates an ambiguity that should be resolved in favor of the policyholder.",
+        "claimant_weak_point": "The insurer can object that under the sub-limit clause on page 8 and the cataract treatment clause on page 9, policy liability is strictly capped at Rs. 40,000 per eye, making the insurer legally exempt from paying any portion of the Rs. 95,000 claim that exceeds this cap."
+      },
+      "rejection_type": "sublimit",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 52
+  },
+  {
+    "key": "g",
+    "label": "documentation, Star Arogya Sanjeevani (not addressed by wording)",
+    "sent": {
+      "rejection_text": "Claim rejected. Documents submitted were incomplete and the discharge summary was not legible.",
+      "insurer_id": "star_health",
+      "policy_id": "star_arogya_sanjeevani",
+      "claim": {
+        "treatment": null,
+        "amount": null,
+        "policy_start_date": "2023-04-01",
+        "admission_date": "2026-05-20"
+      }
+    },
+    "result": {
+      "case_id": "150dc687-da73-4476-98c0-2e4182414685",
+      "status": "complete",
+      "verdict": "partially_supported",
+      "confidence": 0.85,
+      "deciding_clauses": [
+        {
+          "clause_id": "E",
+          "clause_title": "Documents to be submitted for Reimbursement claims",
+          "clause_text": "E. Documents to be submitted for\nReimbursement claims: The reimbursement\nclaim is to be supported with the following\ndocuments and submitted within the\nprescribed time limit.\ni. Duly Completed claim form\nii. Photo Identity proof of the patient\niii. Medical practitioner’s prescription\nadvising admission\nIv. Original bills with itemized break-up\niv. Payment receipts\nvi. D ischarge summary including complete\nmedical history of the patient along\nwith other details.\nvii. Investigation / Diagnostic test reports\netc. supported by the prescription\nfrom attending medical practitioner\nviii. OT notes or Surgeon’s certificate\ngiving details of the operation\nperformed (for surgical cases).\nix. Sticker/Invoice of the Implants,\nwherever applicable.\nx. MLR(Medico Legal Report copyif\ncarried out and FIR (First information\nreport) if registered, where ever\napplicable.\nxi. NEFT Details (to enable direct credit\nof claim amount in bank account)\nand cancelled cheque\nxii. KYC (Identity proof with Address) of\nthe proposer, as per AML Guidelines\nxiii. Legal heir/succession certificate,\nwherever applicable\nxiv. Any other relevant document\nrequired by Company/TPA for\nassessment of the claim.\nxv. NEFT documents viz., Customer\nname, Bank Account No., Name of\nthe Bank, IFSC code\nxvi. CKYC No. of the proposer (if available)\nFor the comprehensive list of documents to be\nsubmitted while filing a reimbursement claim,\nplease refer our website under the link https://\nwww.starhealth.in/claims/#claim-process\nNote:\n1. The company shall only accept bills/\ninvoices/medical treatment related\ndocuments only in the Insured Person’s\nname for whom the claim is submitted\n2. In the event of a claim lodged under the\nPolicy and the original documents having\nbeen submitted to any other insurer,\nthe Company shall accept the copy of\nthe documents and claim settlement\nadvice, duly certified by the other insurer\nsubject to satisfaction of the Company\n3. Any delay in notification or submission\nmay be condoned on merit where delay\nis proved to be for reasons beyond the\ncontrol of the Insured Person\n4. For assistance call 24 hours help-line\n2255. Senior Citizens may call at 044-\n40020888",
+          "insurer": "Star Health",
+          "source_page": 15,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": null,
+          "percent_cap": null
+        },
+        {
+          "clause_id": "2",
+          "clause_title": "Claim Settlement",
+          "clause_text": "2. Claim Settlement\nA. Condition Precedent to Admission\nof Liability: The terms and conditions\nof the Policy must be fulfilled by the\nInsured Person for the Company\nto make any payment for claim(s)\narising under the Policy.\nB. Documents for Cashless Treatment\na. For assistance call 24 hours\nhelp-line 044-69006900 or\nSenior Citizens may call at 044-\n40020888\nb. Treatment may be taken in a\nnetwork provider and is subject to\npre authorization by the Company.\nc. Cashless request form available\nwith the network provider\nand sent to the Company for\nauthorization.\nd. The Company upon getting\ncashless request form and\nrelated medical information\nfrom the Insured Person /\nnetwork provider will issue\npre- authorization letter to the\nhospital after verification.\ne. At the time of discharge, the\nInsured Person has to verify\nand sign the discharge papers,\npay for non-medical and\ninadmissible expenses.\nf. The Company reserves the E\nright to deny pre-authorization\nin case the Insured Person is\nunable to provide the relevant\nmedical details.\ng. In case of denial of cashless\naccess, the Insured Person\nmay obtain the treatment\nas per treating doctor’s\nadvice and submit the claim\ndocuments to the Company for\nreimbursement.\nh. KYC (Identity proof with Address)\nof the proposer, as per AML\nGuidelines\nC. For Reimbursement claims: For\nreimbursement of claims the Insured\nPerson may submit the necessary\ndocuments to Company within the\nprescribed time limit as specified\nhereunder;\nS.No. Type of Claim Prescribed Time\nlimit\nReimbursement\nof hospitalization, Within thirty days of\n1. day care and pre date of discharge\nhospitalization from hospital\nexpenses\nReimbursement Within fifteen days\nof post from completion of\n2.\nhospitalization post hospitalization\nexpenses treatment\nD. Notification of Claim: Notice with full\nparticulars shall be sent to the Company\nas under;\ni. Within 24 hours from the date of\nemergency hospitalization required\nor before the Insured Person’s\ndischarge from Hospital, whichever\nis earlier.\nii. At least 48 hours prior to admission\nin Hospital in case of a planned\nHospitalization.\nE. Documents to be submitted for\nReimbursement claims: The reimbursement\nclaim is to be supported with the following\ndocuments and submitted within the\nprescribed time limit.\ni. Duly Completed claim form\nii. Photo Identity proof of the patient\niii. Medical practitioner’s prescription\nadvising admission\nIv. Original bills with itemized break-up\niv. Payment receipts\nvi. D ischarge summary including complete\nmedical history of the patient along\nwith other details.\nvii. Investigation / Diagnostic test reports\netc. supported by the prescription\nfrom attending medical practitioner\nviii. OT notes or Surgeon’s certificate\ngiving details of the operation\nperformed (for surgical cases).\nix. Sticker/Invoice of the Implants,\nwherever applicable.\nx. MLR(Medico Legal Report copyif\ncarried out and FIR (First information\nreport) if registered, where ever\napplicable.\nxi. NEFT Details (to enable direct credit\nof claim amount in bank account)\nand cancelled cheque\nxii. KYC (Identity proof with Address) of\nthe proposer, as per AML Guidelines\nxiii. Legal heir/succession certificate,\nwherever applicable\nxiv. Any other relevant document\nrequired by Company/TPA for\nassessment of the claim.\nxv. NEFT documents viz., Customer\nname, Bank Account No., Name of\nthe Bank, IFSC code\nxvi. CKYC No. of the proposer (if available)",
+          "insurer": "Star Health",
+          "source_page": 14,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The insurer is justified in withholding claim payment because the documents to be submitted for reimbursement claims clause on page 15 explicitly requires a discharge summary containing the complete medical history of the patient. Furthermore, the claim settlement clause on page 14 makes full compliance with document submission a condition precedent to admitting liability. However, an illegible or missing document is a curable administrative defect rather than a permanent policy exclusion. The insurer cannot permanently repudiate the claim without allowing the policyholder an opportunity to provide a legible document.",
+      "what_would_change_it": "Submitting an officially certified, legible copy of the complete discharge summary from the treating hospital to the insurer.",
+      "arguments": {
+        "insurer_position": "Under the condition precedent to admission of liability clause on page 14 and the documents to be submitted for reimbursement claims clause on page 15, the insured person must fulfill all policy terms and submit complete documentation, including a discharge summary detailing the patient's full medical history. Furthermore, the records to be maintained clause on page 20 requires the policyholder to furnish all information necessary for the assessment and settlement of the claim. Because the submitted documents were incomplete and the discharge summary was illegible, the insurer is unable to verify the claim details and is entitled to repudiate liability.",
+        "claimant_position": "Under the records to be maintained clause on page 20, the policyholder shall furnish such information as the insurer may require for claim settlement within a reasonable time limit, which obligates the insurer to request legible records or conduct an inspection rather than summarily rejecting the claim. Furthermore, under the documents to be submitted for reimbursement claims clause on page 15, the claimant has provided the required document types and any submission difficulty beyond the insured's control may be condoned on merit. Therefore, the claimant should be permitted to submit a clearer copy of the discharge summary to satisfy the requirements under the claim settlement clause on page 14.",
+        "insurer_weak_point": "The insured may contend that an illegible discharge summary is a curable deficiency and that the insurer should have requested a clearer copy or additional details from the hospital rather than rejecting the claim outright.",
+        "claimant_weak_point": "The insurer can contend that under the claim settlement clause on page 14, the submission of complete documents and a legible discharge summary detailing the patient's complete medical history is an express condition precedent to the admission of liability."
+      },
+      "rejection_type": "documentation",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "appeal"
+    },
+    "seconds": 45
+  },
+  {
+    "key": "h",
+    "label": "specified disease waiting period, Niva ReAssure, hernia",
+    "sent": {
+      "rejection_text": "The claim is denied as the treatment falls within the specified disease waiting period of 24 months from policy commencement.",
+      "insurer_id": "niva_bupa",
+      "policy_id": "niva_reassure",
+      "claim": {
+        "treatment": "Hernia repair",
+        "amount": 78000,
+        "policy_start_date": "2025-03-01",
+        "admission_date": "2026-07-20"
+      }
+    },
+    "result": {
+      "case_id": "bab7c407-c769-4f4f-939a-825a52f69067",
+      "status": "complete",
+      "verdict": "well_supported",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "6.2",
+          "clause_title": "Specified disease/procedure waiting period",
+          "clause_text": "a. Expenses related to the treatment of the listed conditions, surgeries/treatments shall be excluded until the expiry of 24 months of\ncontinuous coverage after the date of inception of the first Policy. This exclusion shall not be applicable for claims arising due to an\nAccident (covered from day 1) or Cancer (covered after 30-days waiting period).\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase.\nc. If any of the specified disease/procedure falls under the waiting period specified for pre-Existing diseases, then the longer of the\ntwo waiting periods shall apply.\nd. The waiting period for listed conditions shall apply even if contracted after the Policy or declared and accepted without a specific\nexclusion.\ne. If the Insured Person is continuously covered without any break as defined under the applicable norms on portability stipulated by\nIRDAI then waiting period for the same would be reduced to the extent of prior coverage.\nf. List of specific diseases/procedures:\na. Pancreatitis and stones in biliary and urinary system\nb. Cataract, glaucoma and retinal detachment\nc. Hyperplasia of prostate, hydrocele and spermatocele\nd. Prolapse uterus or cervix, endometriosis, Fibroids, Polycystic ovarian disease (PCOD), hysterectomy (unless necessitated by\nMalignancy)\ne. Hemorrhoids, fissure, fistula or abscess of anal and rectal region\nf. Hernia of any site or type,\ng. Osteoarthritis, joint replacement, osteoporosis, systemic connective tissue disorders, inflammatory polyarthropathies,\nRheumatoid Arthritis, gout, intervertebral disc disorders, arthroscopic surgeries for ligament repair\nh. Varicose veins of lower extremities\ni. All internal or external benign neoplasms/ tumours, cyst, sinus, polyps, nodules, mass or lump\nj. Ulcer, erosion or varices of gastro intestinal tract\nk. Surgical treatment for diseases of middle ear and mastoid (including otitis media, cholesteatoma, perforation of tympanic\nmembrane), Tonsils and adenoids, nasal septum and nasal sinuses",
+          "insurer": "Niva Bupa",
+          "source_page": 22,
+          "exclusion_code": "Excl02",
+          "waiting_period_days": 720,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The rejection is well supported because hernia of any site or type is explicitly listed under the specified disease waiting period clause on page 22, which requires 24 months of continuous coverage before claims are payable. From your policy commencement date of March 1, 2025, to your hospital admission on July 20, 2026, only approximately 16.5 months of coverage had elapsed. Since this is less than the mandatory 24-month waiting period, the insurer correctly denied the claim.",
+      "what_would_change_it": "Proof that the hernia was caused by an accident or official proof of prior continuous health insurance coverage ported from a previous policy that credits toward the 24-month waiting period.",
+      "arguments": {
+        "insurer_position": "Under the specified disease/procedure waiting period clause on page 22, expenses related to the treatment of a hernia of any site or type are excluded from coverage until the expiry of 24 months of continuous coverage from policy inception. Since the policy commenced on March 1, 2025, and the admission for hernia repair took place on July 20, 2026, only approximately 16.5 months of continuous coverage had elapsed. Therefore, the claim falls within the applicable 24-month waiting period and was correctly denied.",
+        "claimant_position": "The claimant completed over 16 months of continuous coverage from policy commencement on March 1, 2025 to hospital admission on July 20, 2026, satisfying the continuous coverage threshold under the 30-day waiting period clause on page 23. Furthermore, the renewal clause on page 5 confirms that continuous renewals grant credit for time-bound exclusions and waiting periods. Under the specified disease/procedure waiting period clause on page 22, any applicable prior continuous coverage or portability credit reduces the 24-month waiting period accordingly.",
+        "insurer_weak_point": "The insured could object by demonstrating that the hernia was caused by an accident—which is explicitly exempt from the 24-month waiting period—or by producing proof of prior continuous insurance coverage eligible for waiting period credit under IRDAI portability norms.",
+        "claimant_weak_point": "The insurer will argue that hernia is explicitly listed under the specified disease/procedure waiting period clause on page 22, which enforces a strict 24-month exclusion from the policy inception date regardless of whether the illness arose post-inception."
+      },
+      "rejection_type": "waiting_period",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 48
+  },
+  {
+    "key": "i",
+    "label": "WRONG INSURER: HDFC letter filed against Star Arogya Sanjeevani",
+    "sent": {
+      "rejection_text": "We regret to inform you that your claim under policy Optima Secure has been repudiated. The insured was admitted for treatment of a condition which is pre-existing in nature. As per Exclusion Excl01 of the policy wording, treatment of a pre-existing disease and its direct complications is excluded until the expiry of 36 months of continuous coverage after the date of inception of the first policy with us. The claim is therefore not payable.",
+      "insurer_id": "star_health",
+      "policy_id": "star_arogya_sanjeevani",
+      "claim": {
+        "treatment": "Angioplasty",
+        "amount": 285000,
+        "policy_start_date": "2025-01-01",
+        "admission_date": "2026-06-10"
+      }
+    },
+    "result": {
+      "case_id": "4ec8b3e3-aa42-4c4d-a5be-4af6576fef76",
+      "status": "complete",
+      "verdict": "partially_supported",
+      "confidence": 0.85,
+      "deciding_clauses": [
+        {
+          "clause_id": "1",
+          "clause_title": "Pre-Existing Diseases - Code Excl 01",
+          "clause_text": "1. Pre-Existing Diseases - Code Excl 01\nA. Expenses related to the treatment\nof a Pre-Existing Disease (PED)\nand its direct complications shall\nbe excluded until the expiry of 36\nmonths of continuous coverage\nafter the date of inception of the first\nPolicy with insurer\nB. In case of enhancement of Sum\nInsured the exclusion shall apply\nafresh to the extent of Sum Insured\nincrease\nC. If the Insured Person is continuously\ncovered without any break as\ndefined under the applicable norms\non portability stipulated by IRDAI,\nthen waiting period for the same\nwould be reduced to the extent of\nprior coverage\nD. Coverage under the Policy after the\nexpiry of 36 months for any pre-\nexisting disease is subject to the\nsame being declared at the time of\napplication and accepted by Insurer",
+          "insurer": "Star Health",
+          "source_page": 10,
+          "exclusion_code": "Excl 01",
+          "waiting_period_days": 1080,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The pre-existing disease exclusion clause on page 10 requires 36 months of continuous policy coverage before treatments for pre-existing medical conditions are eligible for reimbursement. Because your policy began on January 1, 2025, and your admission took place in June 2026, only around 17 months of coverage have elapsed under this policy. However, the insurer can only enforce this 36-month waiting period if there is proof that your cardiac condition was diagnosed or treated before the policy start date, or if you lack ported coverage credits from a previous health insurance policy. If the condition arose for the first time after your policy started, this exclusion cannot be used to deny your claim.",
+      "what_would_change_it": "Medical records showing the heart condition was first diagnosed after January 1, 2025, or proof of prior continuous health insurance ported from another policy to fulfill the 36-month waiting period.",
+      "arguments": {
+        "insurer_position": "Under the pre-existing diseases exclusion clause on page 10 and the pre-existing disease definition on page 6, expenses related to the treatment of a pre-existing disease and its direct complications are excluded from coverage until 36 months of continuous policy coverage have elapsed. Because the policy commenced on January 1, 2025, and the insured was admitted for angioplasty in June 2026, only about 17 months of coverage have passed. Consequently, the claim falls within the applicable 36-month waiting period and was correctly repudiated.",
+        "claimant_position": "Under the pre-existing disease definition on page 6, an ailment is considered pre-existing only if medical advice, diagnosis, or treatment was received within 36 months prior to policy commencement. Furthermore, the pre-existing diseases clause on page 10 and the portability clause on page 17 require the insurer to credit any prior continuous coverage towards reducing the 36-month waiting period. Additionally, Angioplasty is not listed as a restricted procedure under the specified disease waiting period clause on page 11.",
+        "insurer_weak_point": "The insurer must present medical evidence proving that the insured was actually diagnosed with or received medical advice/treatment for the underlying cardiac condition prior to policy inception to qualify it as a pre-existing disease.",
+        "claimant_weak_point": "The insurer could present prior medical records proving that the heart condition requiring Angioplasty was diagnosed or treated before the policy start date and show that the insured lacks prior continuous coverage to offset the waiting period."
+      },
+      "rejection_type": "pre_existing",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "appeal"
+    },
+    "seconds": 48
+  }
+]

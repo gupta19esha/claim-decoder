@@ -734,6 +734,137 @@ some point in the last two days, which is the argument for having all three.
 
 ---
 
+## NEW — what the optional fields actually do, and eight rejection types
+
+9 Sep 2026. Only HDFC pre-existing disease had ever been run end to end.
+`run_matrix.py` runs nine cases against the deployed API in the exact body
+shape the form builds, sequentially, and merges into `matrix_results.json`.
+Everything below is measured, not assumed.
+
+### The dates decide the verdict. Treatment and amount do not.
+
+Identical rejection text, identical policy, only the claim fields varying:
+
+| | fields | verdict | confidence |
+|---|---|---|---|
+| a | all four, start 2020-01-15, admission 2026-06-10 (77 months) | `weakly_supported` | 0.95 |
+| b | all four, start 2025-01-01, admission 2026-06-10 (17 months) | `well_supported` | 0.95 / 0.85 |
+| c | dates only, same 17 months | `well_supported` | 0.95 / 0.90 |
+| d | treatment and amount only, no dates | `insufficient_information` | 0.95 |
+| e | nothing | `insufficient_information` | 0.90 / 0.95 |
+
+**a and b differ, so the dates reach the model and the arithmetic is real.**
+Both cite the same clause — Excl01, HDFC page 30, `waiting_period_days` 1080
+— and reason to opposite conclusions: "over six years of continuous coverage"
+against "only 17 months of coverage had passed". `letter_type` flips with it,
+`appeal` on a, `substantiate` on b. This was the check that outranked
+everything else and it passes.
+
+**c is identical to b, so treatment and amount contribute nothing to the
+verdict.** They colour the explanation — b names the angioplasty where c says
+"hospital admission" — and nothing more. The accordion copy already says
+exactly this ("These sharpen how the answer is written. They do not decide it
+— the dates above are what a waiting period turns on"), and this is the
+evidence that the copy is true rather than merely plausible.
+
+**d does not invent a timeline.** Given a treatment and an amount and no
+dates it returns `insufficient_information` and names the gap: "the claim
+details provided do not include the policy start date, the hospital admission
+date, or any medical records confirming when the cardiac condition was first
+diagnosed". `what_would_change_it` names the same three. e behaves the same
+way from nothing at all.
+
+**Verdicts are stable; confidence is not.** Every case was run twice. All five
+verdicts and all five `letter_type` values reproduced exactly. Confidence
+moved on three of five (b 0.95→0.85, c 0.95→0.90, e 0.90→0.95). **Do not build
+anything that branches on a confidence threshold.** It is a display value with
+roughly ±0.1 of run-to-run noise, and the verdict is the stable signal.
+
+**A known display oddity, unfixed.** `insufficient_information` at 0.95 renders
+as "Confidence in this reading: 95%" directly under "Not enough to judge". It
+is confidence in the reading, not in a verdict, and the two lines read as
+contradicting each other. Worth rewording when that screen is next touched.
+
+### The other rejection types
+
+| | case | verdict | confidence | clause |
+|---|---|---|---|---|
+| f | sub-limit, Star, cataract Rs 95,000 | `well_supported` | 0.95 | Star p9 + p22 "Cataract Treatment", `monetary_cap` 40000, `percent_cap` 25.0 |
+| g | documentation, Star | `partially_supported` | 0.85 | Star p15 "Documents to be submitted", p14 "Claim Settlement" |
+| h | specified disease, Niva, hernia | `well_supported` | 0.95 | Niva p22 Excl02, `waiting_period_days` 720 |
+| i | HDFC letter filed against Star | `partially_supported` | 0.85 | Star p10 "Excl 01" — **Star's, not HDFC's** |
+
+f is the first evidence that `monetary_cap` and `percent_cap` reach a user
+correctly: "capped at 25% of the sum insured or Rs. 40,000 per eye", against a
+Rs 95,000 bill. h does the 24-month arithmetic against the dates and gets
+16.5 months.
+
+**g was expected to return `insufficient_information` and did not, and the
+expectation was wrong.** Star's wording does address documentation: clause E
+on page 15 requires a "Discharge summary including complete medical history",
+and page 14 makes compliance a "Condition Precedent to Admission of
+Liability". The clauses are real and on point, so this is not a clause forced
+to fit. The adjudicator then reasoned that "an illegible or missing document
+is a curable administrative defect rather than a permanent policy exclusion"
+and offered an appeal letter with a concrete next step. That is a better
+answer than `insufficient_information`, which would have been true and
+useless. **Before treating a non-`insufficient_information` verdict as a
+forced fit, read the retrieved clause text.**
+
+### Cross-insurer contamination: structurally impossible, and now proved
+
+`retrieve()` puts `WHERE policy_id = @policy_id` before the ORDER BY, so the
+ranking never sees another insurer's clauses. Case i confirms it end to end —
+the HDFC letter filed against Star returned Star's own Excl01 on page 10 and
+nothing of HDFC's. The filter can only leak if a `policy_id` maps to more than
+one insurer, so that was checked directly:
+
+```
+policy_id                 distinct_insurers
+hdfc_optima_secure        1    HDFC Ergo
+icici_elevate             1    ICICI Lombard
+niva_reassure             1    Niva Bupa
+niva_reassure_30          1    Niva Bupa
+star_arogya_sanjeevani    1    Star Health
+tata_medicare_select      1    Tata AIG
+```
+
+One insurer per policy across all 972 rows, so all 15 retrieved clauses were
+necessarily Star's, not only the two shown. **Re-run that query before
+trusting any corpus reload.** It is the whole proof.
+
+**But i exposes a real gap.** The letter says "your claim under policy Optima
+Secure" and the reader had selected Star. The system answered against Star
+without ever noticing the letter names a different insurer, and produced a
+confident, well-reasoned answer about a policy the letter is not about. Not
+contamination — the right policy was searched, the one the reader chose — but
+nothing anywhere says "this letter appears to be from a different insurer".
+That is the confirmation step the auto-detection idea in Direction already
+calls for, and it is needed whether or not auto-detection is ever built.
+
+### The bill auditor's letter
+
+`npm run verify:bill-letter` drives the real site against the real API, and
+had never been pressed before today. It captures `/api/bill/audit` by
+intercepting the route and passing the real response through, then reads the
+rendered letter and requires every finding's IRDAI name to appear **inside
+quotes, verbatim**, the billed description to appear verbatim, the amounts to
+match, both section totals to be arithmetic on their own lines, and — the
+check that matters — **every quoted string in the letter to trace back to an
+item the API returned**, so nothing can be quoted that the corpus does not
+hold.
+
+27 checks pass. Set `BILL_TEXT` to change the bill: the three-item bill in the
+brief is all List I and never reaches section B, so the ten-line sample is
+what exercises `subsume_room` and `subsume_procedure`. Both sections verified,
+Rs 3,320 + Rs 3,800 = Rs 7,120.
+
+`page.on("response")` does not reliably retain a body long enough to read it
+and returned null every time; `context.route` with `route.fetch()` is the way
+to capture a real response without stubbing it.
+
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,
