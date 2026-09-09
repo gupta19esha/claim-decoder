@@ -266,6 +266,48 @@ function PolicyStep({
 }) {
   const set = (k) => (e) => setClaim({ ...claim, [k]: e.target.value });
 
+  /*
+    THE DATES ARE NOT BEHIND A DISCLOSURE, AND THAT IS THE WHOLE POINT.
+
+    They used to sit inside "Add dates and amount for a sharper answer",
+    stacked against a second collapsed row, between the cards and the button.
+    Two grey rows that both read as footnotes, and nobody opens a footnote.
+
+    That was not cosmetic. The adjudicator is handed the claim details and
+    told to judge only against what it can see and to return
+    insufficient_information rather than guess. A waiting period is arithmetic
+    on two dates; with neither supplied there is nothing to do the arithmetic
+    on. So the default path through this form — fill nothing, press the
+    button — produced the worst answer the product can give, on the commonest
+    kind of rejection there is.
+
+    Treatment and amount stay collapsed. They colour how the answer is
+    written. They do not decide it.
+  */
+  const [warned, setWarned] = useState(false);
+
+  const missing = [
+    !claim.policy_start_date && "the date the policy started",
+    !claim.admission_date && "the date of admission",
+  ].filter(Boolean);
+
+  /*
+    Warn once, then let them through. Blocking would put a wall back in front
+    of the door, and the dates are genuinely optional — someone reading a
+    letter in a corridor may not have them. Deriving this rather than storing
+    it means the warning self-clears the moment the dates are filled, so a
+    stale one can never sit underneath a complete form.
+  */
+  const held = warned && missing.length > 0;
+
+  function submit() {
+    if (missing.length > 0 && !warned) {
+      setWarned(true);
+      return;
+    }
+    onRun();
+  }
+
   return (
     <div>
       <h1 className="font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl">
@@ -316,31 +358,42 @@ function PolicyStep({
         })}
       </div>
 
-      <details className="mt-8 border border-rule-soft bg-card">
-        <summary className="cursor-pointer px-5 py-4 font-doc text-lg text-ink-2">
-          None of these is my insurer
-        </summary>
-        <div className="border-t border-rule-soft px-5 py-4">
-          <p className="max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
-            Then we cannot check this rejection yet. We only hold the six
-            wordings above, and guessing against a policy that is not yours
-            would produce a confident answer about the wrong document — which
-            is worse than no answer.
-          </p>
-          <p className="mt-3 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
-            The{" "}
-            <Link to="/bill" className="text-ink underline">
-              hospital bill checker
-            </Link>{" "}
-            does not need your policy. It works against the IRDAI list, which
-            is the same for every insurer in India.
-          </p>
+      {/* The 3px rule is the weight this system gives a block that carries the
+          argument, and that is exactly what this is. */}
+      <section className="mt-8 border-t-[3px] border-ink bg-card px-5 py-5 sm:px-6 sm:py-6">
+        <h2 className="font-doc text-xl leading-tight font-semibold sm:text-2xl">
+          When did the policy start, and when were you admitted?
+        </h2>
+        <p className="mt-2 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
+          A waiting period is counted in months from the day your policy
+          started, so these two dates are what decide whether one had run out
+          by the time you were admitted. Without both, the answer has to hedge.
+        </p>
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          <Field label="Policy started on" id="start">
+            <input
+              id="start"
+              type="date"
+              value={claim.policy_start_date}
+              onChange={set("policy_start_date")}
+              className="w-full border border-rule bg-paper px-3 py-3 font-doc text-base"
+            />
+          </Field>
+          <Field label="Date of admission" id="admission">
+            <input
+              id="admission"
+              type="date"
+              value={claim.admission_date}
+              onChange={set("admission_date")}
+              className="w-full border border-rule bg-paper px-3 py-3 font-doc text-base"
+            />
+          </Field>
         </div>
-      </details>
+      </section>
 
       <details className="mt-4 border border-rule-soft bg-card">
         <summary className="cursor-pointer px-5 py-4 font-doc text-lg text-ink-2">
-          Add dates and amount for a sharper answer
+          Add the treatment and the amount claimed
         </summary>
         <div className="grid gap-5 border-t border-rule-soft px-5 py-5 sm:grid-cols-2">
           <Field label="Treatment" id="treatment">
@@ -363,37 +416,21 @@ function PolicyStep({
               className="w-full border border-rule bg-paper px-3 py-3 font-doc text-base"
             />
           </Field>
-          <Field label="Policy started on" id="start">
-            <input
-              id="start"
-              type="date"
-              value={claim.policy_start_date}
-              onChange={set("policy_start_date")}
-              className="w-full border border-rule bg-paper px-3 py-3 font-doc text-base"
-            />
-          </Field>
-          <Field label="Date of admission" id="admission">
-            <input
-              id="admission"
-              type="date"
-              value={claim.admission_date}
-              onChange={set("admission_date")}
-              className="w-full border border-rule bg-paper px-3 py-3 font-doc text-base"
-            />
-          </Field>
           <p className="font-doc text-base text-ink-soft sm:col-span-2">
-            Waiting periods turn on dates. Without them the answer has to hedge.
+            These sharpen how the answer is written. They do not decide it —
+            the dates above are what a waiting period turns on.
           </p>
         </div>
       </details>
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <button
-          onClick={onRun}
+          onClick={submit}
           disabled={!policy}
+          aria-describedby={held ? "dates-warning" : undefined}
           className="border border-ink bg-ink px-7 py-4 font-doc text-lg font-semibold text-paper transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-35"
         >
-          Check the rejection
+          {held ? "Check it anyway" : "Check the rejection"}
         </button>
         <button
           onClick={onBack}
@@ -407,13 +444,58 @@ function PolicyStep({
           </span>
         )}
       </div>
+
+      {/* Below the button, deliberately. Anything inserted above it shifts the
+          control out from under a thumb that is already resting there. The
+          label changes in place instead, so the second press is a decision
+          rather than a mis-tap. */}
+      {held && (
+        <div
+          id="dates-warning"
+          role="alert"
+          className="mt-4 max-w-[62ch] border-l-[3px] border-ochre bg-ochre-tint px-5 py-4"
+        >
+          <p className="folio text-ochre">Without the dates</p>
+          <p className="mt-2 font-doc text-base leading-relaxed text-ink">
+            You have not given {missing.join(" or ")}. We cannot work out how
+            long you had been covered by the time you were admitted, and a
+            waiting period turns on exactly that — so the answer will most
+            likely come back as not enough to judge.
+          </p>
+          <p className="mt-2 font-doc text-base leading-relaxed text-ink-2">
+            Add them above, or press the button again to go ahead without them.
+          </p>
+        </div>
+      )}
+
+      {/* Plain text, and below the control. As a collapsed row between the
+          cards and the button this read as a third thing to weigh up before
+          pressing anything, when it is an exit for the few people we cannot
+          help. */}
+      <section className="mt-10 border-t border-rule-soft pt-5">
+        <h2 className="folio text-ink-soft">None of these is my insurer</h2>
+        <p className="mt-2 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
+          Then we cannot check this rejection yet. We hold only the six
+          wordings above, and guessing against a policy that is not yours would
+          produce a confident answer about the wrong document — which is worse
+          than no answer. The{" "}
+          <Link to="/bill" className="text-ink underline">
+            hospital bill checker
+          </Link>{" "}
+          does not need your policy: it works against the IRDAI list, which is
+          the same for every insurer in India.
+        </p>
+      </section>
     </div>
   );
 }
 
+/* min-w-0: a grid child defaults to min-width:auto, and a date input's
+   intrinsic width is set by the widget the browser draws rather than by us.
+   Without this it can refuse to shrink and push the two-column track wide. */
 function Field({ label, id, children }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label htmlFor={id} className="folio mb-2 block text-ink-soft">
         {label}
       </label>

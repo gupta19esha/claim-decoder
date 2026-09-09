@@ -147,10 +147,24 @@ const goRejectionPolicy = async (p) => {
   await p.waitForSelector("text=Which policy is this?");
 };
 
+// The dates now sit in the main flow rather than inside a disclosure, and
+// pressing the button without them warns once before going ahead. That is a
+// second state of this step with its own layout, so it is measured too.
+const goRejectionPolicyWarned = async (p) => {
+  await goRejectionPolicy(p);
+  await p.locator("button[aria-pressed]").first().click();
+  await p.getByRole("button", { name: "Check the rejection" }).click();
+  await p.waitForSelector("#dates-warning");
+};
+
 const goRejectionFinding = async (p) => {
   await goRejectionPolicy(p);
   // The policy cards are the only aria-pressed buttons on this step.
   await p.locator("button[aria-pressed]").first().click();
+  // Filled, so this walks the intended path in one press. The empty-date
+  // path is verify_policy_step.mjs, which checks behaviour rather than width.
+  await p.fill("#start", "2025-01-15");
+  await p.fill("#admission", "2026-03-04");
   await p.getByRole("button", { name: "Check the rejection" }).click();
   await p.waitForSelector("text=The rejection looks weak", { timeout: 20000 });
 };
@@ -183,6 +197,7 @@ const SCREENS = [
   ["landing", goLanding],
   ["rejection-paste", goRejectionPaste],
   ["rejection-policy", goRejectionPolicy],
+  ["rejection-policy-warned", goRejectionPolicyWarned],
   ["rejection-finding", goRejectionFinding],
   ["rejection-letter", goRejectionLetter],
   ["bill-paste", goBillPaste],

@@ -568,9 +568,12 @@ against the printed page — we do not add characters to it. `overflow-x:
 hidden` clips the far end of a clause, which is the one thing this product
 must never do. `break-word` inserts nothing and moves nothing.
 
-**`npm run verify:mobile` is the gate.** It walks every screen at 320, 375 and
-414, requires the document to be no wider than the viewport, and names the
-elements responsible when it is not. The API is stubbed from
+**`npm run verify:mobile` is the gate** for width. It walks every screen at
+320, 375 and 414, requires the document to be no wider than the viewport, and
+names the elements responsible when it is not. It answers only the question
+"does it fit"; `npm run verify:policy-step` is the companion that drives a
+form and asks whether it works. See "the form that produced the worst answer
+by default" below for why both are needed. The API is stubbed from
 `verify_mobile_fixtures.mjs`, so it needs no backend and no credentials and
 reaches the finding screens deterministically. It exits non-zero, so it can
 gate a deploy. `ENGINE=webkit` runs it under Safari's engine and `ORIGIN=`
@@ -581,6 +584,74 @@ There is a companion check worth knowing about: rendering all 972 clause texts
 through the real exhibit styling and measuring each one. That is how the four
 clauses above were named rather than guessed at. Character counts do not
 answer this — only the renderer knows where it will agree to break a URL.
+
+---
+
+## NEW — the form that produced the worst answer by default
+
+9 Sep 2026. On a narrow viewport the insurer step showed two collapsed rows
+stacked together between the insurer cards and the submit button: "None of
+these is my insurer" and "Add dates and amount for a sharper answer". Both
+read as footnotes. Nobody opens a footnote.
+
+**The dates were inside the second one, and the dates decide the verdict.**
+`ADJUDICATOR_PROMPT` is handed the claim details and told to judge only
+against the clauses shown and to return `insufficient_information` rather
+than guess. A waiting period is arithmetic on two dates. With neither
+supplied there is nothing to do the arithmetic on, so the default path
+through the form — fill nothing, press the button — returned "not enough to
+judge" on the commonest kind of rejection there is.
+
+That is worth stating plainly: **the form was shaped so that the majority
+route through it produced the worst answer the product can give.** It was a
+design failure, not a user error, and no gate we had could see it. Nothing
+overflowed. Nothing was slow. Every screen passed `verify:mobile`.
+
+*Fix, in `PolicyStep`:*
+- Both dates are in the main flow, in a `border-t-[3px] border-ink` block —
+  the weight this system gives to something carrying the argument. Not
+  collapsible.
+- One line saying why: a waiting period is counted in months from the day the
+  policy started, so the two dates decide whether one had run out by
+  admission.
+- Treatment and amount stay collapsed, relabelled "Add the treatment and the
+  amount claimed". They colour how the answer is written; they do not decide
+  it, and the note inside says so.
+- Empty dates warn once and then go ahead. `missing` is derived rather than
+  stored, so the warning self-clears the moment the dates are filled and a
+  stale one can never sit under a complete form.
+- "None of these is my insurer" is plain text below the submit button. As a
+  collapsed row between the cards and the control it read as a third thing to
+  weigh up before pressing anything, when it is an exit for the few people we
+  cannot help.
+
+**The warning goes below the button, and that is deliberate.** Anything
+inserted above the control shifts it out from under a thumb already resting
+there. The label changes in place instead — "Check the rejection" becomes
+"Check it anyway" — so the second press is a decision rather than a mis-tap.
+`verify_policy_step.mjs` measures the button's position in **document**
+coordinates either side of the press and requires it not to move. Do not use
+`boundingBox()` for this: it is viewport-relative, and Playwright scrolls an
+element into view before clicking it, so two readings either side of a click
+disagree by the scroll distance. That produced a false failure the first time
+this ran.
+
+**`npm run verify:policy-step` is the second gate, and it drives the form.**
+27 checks at 375px: the date fields are reachable without opening anything
+and are not inside a `<details>`, treatment and amount still are, the escape
+hatch is plain text below the control, an empty submit warns without leaving
+the step, a second press proceeds, a filled form needs one press and shows no
+warning, a half-filled one names only the date actually missing, and both
+dates arrive in the POST body. That last check is the one that matters most:
+it is the only thing asserting the dates reach the adjudicator at all.
+
+Both gates pass under chromium and webkit, at 320/375/414, against the dev
+server, the production build and the deployed site.
+
+**The lesson generalises.** `verify:mobile` asks whether the layout fits.
+That is not the same question as whether the form works, and a form can be
+perfectly laid out and still be shaped so nobody fills the field that decides
+the answer. When a field is load-bearing, gate the behaviour, not the width.
 
 ---
 
