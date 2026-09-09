@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "verify:mobile": "node verify_mobile.mjs",
-    "verify:policy-step": "node verify_policy_step.mjs"
+    "verify:policy-step": "node verify_policy_step.mjs",
+    "verify:mobile-shift": "node verify_mobile_shift.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",

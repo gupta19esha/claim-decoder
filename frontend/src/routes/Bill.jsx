@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { auditBill } from "../api";
 import Shell from "../components/Shell.jsx";
@@ -67,6 +67,17 @@ export default function Bill() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const fileRef = useRef(null);
+
+  /*
+    The findings replace the paste screen, and the browser keeps the scroll
+    offset across the swap — press the button from the foot of a long
+    pasted bill and the total you were just told about is above you, off
+    the top of the screen. Same defect as the step change in the rejection
+    decoder, same instant fix, and it has to run on the reset too.
+  */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [result]);
 
   async function readFile(e) {
     const file = e.target.files?.[0];
@@ -162,13 +173,17 @@ function Paste({ text, setText, busy, run, fileRef, readFile }) {
         <label htmlFor="bill" className="sr-only">
           The itemised bill
         </label>
+        {/* 16px on a phone. Below that mobile Safari zooms the viewport
+            on focus and leaves it zoomed. Same rule as the letter textarea
+            in Rejection.jsx, same reason; the designed 14px mono returns
+            at sm:. */}
         <textarea
           id="bill"
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={12}
           placeholder={"GLOVES   450.00\nBABY FOOD   320.00\nATTENDANT CHARGES   2400.00"}
-          className="mt-6 w-full border border-rule bg-card px-4 py-4 font-quote text-[0.875rem] leading-relaxed text-ink placeholder:text-ink-soft/60 focus:border-ink"
+          className="mt-6 w-full border border-rule bg-card px-4 py-4 font-quote text-base leading-relaxed text-ink placeholder:text-ink-soft/60 focus:border-ink sm:text-[0.875rem]"
         />
 
         <div className="mt-5 flex flex-wrap items-center gap-3">

@@ -655,6 +655,85 @@ the answer. When a field is load-bearing, gate the behaviour, not the width.
 
 ---
 
+## NEW — the page moving under the reader, and the three causes
+
+9 Sep 2026. Mobile felt loose: the layout moved when things were tapped. Not
+overflow — 8897703 had fixed that, and every width still passed. Three
+separate defects, none of which a width gate can see.
+
+**1. Both textareas were 14px, and mobile Safari zooms below 16px.** The
+letter field and the bill field were `text-[0.875rem]`. Safari zooms the
+viewport whenever a focused input computes under 16px **and does not zoom
+back out**, so the reader taps a textarea to paste a letter and is left on a
+page wider than the screen for the rest of the session. This is not a layout
+shift, no shift observer reports it, and it is the one that most reads as
+"the whole screen moved".
+
+*Fix:* `text-base sm:text-[0.875rem]` on both. 16px on phones, the designed
+14px mono from 640px up where no browser does this. **Do not tidy the two
+sizes into one.** The alternative — `maximum-scale=1` in the viewport meta —
+would also stop the zoom, by disabling pinch zoom for everyone. That is an
+accessibility failure and this product is read by people who are unwell.
+
+**2. Scroll position was carried across every screen change, and this was the
+serious one.** Each step of the decoder is a whole screen, and React swapping
+the content does not reset the scroll offset. Measured: pressing "Check the
+rejection" from the foot of the policy step landed the reader **1709px into
+the finding, in the middle of the second clause exhibit**, having never seen
+"The rejection looks weak" — the headline the screen exists to deliver. The
+bill had the same defect: press the button at the foot of a long pasted bill
+and the total you were just told about is above the top of the screen.
+
+*Fix:* `window.scrollTo(0, 0)` on `[step]` in `Rejection` and on `[result]`
+in `Bill`. Instant, never smooth — an animated scroll is motion nobody asked
+for and it fights a reader who starts scrolling before it finishes.
+
+**3. Nothing else.** Worth recording, because it was where the time was
+expected to go. No focus style occupied space (the one ring is an `outline`,
+which does not reflow, and `focus:border-ink` changes colour rather than
+width). No animation changed height — `motion.jsx` is transform-only and that
+rule held. Every in-place interaction now measures **0.0000**.
+
+### `npm run verify:mobile-shift`
+
+Walks 21 interactions across all four screens, and for each one clears a
+`layout-shift` PerformanceObserver, screenshots, interacts, screenshots
+again, and reports the score with the nodes that moved and the scroll delta.
+Writes `mobile-shots/index.html`, a contact sheet pairing every before and
+after against its score, so a shift can be **seen** rather than only scored.
+`mobile-shots/` is gitignored.
+
+Four things about how it measures, each of which was wrong in the first
+version and cost a false reading:
+
+- **`hadRecentInput` is recorded but never filtered on.** Standard CLS
+  discards shifts within 500ms of a tap. Those are exactly what this hunts.
+- **The tap target is scrolled into view before the *first* screenshot.**
+  Playwright scrolls an element into view as part of clicking it and a real
+  thumb does not, so leaving it inside the measured window charges the
+  interaction for a scroll the reader had already made — and the two
+  screenshots then show different parts of the page for a reason that has
+  nothing to do with the shift.
+- **A screen change is judged on where it lands, not on CLS.** The content is
+  meant to be entirely different, so a score across it measures nothing.
+  Those steps assert `scrollY === 0` instead. `policy-submit` scored 0.1187
+  before the fix, which understated a defect that put the reader 1709px off
+  target; the scroll assertion states it exactly.
+- **A disclosure is meant to move what is below it.** Those carry a wide
+  budget and are read for *which* nodes moved.
+
+`layout-shift` is a Chromium API, so the shift half runs there; the font-size
+half is computed style and runs on either engine. Verified on chromium at 320
+and 375, on webkit at 375, against the dev server, the production build and
+the deployed site.
+
+**Read the three gates as three questions.** `verify:mobile` asks does it
+fit. `verify:policy-step` asks does the form work. `verify:mobile-shift` asks
+does it hold still. All three passed while each of the others was failing, at
+some point in the last two days, which is the argument for having all three.
+
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,

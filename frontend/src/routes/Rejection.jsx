@@ -97,6 +97,23 @@ export default function Rejection() {
     return () => clearInterval(timer.current);
   }, []);
 
+  /*
+    Each step is a whole screen, and the browser keeps the scroll offset when
+    one replaces another. Measured: pressing "Check the rejection" from the
+    foot of the policy step landed the reader 1709px into the finding, in the
+    middle of the second clause, having never seen the verdict headline that
+    the screen exists to deliver. Nothing overflowed and nothing animated —
+    the page had simply moved out from under them, which is what "the whole
+    screen moves" means.
+
+    Instant, never smooth. A long animated scroll is motion nobody asked for,
+    and this is read by someone stressed; it would also fight a reader who
+    starts scrolling before it finishes.
+  */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [step]);
+
   const policies = insurers.flatMap((i) =>
     (i.policies || []).map((p) => ({ ...p, insurer: i.insurer }))
   );
@@ -194,13 +211,19 @@ function PasteStep({ letter, setLetter, policies, onNext }) {
         <label htmlFor="letter" className="sr-only">
           The rejection letter
         </label>
+        {/* text-base is 16px, and that number is not a preference. Mobile
+            Safari zooms the viewport when a focused field computes below
+            16px, and it does not zoom back out — the reader is left on a page
+            wider than the screen, having only tapped a textarea. The designed
+            14px mono returns at sm:, 640px and up, where no browser does
+            this. Do not "tidy" the two sizes into one. */}
         <textarea
           id="letter"
           value={letter}
           onChange={(e) => setLetter(e.target.value)}
           rows={12}
           placeholder="We regret to inform you that your claim has been repudiated…"
-          className="mt-6 w-full border border-rule bg-card px-4 py-4 font-quote text-[0.875rem] leading-relaxed text-ink placeholder:text-ink-soft/60 focus:border-ink"
+          className="mt-6 w-full border border-rule bg-card px-4 py-4 font-quote text-base leading-relaxed text-ink placeholder:text-ink-soft/60 focus:border-ink sm:text-[0.875rem]"
         />
 
         <div className="mt-5 flex flex-wrap items-center gap-4">
