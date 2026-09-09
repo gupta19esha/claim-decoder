@@ -37,7 +37,7 @@ const SAMPLE_CLAUSE =
   "the time of application and accepted by Us.";
 
 const FIGURES = [
-  { n: "965", label: "clauses held", sub: "read from the policy wordings" },
+  { n: "972", label: "clauses held", sub: "read from the policy wordings" },
   { n: "6", label: "policies", sub: "five insurers. That is all we hold" },
   { n: "146", label: "IRDAI items", sub: "a hospital may not bill to a claim" },
 ];

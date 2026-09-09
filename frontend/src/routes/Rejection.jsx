@@ -4,6 +4,7 @@ import { listPolicies, createCase, pollCase, createAppeal } from "../api";
 import Shell from "../components/Shell.jsx";
 import Exhibit from "../components/Exhibit.jsx";
 import { Arrive } from "../components/motion.jsx";
+import { insurerMismatch } from "../insurerMatch.js";
 
 /*
   The rejection decoder.
@@ -57,8 +58,29 @@ const VERDICT = {
     band: "bg-paper-sunk text-ink",
     rule: "border-ink-soft",
     contestable: false,
+    // See `scored` below.
+    scored: false,
   },
 };
+
+/*
+  `scored` decides whether the confidence figure is shown.
+
+  The adjudicator returns a confidence on every verdict including
+  insufficient_information, and there it means "I am confident there is not
+  enough here to judge" — measured at 0.95 on a case with no dates at all.
+  Printed as "Confidence in this reading: 95%" directly under "Not enough to
+  judge" it reads as a contradiction, and a reader who has just been told we
+  cannot answer does not need a number attached to it.
+
+  So it is shown only where there is a finding for it to qualify. Every other
+  verdict is scored; the default below is true, so a new verdict added to the
+  table is scored unless it says otherwise.
+*/
+for (const v of Object.values(VERDICT)) {
+  if (v.scored === undefined) v.scored = true;
+}
+
 
 // Honest: this is the order the backend actually works in.
 const STAGES = [
@@ -184,7 +206,14 @@ export default function Rejection() {
         />
       )}
       {step === 2 && <WaitingStep letter={letter} policy={policy} stage={stage} />}
-      {step === 3 && result && <Finding result={result} policy={policy} />}
+      {step === 3 && result && (
+        <Finding
+          result={result}
+          policy={policy}
+          letter={letter}
+          policies={policies}
+        />
+      )}
     </Shell>
   );
 }
@@ -593,13 +622,46 @@ function WaitingStep({ letter, policy, stage }) {
 
 /* ----------------------------------------------------------- step four */
 
-function Finding({ result, policy }) {
+function Finding({ result, policy, letter, policies = [] }) {
   const v = VERDICT[result.verdict] || VERDICT.insufficient_information;
   const clauses = result.deciding_clauses || [];
   const noClauses = clauses.length === 0;
+  const mismatch = insurerMismatch(letter, policy, policies);
 
   return (
     <div>
+      {/*
+        Above the verdict, because it changes what the verdict means. It warns
+        and never blocks: a letter can legitimately name another insurer, the
+        reader may have chosen deliberately, and the finding below is still a
+        true statement about the policy they picked.
+
+        Ink rather than ochre. Ochre means "go and check this" and the theme
+        allows it once per screen; what_would_change_it already has it, and
+        two would dilute both. This sits first on the page and does not need
+        colour to be read.
+      */}
+      {mismatch && (
+        <section className="mb-8 border-l-[3px] border-ink bg-paper-sunk px-5 py-4">
+          <p className="folio text-ink-soft">Check this first</p>
+          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink">
+            Your letter mentions{" "}
+            <strong className="font-semibold">{mismatch.named.join(" and ")}</strong>
+            , but you chose{" "}
+            <strong className="font-semibold">
+              {policy.insurer} {policy.policy_name}
+            </strong>
+            . Everything below is read from the wording of the policy you
+            chose.
+          </p>
+          <p className="mt-2 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
+            If that is the wrong policy, the finding is about the wrong
+            document — go back and pick again. If it is right, and the letter
+            simply refers to a previous insurer, you can ignore this.
+          </p>
+        </section>
+      )}
+
       <Arrive>
         <section className={"px-5 py-8 sm:px-8 sm:py-10 " + v.band}>
           <p className="folio opacity-70">The finding</p>
@@ -625,13 +687,21 @@ function Finding({ result, policy }) {
             {result.explanation}
           </p>
 
-          {typeof result.confidence === "number" && (
+          {/* The clause count stands on its own when the score is withheld:
+              it is a fact about what was searched, not a claim about the
+              answer, and it is true on every verdict. */}
+          {((v.scored && typeof result.confidence === "number") ||
+            result.considered_count > 0) && (
             <p className="mt-4 font-doc text-base text-ink-soft">
-              Confidence in this reading:{" "}
-              <span className="font-quote">
-                {Math.round(result.confidence * 100)}%
-              </span>
-              .{" "}
+              {v.scored && typeof result.confidence === "number" && (
+                <>
+                  Confidence in this reading:{" "}
+                  <span className="font-quote">
+                    {Math.round(result.confidence * 100)}%
+                  </span>
+                  .{" "}
+                </>
+              )}
               {result.considered_count > 0 && (
                 <>
                   {result.considered_count} clauses from your policy were read

@@ -865,6 +865,82 @@ to capture a real response without stubbing it.
 
 ---
 
+## NEW — the insurer-mismatch notice, and two corrections
+
+9 Sep 2026, following the test matrix above.
+
+**The landing said 965 clauses.** The corpus has been 972 since the v17 build
+of 31 Aug. The figure is hardcoded in `Landing.jsx`; the policy step reads
+`clause_count` from the API and was always right. If the corpus moves again,
+that constant is the one place that does not follow.
+
+**Confidence is withheld on `insufficient_information`.** The adjudicator
+scores every verdict, and on that one the score means "I am confident there is
+not enough here to judge" — measured at 0.95 on a case with no dates at all.
+Printed as "Confidence in this reading: 95%" under "Not enough to judge" it
+read as self-contradiction. The `VERDICT` table now carries `scored`, false
+only there, defaulted true so a new verdict is scored unless it says
+otherwise. The clause count ("15 clauses from your policy were read") survives
+on its own: it is a fact about what was searched, true on every verdict, and
+not a claim about the answer.
+
+### The mismatch notice
+
+Case i produced a confident, well-reasoned finding about Star from a letter
+that says "your claim under policy Optima Secure". Retrieval was right —
+`policy_id` filtering makes contamination impossible — but nothing said the
+letter names a different insurer. Now a notice sits **above** the verdict,
+because it changes what the verdict means, and it warns without blocking: the
+finding, the exhibit and the letter are all still delivered.
+
+`src/insurerMatch.js`, deterministic and no model call. **Both directions of
+error are costly** — a miss leaves someone reading a confident answer about
+the wrong document, a false positive tells an anxious reader their correct
+choice is wrong — and the unit test caught two failures before deploy:
+
+- **Longest name first, and a match is consumed.** "ReAssure" is a substring
+  of "ReAssure 3.0".
+- **A single-word policy name must be capitalised to count.** Two of the six
+  are ordinary English words, "Elevate" and "ReAssure", and "undertaken to
+  elevate the patient's quality of life" is a sentence a real letter might
+  contain. Multi-word names match without regard to case.
+- **A precedence ladder, most specific first:** own policy named → quiet; a
+  different policy named → warn; own insurer named → quiet; a different
+  insurer named → warn. The insurer alone cannot discriminate, because two
+  policies share one — treating "Niva Bupa" in a ReAssure 3.0 letter as
+  reassurance silenced a real mismatch.
+
+**One recorded ambiguity, deliberate and tested as such.** A portability
+letter that names the previous policy in full and the current one only by
+insurer does warn, because step 2 sits above step 3. The reader can resolve
+that and we cannot, and the copy says they can ignore it if the letter simply
+refers to a previous insurer.
+
+**Ink, not ochre.** The theme allows ochre once per screen and
+`what_would_change_it` already has it; two would dilute both. The notice is
+first on the page and does not need colour to be read. `verify_finding.mjs`
+asserts the ochre count stays at one.
+
+### Two more gates
+
+`npm run verify:insurer-match` — 15 checks, no browser, no API, no model.
+`npm run verify:finding` — 15 checks in a browser with a stubbed API, covering
+both verdict paths and the notice's position, presence and absence.
+
+Seven gates now. Run them all before a deploy:
+`verify:mobile`, `verify:policy-step`, `verify:mobile-shift`,
+`verify:insurer-match`, `verify:finding`, `verify:bill-letter`, and
+`run_matrix.py` when the backend or a prompt changes.
+
+**A testing note worth keeping.** `.folio` sets `text-transform: uppercase`,
+and `innerText` returns rendered text — so an assertion on "Check this first"
+fails against "CHECK THIS FIRST" while the element is on screen. Match
+case-insensitively on any text inside a `.folio`. Playwright's own `text=`
+engine is already case-insensitive, which is why one assertion passed and
+another failed on the same element.
+
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,
@@ -887,6 +963,9 @@ to capture a real response without stubbing it.
   needs to know whether a cap is per-day or per-year.
 - **`clause_title` and `exclusion_code` are user-visible and unguarded.** 96.4%
   and 87.7% verbatim respectively.
+- **The landing clause count is hardcoded.** `Landing.jsx` FIGURES carries
+  972; the policy step reads the live `clause_count`. A corpus change has to
+  update that constant by hand.
 - **8 accepted gate findings are live in the corpus**: 5 truncations, 3
   mid-sentence starts, accepted via `--accept` and not fixed.
 - **Three policies have a silent page run above the ceiling** and are only
