@@ -76,6 +76,56 @@
   --font-doc: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
   --font-quote: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
 
+  /*
+    THE SCALE, NAMED BY ROLE.
+
+    It exists because 58 percent of the type in the product was one of two
+    sizes two pixels apart, and the verdict headline — the answer someone came
+    for — rendered at exactly the size of "Which policy is this?" on every
+    phone. They were the same class string. Nothing drew the eye because
+    nothing was allowed to.
+
+    Ratios run about 1.2 through the middle and then jump 1.5 to the verdict.
+    The jump IS the hierarchy: everything below it is a quiet, closely spaced
+    ladder, and the verdict is a different order of thing.
+
+    Line height and tracking travel with the size because they are properties
+    of it. Weight does not: it stays explicit in the markup, so a utility can
+    never silently lose to a token.
+  */
+  --text-verdict: 2.875rem;
+  --text-verdict--line-height: 1;
+  --text-verdict--letter-spacing: -0.03em;
+  --text-verdict-lg: 5.25rem;
+  --text-verdict-lg--line-height: 0.96;
+  --text-verdict-lg--letter-spacing: -0.035em;
+
+  --text-screen: 1.75rem;
+  --text-screen--line-height: 1.12;
+  --text-screen--letter-spacing: -0.015em;
+  --text-screen-lg: 2.125rem;
+  --text-screen-lg--line-height: 1.1;
+  --text-screen-lg--letter-spacing: -0.02em;
+
+  --text-section: 1.25rem;
+  --text-section--line-height: 1.25;
+  --text-section-lg: 1.5rem;
+  --text-section-lg--line-height: 1.2;
+
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.55;
+  --text-lead-lg: 1.3125rem;
+  --text-lead-lg--line-height: 1.5;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
+
+  /* Genuinely secondary material only. Never prose the reader must read, and
+     never a form control: below 16px mobile Safari zooms the viewport on
+     focus and does not zoom back. verify:mobile-shift enforces that. */
+  --text-aside: 0.875rem;
+  --text-aside--line-height: 1.5;
+
   --text-folio: 0.6875rem;
   --text-folio--line-height: 1.2;
 }

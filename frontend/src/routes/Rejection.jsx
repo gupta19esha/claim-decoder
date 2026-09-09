@@ -644,7 +644,7 @@ function Finding({ result, policy, letter, policies = [] }) {
       {mismatch && (
         <section className="mb-8 border-l-[3px] border-ink bg-paper-sunk px-5 py-4">
           <p className="folio text-ink-soft">Check this first</p>
-          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink">
+          <p className="mt-1.5 max-w-[62ch] font-doc text-body text-ink">
             Your letter mentions{" "}
             <strong className="font-semibold">{mismatch.named.join(" and ")}</strong>
             , but you chose{" "}
@@ -654,7 +654,7 @@ function Finding({ result, policy, letter, policies = [] }) {
             . Everything below is read from the wording of the policy you
             chose.
           </p>
-          <p className="mt-2 max-w-[62ch] font-doc text-base leading-relaxed text-ink-2">
+          <p className="mt-3 max-w-[62ch] font-doc text-aside text-ink-2">
             If that is the wrong policy, the finding is about the wrong
             document — go back and pick again. If it is right, and the letter
             simply refers to a previous insurer, you can ignore this.
@@ -662,17 +662,47 @@ function Finding({ result, policy, letter, policies = [] }) {
         </section>
       )}
 
-      <Arrive>
-        <section className={"px-5 py-8 sm:px-8 sm:py-10 " + v.band}>
-          <p className="folio opacity-70">The finding</p>
-          <h1 className="mt-3 max-w-[20ch] font-doc text-3xl leading-tight font-semibold text-balance sm:text-4xl lg:text-5xl">
-            {v.headline}
-          </h1>
-          <p className="mt-3 max-w-[52ch] font-doc text-lg leading-relaxed opacity-90">
-            {v.sub}
-          </p>
-        </section>
-      </Arrive>
+      {/*
+        THE ONE MOMENT ON THIS SCREEN.
+
+        It used to render at exactly the size of "Which policy is this?" — the
+        same class string, identical on every phone up to 1024px. The answer
+        someone came for was set as a paragraph heading.
+
+        Three things make it the moment now, and none of them is ornament:
+        it runs edge to edge instead of sitting in the margin, it is given
+        roughly twice the vertical space, and it is a different order of size
+        from everything under it.
+
+        Medium weight, not bold. At this size bold shouts, and half of these
+        headlines are telling someone they have no case.
+
+        Still not animated. Arrive is transform-only and never touches
+        opacity, so the verdict is on the screen the instant it paints — but a
+        headline this size that moved at all would read as a reveal, and on
+        well_supported a reveal would be grotesque. The band no longer moves;
+        only what follows it does.
+      */}
+      {/* Flush to the step rule when nothing precedes it: the verdict is the
+          top of the page, and a 47px sliver of paper above it read as neither
+          flush nor generous. Shell gives main py-8/py-12, so this cancels it.
+          When the mismatch notice is present that notice comes first and the
+          band keeps its own space. */}
+      <section
+        className={
+          "-mx-5 px-5 py-14 sm:-mx-8 sm:px-8 sm:py-16 lg:py-24 " +
+          (mismatch ? "" : "-mt-8 sm:-mt-12 ") +
+          v.band
+        }
+      >
+        <p className="folio opacity-60">The finding</p>
+        <h1 className="mt-6 max-w-[15ch] font-doc text-verdict font-medium text-balance lg:mt-8 lg:max-w-[13ch] lg:text-verdict-lg">
+          {v.headline}
+        </h1>
+        <p className="mt-6 max-w-[46ch] font-doc text-lead opacity-80 lg:mt-8 lg:text-lead-lg">
+          {v.sub}
+        </p>
+      </section>
 
       {/* Desktop is not a stretched phone. The reasoning and the one thing
           worth checking sit side by side at the top, because they are read
@@ -680,10 +710,17 @@ function Finding({ result, policy, letter, policies = [] }) {
           the whole width on its own, folio in the true margin and text capped
           to a readable measure — it is the evidence, and it gets the boldness
           while everything around it stays quiet. */}
-      <div className="mt-8 lg:grid lg:grid-cols-12 lg:gap-12">
+      {/* Everything from here down steps back so nothing argues with the
+          verdict. The reasoning was text-lg, one step off the old headline;
+          it is body now. Related things sit tight — a folio label 6px from
+          what it labels — and unrelated regions sit 20 times that apart. Even
+          spacing is what made the page read flat. */}
+      <div className="mt-14 lg:mt-20 lg:grid lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-7">
           <h2 className="folio text-ink-soft">Why</h2>
-          <p className="mt-3 font-doc text-lg leading-relaxed text-ink">
+          {/* text-ink, not ink-2: prose the reader must actually read keeps
+              the darkest ink. Only genuine asides are allowed to lighten. */}
+          <p className="mt-1.5 font-doc text-body text-ink">
             {result.explanation}
           </p>
 
@@ -692,7 +729,7 @@ function Finding({ result, policy, letter, policies = [] }) {
               answer, and it is true on every verdict. */}
           {((v.scored && typeof result.confidence === "number") ||
             result.considered_count > 0) && (
-            <p className="mt-4 font-doc text-base text-ink-soft">
+            <p className="mt-5 font-doc text-aside text-ink-soft">
               {v.scored && typeof result.confidence === "number" && (
                 <>
                   Confidence in this reading:{" "}
@@ -713,10 +750,10 @@ function Finding({ result, policy, letter, policies = [] }) {
         </div>
 
         {result.what_would_change_it && (
-          <div className="mt-6 lg:col-span-5 lg:mt-0">
-            <div className="border-l-[3px] border-ochre bg-ochre-tint px-5 py-4">
+          <div className="mt-10 lg:col-span-5 lg:mt-0">
+            <div className="border-l-[3px] border-ochre bg-ochre-tint px-5 py-5">
               <p className="folio text-ochre">Go and check this</p>
-              <p className="mt-2 font-doc text-lg leading-relaxed text-ink">
+              <p className="mt-1.5 font-doc text-body text-ink">
                 {result.what_would_change_it}
               </p>
             </div>
@@ -724,17 +761,22 @@ function Finding({ result, policy, letter, policies = [] }) {
         )}
       </div>
 
-      <div className="mt-10">
+      {/* The band around the exhibit is sunk, so the white sheet reads as
+          laid on a desk rather than as a bordered box on the same paper. The
+          difference between #ffffff and #faf9f6 is five values and invisible;
+          against #f4f2ed the same sheet is an object. Surface, not
+          elevation — a shadow would not survive the photocopier. */}
+      <div className="-mx-5 mt-16 bg-paper-sunk px-5 py-12 sm:-mx-8 sm:px-8 lg:mt-24 lg:py-16">
         {noClauses ? (
           <NoClause policy={policy} explanation={result.explanation} />
         ) : (
           <>
-            <h2 className="folio mb-3 text-ink-soft">
+            <h2 className="folio mb-5 text-ink-soft">
               {clauses.length > 1
                 ? "The clauses this turns on"
                 : "The clause this turns on"}
             </h2>
-            <div className="space-y-8">
+            <div className="space-y-12">
               {clauses.map((c, i) => (
                 <Exhibit
                   key={c.clause_id || i}
@@ -760,9 +802,9 @@ function Finding({ result, policy, letter, policies = [] }) {
       {result.arguments &&
         (result.arguments.insurer_position ||
           result.arguments.claimant_position) && (
-          <section className="no-print mt-12">
+          <section className="no-print mt-16 lg:mt-24">
             <h2 className="folio text-ink-soft">How each side would argue it</h2>
-            <div className="mt-4 grid gap-4 md:grid-cols-2 md:gap-6">
+            <div className="mt-5 grid gap-6 md:grid-cols-2 md:gap-10">
               {/* Oxblood appears here and nowhere else in the product: it
                   marks the insurer's position, so the adversary is visibly
                   the adversary and your own case is set in plain ink. */}
@@ -789,11 +831,11 @@ function Finding({ result, policy, letter, policies = [] }) {
 
 function Side({ heading, accent, body, weak }) {
   return (
-    <article className={"border-t-[3px] bg-card p-5 sm:p-6 " + accent}>
+    <article className={"border-t-[3px] bg-card p-6 sm:p-7 " + accent}>
       <h3 className="folio text-ink-soft">{heading}</h3>
-      <p className="mt-3 font-doc text-lg leading-relaxed text-ink">{body}</p>
+      <p className="mt-1.5 font-doc text-body text-ink">{body}</p>
       {weak && (
-        <p className="mt-4 border-t border-rule-soft pt-3 font-doc text-base leading-relaxed text-ink-soft">
+        <p className="mt-6 border-t border-rule-soft pt-4 font-doc text-aside text-ink-soft">
           <span className="folio mb-1 block text-ink-soft">Weak spot</span>
           {weak}
         </p>
@@ -811,11 +853,11 @@ function NoClause({ policy, explanation }) {
   return (
     <section className="border-t-[3px] border-ink-soft bg-card px-5 py-6 sm:px-6">
       <h2 className="folio text-ink-soft">No clause to show</h2>
-      <p className="mt-3 font-doc text-lg leading-relaxed text-ink">
+      <p className="mt-1.5 font-doc text-body text-ink">
         {explanation ||
           "We could not find wording in this policy that addresses the reason given."}
       </p>
-      <p className="mt-4 font-doc text-base leading-relaxed text-ink-2">
+      <p className="mt-5 font-doc text-body text-ink-2">
         This is not a finding in your favour, and it is not one against you. It
         means the wording we hold for{" "}
         {policy ? `${policy.insurer} ${policy.policy_name}` : "this policy"}{" "}
@@ -890,7 +932,7 @@ function Appeal({ result }) {
   }
 
   return (
-    <section className="mt-12">
+    <section className="mt-16 lg:mt-24">
       {err && (
         <div className="mb-4 border-l-[3px] border-insurer bg-card px-5 py-4 font-doc text-base">
           {err}
@@ -898,11 +940,11 @@ function Appeal({ result }) {
       )}
 
       {!letter ? (
-        <div className="no-print border border-rule bg-card p-5 sm:p-6">
-          <h2 className="font-doc text-2xl leading-tight font-semibold">
+        <div className="no-print border border-rule bg-card p-6 sm:p-8">
+          <h2 className="font-doc text-section font-semibold lg:text-section-lg">
             {copyFor.heading}
           </h2>
-          <p className="mt-2 max-w-[62ch] font-doc text-lg leading-relaxed text-ink-2">
+          <p className="mt-2 max-w-[62ch] font-doc text-body text-ink-2">
             {copyFor.blurb}
           </p>
           <button

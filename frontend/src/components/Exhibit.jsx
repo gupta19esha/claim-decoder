@@ -9,6 +9,23 @@
   officer, so it is built from rule weight, mono and a printer's folio — a
   black and white photocopy loses nothing. See @media print in theme.css.
 
+  IT SHOULD READ AS A SHEET OF PAPER, NOT A BORDERED DIV, AND THE PHYSICALITY
+  COMES FROM SURFACE AND MARGIN RATHER THAN ELEVATION.
+
+  No shadow, no radius, nothing that floats: all three would vanish in a
+  photocopy, which is the one place this has to survive. What does the work
+  instead:
+
+    * The ground. White on #faf9f6 is a five-value difference and invisible.
+      The caller puts the region around the exhibit on paper-sunk (#f4f2ed),
+      and the same white sheet suddenly reads as laid on a desk. Contrast of
+      surface, not height.
+    * Margins, not padding. A printed page has margins; the interior is now
+      generous enough that the clause sits inside a document rather than
+      against an edge.
+    * Width. It is the widest object on the page, wider than the prose
+      measure, because it is the evidence.
+
   Never paraphrase what goes in here. The text prop must be a verbatim string
   from the corpus.
 */
@@ -37,15 +54,16 @@ export default function Exhibit({
     <figure
       className="exhibit relative -mx-5 border-y-1 border-t-[3px] border-ink
                  bg-card sm:mx-0 sm:border-x sm:border-rule
-                 lg:grid lg:grid-cols-[8rem_minmax(0,44rem)] lg:gap-x-8"
+                 lg:grid lg:grid-cols-[9rem_minmax(0,1fr)] lg:gap-x-0"
     >
       {/* The folio. In the margin on desktop, in the top rule on mobile —
           a printer's mark, not a badge. */}
       <div
         className="exhibit-folio flex items-baseline justify-between gap-3
-                   border-b border-rule-soft px-5 pt-3 pb-2
-                   lg:col-start-1 lg:row-start-1 lg:block lg:border-0
-                   lg:px-0 lg:pt-6 lg:pl-6 lg:text-right"
+                   border-b border-rule-soft px-6 pt-4 pb-3
+                   lg:col-start-1 lg:row-start-1 lg:block lg:h-full
+                   lg:border-r lg:border-b-0 lg:border-rule-soft
+                   lg:px-0 lg:pt-9 lg:pr-6 lg:text-right"
       >
         <span className="folio text-ink">Page {page}</span>
         {source && (
@@ -55,9 +73,9 @@ export default function Exhibit({
         )}
       </div>
 
-      <div className="px-5 pt-5 pb-6 lg:col-start-2 lg:row-start-1 lg:py-6 lg:pr-6">
+      <div className="px-6 pt-7 pb-8 lg:col-start-2 lg:row-start-1 lg:max-w-[52rem] lg:py-9 lg:pr-10 lg:pl-10">
         {title && (
-          <figcaption className="wrap-verbatim mb-4 font-doc text-lg leading-snug font-semibold text-ink sm:text-xl">
+          <figcaption className="wrap-verbatim mb-5 font-doc text-section font-semibold text-ink">
             {title}
           </figcaption>
         )}
@@ -71,7 +89,7 @@ export default function Exhibit({
         </blockquote>
 
         {meta.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-1.5">
+          <div className="mt-6 flex flex-wrap gap-1.5">
             {meta.map((m) => (
               <span
                 key={m}
@@ -83,7 +101,7 @@ export default function Exhibit({
           </div>
         )}
 
-        <p className="mt-5 border-t border-rule-soft pt-3 font-doc text-sm text-ink-soft">
+        <p className="mt-7 border-t border-rule-soft pt-4 font-doc text-aside text-ink-soft">
           {note || (
             <>
               Quoted word for word. Open your policy at page {page} and read it
