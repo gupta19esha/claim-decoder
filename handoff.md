@@ -1072,73 +1072,98 @@ established.
 `insufficient_information`** (0.95, 0.90, 0.90), each naming the missing
 fact. The instability is gone.
 
-### Materiality and the structured field — PARTLY WORKING, STILL OPEN
+### Materiality — TRIED TWICE, REVERTED. Read this before trying again.
 
-10 Sep 2026, second pass. Two changes: the rule that an unknown fact only
-prevents a decision if it could change the answer, and an `unknown_facts`
-array returned **first** in the adjudicator's JSON, each entry naming the fact
-and whether it is material. Keys are generated in order, so enumerating the
-silences before naming a verdict makes the verdict a consequence of the list
-rather than something the list is written to justify.
+10 Sep 2026. The unknown-fact rule above fixed the reported case and left two
+neighbours wrong: the cataract sub-limit abstained over a Sum Insured that
+cannot change the answer, and the specified-disease case abstained over
+exceptions nobody had raised. Two attempts to fix that, both reverted.
 
-**Where it worked, it worked exactly as intended.** On the cataract sub-limit
-the Sum Insured is now marked not material in all three runs, with the
-arithmetic spelled out: *"the cap per eye can never exceed Rs 40,000
-regardless of the Sum Insured"*. That is the reasoning that was wanted.
+**Attempt 1 — a materiality rule plus an `unknown_facts` array returned first
+in the JSON.** Partly worked. The Sum Insured came out "not material" 3 of 3
+with the arithmetic spelled out — *"the cap per eye can never exceed Rs 40,000
+regardless of the Sum Insured"*. But better enumeration without a burden
+principle is paralysis: the specified-disease case went to
+`insufficient_information` 3 of 3, flagging accident and portability
+exceptions nobody had claimed.
 
-**But enumeration without a burden principle becomes paralysis.** The model
-is now far better at *finding* unknowns, and nothing tells it which ones
-count, so it finds exceptions nobody has raised and stops.
+**Attempt 2 — a burden rule, then a `role` / `raised_by` decision table.** The
+prose rule suppressed exceptions indiscriminately. The structured version
+asked the model to attribute each unknown before judging it. Neither landed,
+and the second one showed why.
 
-| case | before | after | wanted |
+**THE FINDING THAT SETTLES IT: `raised_by` was filled in wrongly.** In the
+case where nobody mentions portability, two of three runs recorded it as
+*"raised by the claimant"*. In the case where the letter says in terms that
+the insured contends the hernia followed a road accident, two of three runs
+recorded the accident as *"raised by nobody"* and decided the case on that
+basis.
+
+That is not a rule-wording problem. It is the model misreading who said what
+in a four-line letter. **No refinement of the rule reaches it**, because every
+version of the rule depends on that attribution being right. A structured
+field does not make a judgement reliable; it only gives an unreliable
+judgement a tidier place to be wrong.
+
+**Measured across states, three runs each**, on the two cases that matter:
+
+| state | h — dates settle it, want well_supported | f — cap settles it, want well_supported | j — genuinely undecidable |
 |---|---|---|---|
-| j — PED, declaration silent | `insufficient_information` ×3 | **×3, stable** | ✔ |
-| f — cataract sub-limit | `insufficient_information` ×3 | `well_supported` ×2, `insufficient_information` ×1 | ✘ wanted ×3 |
-| a — PED, 77 months | II ×2, weak ×1 | `insufficient_information` ×3 | now stable |
-| h — specified disease | `well_supported` ×3 | **`insufficient_information` ×3** | ✘ **regressed** |
+| `4a43f54` unknown-fact rule (**live**) | **2 / 3** | 1 / 3 | 3 / 3 |
+| `b45450f` + materiality + unknown_facts | 0 / 3 | 2 / 3 | 3 / 3 |
+| attempt 2, burden rule | 1 / 3 | 0 / 3 | 3 / 3 |
+| attempt 2, role + raised_by | 1 / 3 | not run | 3 / 3 |
 
-`h` is the clearest failure. The dates give 16.5 months against a 24-month
-specified-disease waiting period, which decides it. The model instead flags
-*"whether the hernia repair was necessitated by an accident"* and *"whether
-prior coverage was ported"* — both real exceptions in Excl02, neither raised
-by anybody. **There is always some exception whose non-applicability is
-unstated, so on this reading almost every rejection is undecidable.**
+Reverted to `4a43f54`. It is the best available on `h`, and a wrong "cannot
+decide" on a case the dates plainly settle is worse than a cautious one on a
+sub-limit. **`j` is 3 of 3 in every variant, so the original defect — the
+adjudicator resolving a silence in the insurer's favour — stays fixed
+whatever else is done here.**
 
-`f`'s remaining run tested materiality against the wrong question: it asked
-whether the unknown changes *the payable amount* rather than *the verdict*.
-Both eyes gives Rs 80,000, still under the Rs 95,000 bill, so the verdict does
-not move.
+**What is still wrong, and what would actually be needed.** `f` abstains 2 of
+3 over a Sum Insured that cannot change the answer, and `h` abstains 1 of 3
+over an exception nobody raised. Both are the same root cause: judging
+materiality requires holding the clause logic, the stated facts and who
+asserted them simultaneously, and the model does that inconsistently at this
+prompt length. If it is picked up again, the thing to try is **not** another
+rule. Either:
 
-**The missing principle is burden, and it separates the cases cleanly:**
+- decide materiality deterministically in Python for the shapes that recur —
+  a cap with "whichever is lower" against a bill is arithmetic, not judgement;
+  or
+- run the attribution as its own small call with only the letter and the
+  question "which of these exceptions does this letter mention?", so the
+  reading step is not competing with the reasoning step.
 
-- `j` — the insurer *needs* declaration-and-acceptance to be true to sustain
-  the exclusion past 36 months. It is a precondition of their own case and it
-  is unstated. Genuinely material.
-- `h` — an accident, or ported coverage, would be an *exception* to a clause
-  that otherwise applies. Nobody has claimed one. Not material.
+### The process fix, which is the durable part
 
-Draft wording, not applied:
+**Deploy to a no-traffic revision and run every case against it before
+promoting.**
 
-> A fact is material only if the party relying on the clause needs it to be
-> true and has not stated it. An exception nobody has claimed is not a
-> material unknown: if a clause applies unless some condition holds, and
-> neither the letter nor the claim details raises that condition, decide on
-> the clause as it stands. The mere existence of an exception is never a
-> reason you cannot decide.
+```
+gcloud run deploy claim-decoder-api --source backend --region asia-south1 \
+  --max-instances 1 --no-traffic --tag candidate
+CLAIM_API=https://candidate---claim-decoder-api-a5vy5uonga-el.a.run.app \
+  python run_matrix.py h x3
+gcloud run services update-traffic claim-decoder-api \
+  --region asia-south1 --to-latest      # only once it passes
+```
 
-**Two lessons worth keeping regardless of how this is resolved.**
+`run_matrix.py` takes `CLAIM_API` for exactly this. Both regressions on 10 Sep
+went live because each change was shipped and its neighbours checked
+afterwards.
 
-A prompt rule that is correct in isolation can be wrong in aggregate. "Never
-resolve a silence" is right; applied without a burden principle it makes the
-product answer "not enough to judge" to almost everything, which is useless
-in a different way from being confidently wrong.
+**And three runs, never one.** The claim in an earlier revision of this file
+that `h` was well_supported "3 of 3" at `4a43f54` was wrong: it rested on a
+single run, and the real figure is 2 of 3. Adjudication is not deterministic,
+a verdict that moves between runs of identical input is telling you the input
+does not determine it, and a single run is not evidence of anything.
+`python run_matrix.py <case> x3` is the minimum.
 
-And `python run_matrix.py <case> x3` is the minimum before believing any
-prompt change. Adjudication is not deterministic, and a verdict that moves
-between runs of identical input is telling you the input does not determine
-it — that is a finding, not noise. Both prompt changes on 10 Sep looked fine
-on the case they targeted and broke a neighbouring case that was not checked
-until afterwards.
+Case `k` in `run_matrix.py` is the control worth keeping: it is `h` with the
+accident exception actually raised in the letter. A rule that suppresses
+unraised exceptions must still flag `k`. Any future attempt should be judged
+on `h` and `k` together — passing one alone proves nothing.
 ---
 
 ## Known gaps

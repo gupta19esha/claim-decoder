@@ -268,17 +268,8 @@ ADJUDICATOR_PROMPT = """You are adjudicating a health insurance claim dispute in
 
 Decide whether the insurer's rejection is supported by the policy wording shown below.
 
-Return JSON only. The keys are in the order you must think in: enumerate what
-nobody has told you first, decide whether each of those actually changes the
-answer, and only then reach a verdict.
+Return JSON only:
 {{
-  "unknown_facts": [
-    {{
-      "fact": "a fact this dispute could turn on that is stated nowhere in the rejection letter or the claim details, in plain English",
-      "material": true if the answer changes depending on what this fact turns out to be, false if the clause resolves the same way whichever value it takes,
-      "why": "if material, what it would decide; if not material, the reason the outcome is the same either way"
-    }}
-  ],
   "verdict": "well_supported | partially_supported | weakly_supported | insufficient_information",
   "confidence": a number between 0 and 1,
   "deciding_clause_numbers": [the clause numbers that actually decide this, as integers, usually one or two],
@@ -293,10 +284,7 @@ Rules:
 - A clause that merely defines a term is not a deciding clause. The clause that imposes the exclusion, waiting period or limit is.
 - Judge only against the clauses shown. Never assume a provision that is not here.
 - A FACT NOT STATED IN THE REJECTION LETTER OR THE CLAIM DETAILS IS UNKNOWN. It is not false and it is not true. Never resolve a silence in either party's favour. Whether a condition was declared when the policy was applied for, when it was first diagnosed, whether a disclosure was made, whether a document was supplied — if the input does not say, you do not know it, and neither advocate saying it makes it so.
-- An unknown fact only prevents a decision if it could change the answer. If the clause resolves the same way whichever value it takes, decide the case and say why the unknown does not matter.
-- So test every unknown fact before you use it. Take the value most favourable to the insurer, then the value most favourable to the claimant. If the verdict is the same both times, the fact is NOT material: mark it false and decide. Only if the verdict differs is it material.
-- Worked example. A cap of "25% of Sum Insured or Rs.40,000, whichever is lower" against a bill of Rs 95,000, with the Sum Insured unstated: whatever the Sum Insured is, "whichever is lower" puts the cap at no more than Rs 40,000, and Rs 95,000 exceeds that either way. The Sum Insured is unknown and NOT material. Decide the case and say so.
-- The verdict is insufficient_information if and only if at least one unknown fact is material. Then the explanation must name that fact plainly. Do not choose the reading that favours the insurer, and do not choose the reading that favours the claimant. A material unstated fact is the reason you cannot decide, not evidence for either side.
+- If a clause turns on such an unknown fact, the verdict is insufficient_information, and the explanation must name the missing fact plainly. Do not choose the reading that favours the insurer, and do not choose the reading that favours the claimant. An unstated fact is the reason you cannot decide, not evidence for either side.
 - The dates are the exception to nothing: if the policy start date or the admission date is given, use it. Silence about a fact is different from a fact you were given.
 
 What the insurer said:
@@ -395,7 +383,6 @@ def analyse(case: dict):
                 "insurer_weak_point": insurer.get("weakest_point"),
                 "claimant_weak_point": claimant.get("weakest_point"),
             },
-            "unknown_facts": ruling.get("unknown_facts") or [],
             "rejection_type": parsed.get("rejection_type"),
             "considered_count": len(clauses),
             # A letter is always offered, but it is not always an appeal.

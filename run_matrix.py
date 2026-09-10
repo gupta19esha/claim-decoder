@@ -21,12 +21,19 @@ Writes matrix_results.json with the full result of every run.
 """
 
 import json
+import os
 import sys
 import time
 import urllib.error
 import urllib.request
 
-API = "https://claim-decoder-api-793807740598.asia-south1.run.app"
+# CLAIM_API points this at a Cloud Run revision deployed with --no-traffic and
+# a tag, so a prompt change can be run against every case BEFORE it is live.
+# Shipping each change and checking the neighbours afterwards is what put a
+# regression into production twice on 10 Sep.
+API = os.environ.get(
+    "CLAIM_API", "https://claim-decoder-api-793807740598.asia-south1.run.app"
+)
 
 # One rejection text, reused verbatim across a-e and i, so that any difference
 # between those runs is attributable to the claim fields and nothing else.
@@ -68,6 +75,18 @@ STAR_DOCS = (
 NIVA_SPECIFIED = (
     "The claim is denied as the treatment falls within the specified disease "
     "waiting period of 24 months from policy commencement."
+)
+
+# h, with the exception actually raised. Excl02 excepts accidents, and the
+# letter now records the insured saying this was one. The burden rule must
+# treat that as MATERIAL — the case turns on resolving it — where the same
+# exception unraised in h must not be. If k does not flag and h does, the rule
+# is only suppressing exceptions rather than reasoning about who raised them.
+NIVA_SPECIFIED_ACCIDENT = (
+    "The claim is denied as the treatment falls within the specified disease "
+    "waiting period of 24 months from policy commencement. We note the "
+    "insured's contention that the hernia followed a road traffic accident; "
+    "the claim nonetheless stands denied under the waiting period."
 )
 
 HDFC = ("hdfc_ergo", "hdfc_optima_secure")
@@ -114,9 +133,15 @@ CASES = {
     # a verdict either way is free to swing.
     "j": ("UNSTATED FACT: PED diabetes, 77 months of cover, declaration silent",
           HDFC, HDFC_PED_DIABETES, (None, None, "2020-01-15", "2026-06-10")),
+
+    # The control for the burden rule. Same clause and dates as h, but the
+    # accident exception is raised in the letter, so it must flag material.
+    "k": ("EXCEPTION RAISED: h, but the insured says it followed an accident",
+          NIVA, NIVA_SPECIFIED_ACCIDENT,
+          ("Hernia repair", 78000, "2025-03-01", "2026-07-20")),
 }
 
-ORDER = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
+ORDER = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"]
 
 
 def post(path, body):
@@ -180,7 +205,9 @@ def run(key):
               f"cap={c.get('monetary_cap')} pct={c.get('percent_cap')}")
     for u in res.get("unknown_facts") or []:
         mark = "MATERIAL" if u.get("material") else "not material"
-        print(f"     unknown [{mark}]: {u.get('fact')}")
+        role = u.get("role") or "?"
+        by = u.get("raised_by") or "?"
+        print(f"     unknown [{mark}] ({role}, raised by {by}): {u.get('fact')}")
         print(f"               why: {(u.get('why') or '')[:190]}")
     print(f"     why: {(res.get('explanation') or '')[:400]}")
     return {"key": key, "label": label, "sent": body, "result": res,
