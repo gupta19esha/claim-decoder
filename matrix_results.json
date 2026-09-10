@@ -14,7 +14,7 @@
       }
     },
     "result": {
-      "case_id": "bec6acc2-db50-43f2-a0ce-d99babfd79ed",
+      "case_id": "d80dd60a-b479-493b-80f7-f92de9a7020b",
       "status": "complete",
       "verdict": "insufficient_information",
       "confidence": 0.95,
@@ -42,20 +42,32 @@
           "percent_cap": null
         }
       ],
-      "explanation": "More than six years elapsed between the policy start date in January 2020 and the hospital admission in June 2026, which exceeds both the 36-month pre-existing disease waiting period and the 60-month moratorium period. However, coverage after 36 months under the pre-existing disease clause on page 30 requires that the condition was declared at inception, and the moratorium clause on page 37 requires 60 continuous months of coverage without a break. Because the provided records do not state whether the heart condition existed prior to 2020, whether it was declared on the application, or whether the policy was renewed continuously without a break, the claim cannot be adjudicated without these facts.",
-      "what_would_change_it": "Proof of continuous policy renewal without any break from January 15, 2020 through June 10, 2026, along with confirmation of whether the condition was declared at policy inception.",
+      "explanation": "This dispute cannot be decided without knowing whether the policy was renewed continuously without any break between January 2020 and June 2026. If the policy was maintained continuously for over 60 months, the moratorium period clause on page 37 prevents the insurer from rejecting the claim for pre-existing conditions or non-disclosure unless fraud is established. Conversely, if there was a lapse in coverage, the 36-month waiting period under the pre-existing disease clause on page 30 could still apply to exclude the claim. Because the records do not confirm whether policy coverage was continuous, a final decision cannot be reached.",
+      "what_would_change_it": "Proof of continuous policy renewals without any break or lapse from January 15, 2020 to June 10, 2026.",
       "arguments": {
-        "insurer_position": "Under the pre-existing disease exclusion clause on page 30 and definition on page 7, expenses related to a pre-existing condition are excluded until 36 months of continuous coverage elapse, and subsequent coverage requires that the condition was declared at application and accepted by the insurer. Although the policy inception date is January 15, 2020, the claimant has not established that the policy was continuously covered without a break as required by the waiting period definition on page 11, nor that the condition was declared and accepted at inception under the pre-existing disease clause on page 30. Consequently, the claim fails to meet the contractual prerequisites for coverage of a pre-existing condition.",
-        "claimant_position": "The policy commenced on January 15, 2020, and the hospitalization occurred on June 10, 2026, which is more than six years later and well past the 36-month exclusion period outlined in the pre-existing disease clause on page 30. Furthermore, the insurer has not established that the condition met the definition of a pre-existing disease on page 7 prior to policy inception. In addition, because over sixty continuous months have elapsed since inception, the claim is protected under the moratorium period clause on page 37.",
-        "insurer_weak_point": "More than six years elapsed between the policy start date in January 2020 and the hospitalization in June 2026, which well exceeds the 36-month waiting period and 60-month moratorium period, making the rejection unsustainable unless the insurer proves a break in continuous coverage or non-disclosure.",
-        "claimant_weak_point": "The insurer may argue that the policy was not continuously renewed without a break or that the sum insured was recently enhanced, which would restart the waiting period for the enhanced amount under the pre-existing disease clause on page 30."
+        "insurer_position": "Under the pre-existing disease definition on page 7 and the pre-existing disease clause on page 30, treatment for a pre-existing condition is excluded unless 36 months of continuous coverage have elapsed, and any coverage after 36 months remains subject to the disease having been declared at application and accepted by the insurer. The claimant has not established that the condition leading to the angioplasty was not pre-existing or that it was declared and accepted when applying for the policy. Therefore, coverage cannot be extended under the pre-existing disease terms on page 30 without evidence of prior disclosure and acceptance.",
+        "claimant_position": "The policy incepted on 2020-01-15, meaning over six years elapsed before the admission on 2026-06-10, which far exceeds the 36-month waiting period specified in the pre-existing diseases clause on page 30. Furthermore, because the policy has been active for more than sixty continuous months, the claim is protected under the moratorium period clause on page 37 and cannot be contested. The insurer has not established that the condition was a pre-existing disease, nor have they shown any grounds of established fraud or a break in policy coverage.",
+        "insurer_weak_point": "Because the policy commenced on January 15, 2020 and the admission occurred on June 10, 2026, more than 60 continuous months of coverage have elapsed, allowing the claimant to invoke the moratorium period clause on page 37 to argue that the claim cannot be contested on pre-existing disease or non-disclosure grounds absent established fraud.",
+        "claimant_weak_point": "The insurer may argue that there was an unstated break in continuous policy coverage or assert established fraud to attempt to bypass the moratorium period clause."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the policy was continuously renewed without any break or lapse from January 15, 2020 through June 10, 2026.",
+          "material": true,
+          "why": "If coverage was continuous for over 60 months, the moratorium period clause on page 37 prevents the insurer from contesting the claim for pre-existing conditions or non-disclosure without proven fraud. If a break in coverage occurred, the 36-month waiting period under the pre-existing disease clause on page 30 may not have been completed."
+        },
+        {
+          "fact": "Whether the heart condition leading to the angioplasty was diagnosed or treated prior to the policy inception date.",
+          "material": false,
+          "why": "If the policy was continuously active for over 60 months, the moratorium period applies regardless of prior diagnosis, whereas if coverage lapsed, the outcome depends on the continuity of coverage rather than this fact alone."
+        }
+      ],
       "rejection_type": "pre_existing",
       "considered_count": 15,
       "appeal_available": true,
       "letter_type": "substantiate"
     },
-    "seconds": 51
+    "seconds": 66
   },
   {
     "key": "b",
@@ -260,7 +272,7 @@
       }
     },
     "result": {
-      "case_id": "fba6b741-0a50-4aa2-99bf-799c700d8d60",
+      "case_id": "7d7a65d2-78ad-47af-96c6-99beeb325577",
       "status": "complete",
       "verdict": "insufficient_information",
       "confidence": 0.95,
@@ -288,20 +300,32 @@
           "percent_cap": 25.0
         }
       ],
-      "explanation": "The policy limits reimbursement for cataract surgery to 25% of the Sum Insured or Rs. 40,000, whichever is lower, per eye per policy year under the cataract treatment clauses on page 9 and page 22. However, the record does not state the total Sum Insured of the policy or whether the surgery was performed on one eye or both eyes. Without the Sum Insured amount, it is impossible to determine whether 25% of that figure is less than Rs. 40,000, nor can the total capping amount be calculated without knowing the number of eyes treated. Because these crucial facts are missing, the validity of the insurer's partial rejection cannot be decided.",
-      "what_would_change_it": "Checking the policy schedule for the total Sum Insured and verifying the hospital discharge summary to confirm whether one or both eyes were operated on.",
+      "explanation": "The policy's cataract treatment clause on page 9 limits reimbursement to 25% of the Sum Insured or Rs 40,000, whichever is lower, per eye in a policy year. However, the claim details do not state whether the surgery was performed on one eye or on both eyes. If both eyes were operated on during the admission, the policy limit would be up to Rs 80,000 rather than the Rs 40,000 cap applied by the insurer. Without medical records confirming how many eyes were treated, this dispute cannot be decided.",
+      "what_would_change_it": "A discharge summary or hospital record specifying whether the surgery was performed on one eye or both eyes.",
       "arguments": {
-        "insurer_position": "The insurer appropriately capped the claim for cataract surgery because the policy explicitly limits coverage for cataract treatment to 25% of the Sum Insured or Rs. 40,000, whichever is lower, per eye in a policy year, as stated in the cataract treatment clauses on page 9 and page 22. Under the sub-limit clause on page 8, the insurer is not liable for any expenses exceeding this pre-defined limit. Therefore, any amount claimed beyond the applicable cap is excluded from liability.",
-        "claimant_position": "The insurer partially rejected the claim by invoking a sub-limit, but it has not established the policy's Sum Insured or whether the procedure was performed on one eye or both eyes. Under the cataract treatment clause on page 9 and page 22, the capping limit of Rs. 40,000 or 25% of the Sum Insured applies specifically per eye in a policy year. Without proving the number of eyes treated or demonstrating that 25% of the Sum Insured is lower than Rs. 40,000, the insurer has not shown that the claim exceeded the sub-limit specified under the sub-limit clause on page 8.",
-        "insurer_weak_point": "The record does not state the total Sum Insured or whether the surgery was performed on one or both eyes, so it cannot be verified from the available details whether Rs. 40,000 or 25% of the Sum Insured is the lower applicable limit.",
-        "claimant_weak_point": "The insurer will argue that under the cataract treatment clauses on page 9 and page 22, reimbursement for cataract surgery is capped at a maximum of Rs. 40,000 per eye, making expenses above this threshold ineligible for payment."
+        "insurer_position": "Under the cataract treatment clauses on page 9 and page 22, medical expenses for cataract treatment are capped at 25% of the Sum Insured or Rs 40,000, whichever is lower, per eye in a policy year. In accordance with the sub-limit clause on page 8, the insurer is not liable for any costs incurred beyond this pre-defined limit. Consequently, the claim for Rs 95,000 was correctly capped, and the remaining balance exceeding the applicable sub-limit was properly rejected.",
+        "claimant_position": "The insurer rejected the balance of the Rs. 95,000 claim citing a policy sub-limit, but it has not established whether the cataract surgery was performed on a single eye or on both eyes. Under the cataract treatment clause on page 9 and page 22, the limit of Rs. 40,000 or 25% of Sum Insured applies per eye per policy year. Without proving that the treatment was restricted to one eye or showing the policy's total Sum Insured, the insurer has not demonstrated that the sub-limit was properly calculated or exceeded.",
+        "insurer_weak_point": "The claim details do not specify the total Sum Insured or whether the procedure was performed on one eye or both eyes, which could be raised to question the exact calculation of the applicable cap.",
+        "claimant_weak_point": "The insurer may present medical records establishing that the procedure was performed on only one eye, which would enforce the clear per-eye cap of Rs. 40,000 under the policy terms."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the cataract surgery was performed on a single eye or on both eyes",
+          "material": true,
+          "why": "The cataract sub-limit applies per eye per policy year, meaning treatment on both eyes would raise the cap from Rs 40,000 to up to Rs 80,000 and change the payable amount."
+        },
+        {
+          "fact": "The total Sum Insured of the policy",
+          "material": false,
+          "why": "The cap per eye is 25% of the Sum Insured or Rs 40,000, whichever is lower; if the Sum Insured is Rs 160,000 or higher, the per-eye cap remains fixed at Rs 40,000."
+        }
+      ],
       "rejection_type": "sublimit",
       "considered_count": 15,
       "appeal_available": true,
       "letter_type": "substantiate"
     },
-    "seconds": 45
+    "seconds": 96
   },
   {
     "key": "g",
@@ -376,9 +400,9 @@
       }
     },
     "result": {
-      "case_id": "7b4e0b13-a06b-4b7e-88c7-e03aef93325f",
+      "case_id": "b76b7066-35a1-4e73-9e58-66a70f67fa10",
       "status": "complete",
-      "verdict": "well_supported",
+      "verdict": "insufficient_information",
       "confidence": 0.95,
       "deciding_clauses": [
         {
@@ -393,14 +417,21 @@
           "percent_cap": null
         }
       ],
-      "explanation": "The specified disease and procedure waiting period clause on page 22 excludes coverage for hernia repair of any site or type until 24 months of continuous coverage have elapsed. Your policy commenced on March 1, 2025, and your admission occurred on July 20, 2026, which is approximately 16.5 months into the policy. Because 24 full months of continuous coverage had not passed before treatment, the insurer's rejection is supported by the policy wording.",
-      "what_would_change_it": "Proof that the hernia was caused by an accident, or document credit for prior continuous health insurance coverage ported from a previous policy to satisfy the 24-month requirement.",
+      "explanation": "Under the specified disease waiting period clause on page 22, treatments for hernia of any site or type are excluded until the completion of 24 months of continuous coverage. The policy began on March 1, 2025, and admission occurred on July 20, 2026, which is roughly 16 months later. However, the same clause explicitly states that waiting periods are reduced by any prior continuous coverage under IRDAI portability norms. Because the provided documents do not state whether the policyholder has prior coverage credits from porting an earlier policy, a final decision cannot be reached without this missing information.",
+      "what_would_change_it": "Proof of at least 8 months of prior continuous health insurance coverage transferred under IRDAI portability rules to satisfy the 24-month waiting period.",
       "arguments": {
-        "insurer_position": "The specified disease/procedure waiting period clause on page 22 explicitly excludes coverage for hernia of any site or type until 24 months of continuous coverage have elapsed from policy inception. The policy commenced on March 1, 2025, and the insured was admitted for hernia repair on July 20, 2026, which is less than 17 months into the policy period. Because the required time-bound exclusion period defined under the waiting period clause on page 7 had not expired, the denial of the claim is fully justified.",
-        "claimant_position": "The insurer rejected the claim for hernia repair by applying the 24-month waiting period strictly from the policy commencement date of March 1, 2025. However, under the specified disease/procedure waiting period clause on page 22 and the renewal clause on page 5, any applicable waiting periods are reduced to the extent of prior continuous coverage or continuous policy renewals. The insurer has not established that the insured lacks prior continuous coverage or portability credits that would satisfy or reduce the required 24-month period.",
-        "insurer_weak_point": "The insured could argue that the hernia was caused by an accident or that prior continuous coverage exists through portability to reduce the waiting period, neither of which is disproved by the given facts.",
-        "claimant_weak_point": "If the insured has no prior continuous coverage or portability history, the admission date of July 20, 2026 falls within the 24-month waiting period for hernia repair starting from March 1, 2025."
+        "insurer_position": "The policy commenced on March 1, 2025, and the insured was admitted for hernia repair on July 20, 2026, approximately 16 months after the policy inception date. Under the specified disease/procedure waiting period clause on page 22, expenses related to hernia of any site or type are excluded from coverage until the expiry of 24 months of continuous coverage. As the treatment occurred before the completion of the required 24-month waiting period, the insurer correctly denied the claim.",
+        "claimant_position": "The insurer denied the claim on the ground that hernia repair falls within the 24-month specified disease waiting period from the policy commencement date. However, under the specified disease/procedure waiting period clause on page 22 and the renewal clause on page 5, waiting periods are reduced by prior continuous coverage and portability credits, and the insurer has not established that the claimant lacks prior continuous coverage that would satisfy or reduce this 24-month period. Without proving the absence of continuous coverage credit, the insurer cannot validly enforce the exclusion.",
+        "insurer_weak_point": "The insured may argue that they hold prior continuous coverage under applicable IRDAI portability norms, which would reduce the 24-month waiting period by the extent of that prior coverage.",
+        "claimant_weak_point": "The insurer will argue that the policy commencement date is March 1, 2025, making the July 20, 2026 admission date fall within the explicit 24-month exclusion period for hernia repair specified on page 22."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the policyholder has prior continuous insurance coverage or portability credits from a previous policy",
+          "material": true,
+          "why": "If the claimant has at least 8 months of prior continuous coverage credited under portability rules, the 24-month waiting period for hernia repair would be completed and the claim would be payable. If there is no prior coverage, only 16 months have elapsed and the rejection stands."
+        }
+      ],
       "rejection_type": "waiting_period",
       "considered_count": 15,
       "appeal_available": true,
@@ -470,7 +501,7 @@
       }
     },
     "result": {
-      "case_id": "3f00f876-77da-4458-bab1-a633c4ad8c6c",
+      "case_id": "7cc8a221-8ed4-46e0-83c3-9e0bd7b1857e",
       "status": "complete",
       "verdict": "insufficient_information",
       "confidence": 0.95,
@@ -485,22 +516,45 @@
           "waiting_period_days": 1080,
           "monetary_cap": null,
           "percent_cap": null
+        },
+        {
+          "clause_id": "Def. 35",
+          "clause_title": "Pre-Existing Disease",
+          "clause_text": "Def. 35. Pre-Existing Disease means any condition, ailment, injury or disease:\na) that is/are diagnosed by a physician not more than 36 months prior to the date of\ncommencement of the policy issued by the insurer; or\nb) for which medical advice or treatment was recommended by, or received from, a physician,\nnot more than 36 months prior to the date of commencement of the policy.",
+          "insurer": "HDFC Ergo",
+          "source_page": 7,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": null,
+          "percent_cap": null
         }
       ],
-      "explanation": "The pre-existing disease clause on page 30 allows coverage after 36 months only if the condition was declared at the time of application and accepted by the insurer. Although the policy was active for over six years before the admission date of June 10, 2026, the provided records do not state when diabetes mellitus was first diagnosed. Additionally, the records do not reveal whether diabetes was declared on the original proposal form when the policy started on January 15, 2020. Because these essential facts are unstated, this claim dispute cannot be decided based on the information available.",
-      "what_would_change_it": "Proof that diabetes mellitus was first diagnosed after January 15, 2020, or a copy of the proposal form showing it was declared and accepted at policy inception.",
+      "explanation": "This dispute cannot be decided because key facts about the insured's medical history and policy application are missing. Under the pre-existing disease clause on page 30 and the pre-existing disease definition on page 7, treatment for a pre-existing condition is covered after 36 months if the condition was declared at the time of application and accepted by the insurer. Because the policy has been continuously active for over six years since January 15, 2020, the rejection is invalid if diabetes was either diagnosed after policy inception or declared when applying. Without pre-policy medical records and the original proposal form, it is impossible to determine whether the rejection is supported.",
+      "what_would_change_it": "A copy of the original proposal form showing diabetes was declared at application, or medical records proving diabetes was first diagnosed after January 15, 2020.",
       "arguments": {
-        "insurer_position": "Under the pre-existing diseases exclusion on page 30, expenses for treating a pre-existing condition and its direct complications are excluded for 36 months and remain covered after 36 months only if the condition was declared at the time of application and accepted by the insurer. Although the admission date is more than 36 months after the policy commencement date, coverage is not automatic and requires prior declaration and acceptance under the policy terms on page 30 and the pre-existing disease definition on page 7. Because it has not been established that diabetes mellitus was declared and accepted by the insurer at policy inception, the claim for its complications was properly denied.",
-        "claimant_position": "The policy commenced on January 15, 2020, and the hospitalization occurred on June 10, 2026, representing over six years of continuous coverage. Under the pre-existing disease clause on page 30, expenses related to pre-existing conditions and their direct complications are excluded only up to the expiry of 36 months of continuous coverage. Furthermore, the insurer has not established that diabetes mellitus was a diagnosed pre-existing disease prior to policy commencement or that it was undeclared at application.",
-        "insurer_weak_point": "The policy has been active for over six years, well beyond the 36-month waiting period, and the insurer has not produced any evidence showing that diabetes mellitus was diagnosed prior to policy inception or that the insured failed to declare it.",
-        "claimant_weak_point": "The insurer may argue that under the pre-existing disease clause on page 30, coverage after 36 months is subject to the pre-existing condition having been declared at the time of application and accepted by the insurer."
+        "insurer_position": "Under the pre-existing disease clause on page 30, coverage for a pre-existing disease after the expiry of 36 months of continuous coverage is subject to the condition having been declared at the time of application and accepted by the insurer. Although the admission on June 10, 2026, occurred more than 36 months after the policy inception date of January 15, 2020, it has not been established that diabetes mellitus was declared at application and accepted by the insurer. Therefore, expenses for complications arising from diabetes mellitus cannot be admitted under the policy terms.",
+        "claimant_position": "The policy commenced on January 15, 2020, meaning the 36-month waiting period under the pre-existing disease clause on page 30 expired well before the insured's admission on June 10, 2026. Furthermore, the insurer has not shown that diabetes mellitus met the pre-existing disease definition on page 7 at policy inception, or that the treatment is not covered under the ABCD Chronic Care clause on page 69. Therefore, rejecting the claim on the grounds of an excluded pre-existing condition is invalid.",
+        "insurer_weak_point": "The insured will object that over six years of continuous coverage have elapsed since policy inception and the insurer has not produced evidence demonstrating either that diabetes mellitus existed prior to policy commencement or that it was undeclared at the time of application.",
+        "claimant_weak_point": "The insurer may argue that coverage after 36 months under the pre-existing disease clause on page 30 is subject to the condition having been declared at the time of application and accepted by the insurer."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the insured was diagnosed with or treated for diabetes mellitus prior to policy inception on January 15, 2020.",
+          "material": true,
+          "why": "If diabetes developed after the policy commenced, it is not a pre-existing disease and cannot be excluded under the pre-existing disease clause."
+        },
+        {
+          "fact": "Whether diabetes mellitus was declared in the proposal form at the time of application and accepted by the insurer.",
+          "material": true,
+          "why": "Since more than 36 months of continuous coverage have elapsed, a pre-existing condition must be covered if it was declared at application and accepted by the insurer."
+        }
+      ],
       "rejection_type": "pre_existing",
       "considered_count": 15,
       "appeal_available": true,
       "letter_type": "substantiate"
     },
-    "seconds": 70
+    "seconds": 63
   },
   {
     "key": "a#2",
@@ -517,10 +571,10 @@
       }
     },
     "result": {
-      "case_id": "cfd1bcc5-2618-4697-9e05-c0bc1bae6407",
+      "case_id": "665cb79a-0c3e-4621-9003-471b1afa0bb5",
       "status": "complete",
-      "verdict": "weakly_supported",
-      "confidence": 0.85,
+      "verdict": "insufficient_information",
+      "confidence": 0.9,
       "deciding_clauses": [
         {
           "clause_id": "1.a",
@@ -545,20 +599,32 @@
           "percent_cap": null
         }
       ],
-      "explanation": "The insurer rejected your claim stating that the condition is pre-existing and subject to a 36-month waiting period from the policy inception date. However, your policy started on January 15, 2020, and your hospital admission occurred on June 10, 2026, which means over 76 months elapsed before your treatment. This duration far exceeds the 36-month exclusion limit specified in the pre-existing disease clause on page 30, as well as the 60-month limit in the moratorium period clause on page 37. Rejecting the claim solely on the grounds of a 36-month waiting period is therefore unsupported by the timeline provided.",
-      "what_would_change_it": "Proof of a break in your continuous policy renewals between January 15, 2020, and June 10, 2026, which reset the 36-month waiting period.",
+      "explanation": "Your policy start date is January 15, 2020, and your hospital admission was on June 10, 2026, which is over six years later. The pre-existing disease clause on page 30 requires a 36-month waiting period of continuous coverage, and the moratorium period clause on page 37 protects continuous policies over 60 months from contestability. However, the provided details do not confirm whether your policy was renewed continuously without any break during these six years. Without confirmation of uninterrupted coverage, it is impossible to decide whether the 36-month waiting period has expired or was reset by a policy break.",
+      "what_would_change_it": "Renewal receipts or a policy history statement showing continuous, unbroken policy coverage from January 15, 2020, to June 10, 2026.",
       "arguments": {
-        "insurer_position": "Under the pre-existing diseases clause on page 30 and the pre-existing disease definition on page 7, coverage for a pre-existing condition after 36 months is strictly subject to the condition having been declared at the time of application and accepted by the insurer. The policyholder has not established that the heart condition requiring angioplasty was declared and accepted at inception, nor that continuous coverage was maintained without any break or sum insured enhancement. Consequently, the claimant has failed to prove that the treatment qualifies for coverage under the policy terms.",
-        "claimant_position": "The policy incepted on January 15, 2020, and treatment occurred on June 10, 2026, meaning more than 76 months of coverage elapsed before admission, which far exceeds the 36-month exclusion limit under the pre-existing disease clause on page 30. Furthermore, under the moratorium period clause on page 37, the policy has been active for over 60 continuous months, so the claim cannot be contested on pre-existing condition grounds unless the insurer establishes fraud, which the insurer has not shown. Therefore, denying the claim based on a 36-month pre-existing disease exclusion period is unfounded.",
-        "insurer_weak_point": "The admission date of June 10, 2026, occurred more than six years after the policy start date of January 15, 2020, which exceeds both the 36-month waiting period on page 30 and the 60-month moratorium period on page 37.",
-        "claimant_weak_point": "The insurer may argue that under the pre-existing disease clause on page 30, post-36-month coverage requires the condition to have been declared at application and accepted by the insurer, or that there was a break in continuous coverage impacting the calculation of the moratorium period."
+        "insurer_position": "Under the pre-existing diseases clause on page 30, expenses relating to a pre-existing disease are excluded for the first 36 months of continuous coverage, and subsequent coverage remains subject to the condition having been declared at the time of application and accepted by the insurer. Although more than 36 months elapsed between the policy start date in January 2020 and the admission in June 2026, the insured has not established that the condition was declared upon application or that coverage was continuously maintained without a break. Therefore, the pre-existing disease exclusion under the policy terms on page 7 and page 30 remains applicable.",
+        "claimant_position": "The claimant's policy commenced on January 15, 2020, meaning over six years of coverage elapsed prior to the June 10, 2026 admission date, which fully satisfies the 36-month exclusion period under the pre-existing diseases clause on page 30. Furthermore, under the moratorium period clause on page 37, a policy active for more than sixty continuous months cannot be contested on grounds of non-disclosure unless fraud is established, which the insurer has not shown. Finally, the insurer has not established that the heart condition met the criteria of a pre-existing disease prior to policy inception under the pre-existing disease definition on page 7.",
+        "insurer_weak_point": "The insured can argue that over six years of coverage elapsed between policy inception in January 2020 and treatment in June 2026, exceeding both the 36-month waiting period on page 30 and the 60-month moratorium period on page 37 which bars contestability absent established fraud.",
+        "claimant_weak_point": "The insurer may argue that there was a break in continuous policy coverage between 2020 and 2026, or that a recent sum insured enhancement occurred to which a new waiting period applies."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the policy was continuously maintained without any break in coverage between January 15, 2020, and June 10, 2026.",
+          "material": true,
+          "why": "If the policy was renewed continuously for over 6 years, the 36-month waiting period under the pre-existing diseases clause on page 30 has expired. If there was a break in coverage, the 36-month waiting period may have reset and still be active."
+        },
+        {
+          "fact": "Whether the heart condition requiring angioplasty was diagnosed or treated within the 36 months prior to January 15, 2020.",
+          "material": true,
+          "why": "If the condition first developed after the policy started in January 2020, it is not a pre-existing disease and the 36-month waiting period clause on page 30 does not apply at all."
+        }
+      ],
       "rejection_type": "pre_existing",
       "considered_count": 15,
       "appeal_available": true,
-      "letter_type": "appeal"
+      "letter_type": "substantiate"
     },
-    "seconds": 65
+    "seconds": 61
   },
   {
     "key": "a#3",
@@ -575,10 +641,10 @@
       }
     },
     "result": {
-      "case_id": "c00388a7-5520-4058-ae79-f830bb1ca6d3",
+      "case_id": "7680fb51-ffb3-4c18-9f5f-b8bdcf338258",
       "status": "complete",
       "verdict": "insufficient_information",
-      "confidence": 0.95,
+      "confidence": 0.9,
       "deciding_clauses": [
         {
           "clause_id": "1.a",
@@ -603,20 +669,290 @@
           "percent_cap": null
         }
       ],
-      "explanation": "The pre-existing diseases clause on page 30 excludes pre-existing conditions for 36 months of continuous coverage, and coverage beyond 36 months requires that the condition was declared during application and accepted by the insurer. Additionally, the moratorium period clause on page 37 prevents the insurer from contesting a claim for non-disclosure after 60 continuous months of coverage. However, the record does not state whether the policy was continuously renewed without a break from January 2020 to June 2026, nor whether the heart condition was diagnosed prior to policy inception and disclosed. Because the outcome depends on whether continuous coverage was maintained without a break, the dispute cannot be decided without these missing facts.",
-      "what_would_change_it": "Proof of continuous policy renewals without any break from January 15, 2020, to June 10, 2026.",
+      "explanation": "The claim cannot be decided without knowing whether the policy was maintained continuously without a break from January 2020 to June 2026, and whether the heart condition existed prior to policy inception. Under the moratorium period clause on page 37, once a policy has completed sixty continuous months of coverage, an insurer cannot reject a claim based on pre-existing conditions or non-disclosure unless established fraud is proven. If the policy ran continuously for those six-plus years, the rejection is unsupported, but if there was a lapse in coverage, the 36-month pre-existing disease clause on page 30 may apply.",
+      "what_would_change_it": "Renewal receipts or policy schedules proving that the policy was continuously active without a break from January 15, 2020 through June 10, 2026.",
       "arguments": {
-        "insurer_position": "Under the pre-existing disease clause on page 30 and the pre-existing disease definition on page 7, expenses related to a pre-existing disease are excluded for 36 months, and any subsequent coverage remains subject to the condition having been declared at the time of application and accepted by the insurer. Furthermore, under the waiting period definition on page 11, coverage requires continuous renewal without a break. Because the claimant has not established that the condition was declared and accepted or that continuous coverage was maintained without break, the rejection is justified under the policy terms.",
-        "claimant_position": "With a policy commencement date of January 15, 2020, and hospitalization on June 10, 2026, over six years of coverage have elapsed, satisfying the 36-month requirement under the pre-existing diseases clause on page 30. The insurer has not shown that there was any break in policy continuity that would reset this timeframe. Furthermore, because more than 60 continuous months have passed since inception, the claim is also protected under the moratorium period clause on page 37.",
-        "insurer_weak_point": "More than six years elapsed between the policy start date of January 15, 2020, and the admission date of June 10, 2026, meaning the 36-month waiting period has well expired and the 60-month moratorium period clause on page 37 may prevent the insurer from contesting the claim.",
-        "claimant_weak_point": "The insurer may argue that a break in policy continuity occurred which reset the waiting period, or that the pre-existing disease was undeclared at inception and constitutes fraud under the moratorium exception."
+        "insurer_position": "Under the pre-existing diseases clause on page 30, coverage for a pre-existing disease even after 36 months of continuous coverage remains strictly subject to the condition having been declared at the time of application and accepted by the insurer. Although the policy commenced in January 2020, the claimant has not established that the condition requiring angioplasty was declared at inception, nor has it been shown that continuous coverage was maintained without a break. Therefore, under the pre-existing disease definition on page 7 and the exclusion provisions on page 30, coverage cannot be extended for this claim.",
+        "claimant_position": "The policy commenced on January 15, 2020, and the hospitalization occurred on June 10, 2026, meaning over 76 months of coverage elapsed, which far exceeds the 36-month exclusion period under the pre-existing disease clause on page 30. Furthermore, under the moratorium period clause on page 37, the policy has completed over sixty continuous months, making the claim uncontestable on grounds of non-disclosure or pre-existing conditions absent established fraud, which the insurer has not shown. Additionally, the insurer has not established that the condition requiring angioplasty met the criteria of a pre-existing disease prior to policy inception under the pre-existing disease definition on page 7.",
+        "insurer_weak_point": "The claimant will point out that more than six years elapsed between the policy start date in January 2020 and the hospitalization in June 2026, far exceeding 36 months, and that the insurer has not established that the condition existed prior to policy inception or was non-disclosed.",
+        "claimant_weak_point": "The insurer may argue that under the pre-existing disease clause on page 30, coverage after 36 months is conditional upon the pre-existing disease having been declared at the time of application and accepted by the insurer, or that there was a break in continuous policy coverage."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the policy was continuously renewed without any break from January 15, 2020 to June 10, 2026.",
+          "material": true,
+          "why": "If coverage was continuous for over 60 months, the moratorium period clause on page 37 prevents the insurer from rejecting claims for pre-existing conditions or non-disclosure absent fraud. If there was a break in coverage, the 36-month waiting period on page 30 might still apply."
+        },
+        {
+          "fact": "Whether the condition requiring angioplasty was diagnosed or treated within 36 months prior to the policy start date of January 15, 2020.",
+          "material": true,
+          "why": "If the condition arose only after policy inception, the pre-existing disease exclusion on page 30 does not apply at all."
+        }
+      ],
       "rejection_type": "pre_existing",
       "considered_count": 15,
       "appeal_available": true,
       "letter_type": "substantiate"
     },
-    "seconds": 51
+    "seconds": 58
+  },
+  {
+    "key": "f#2",
+    "label": "sub-limit, Star Arogya Sanjeevani, cataract",
+    "sent": {
+      "rejection_text": "Your claim for cataract surgery has been partially settled. As per policy terms the amount payable for cataract is subject to a sub-limit. The balance amount is not payable and stands deducted.",
+      "insurer_id": "star_health",
+      "policy_id": "star_arogya_sanjeevani",
+      "claim": {
+        "treatment": "Cataract surgery",
+        "amount": 95000,
+        "policy_start_date": "2023-04-01",
+        "admission_date": "2026-05-20"
+      }
+    },
+    "result": {
+      "case_id": "5c4b0d30-8c00-4cb0-9119-1c44d02c44dc",
+      "status": "complete",
+      "verdict": "well_supported",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "3",
+          "clause_title": "Cataract Treatment",
+          "clause_text": "3. Cataract Treatment: The Company shall\nindemnify medical expenses incurred for\ntreatment of Cataract, subject to a limit\nof 25% of Sum Insured or Rs.40,000/-,\nwhichever is lower, per each eye in one\nPolicy Year.",
+          "insurer": "Star Health",
+          "source_page": 9,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": 40000,
+          "percent_cap": 25.0
+        },
+        {
+          "clause_id": null,
+          "clause_title": "Cataract Treatment",
+          "clause_text": "Up to 25% of Sum Insured or Rs.40,000/-, whichever is lower, per eye, under one\nCataract Treatment\npolicy year.",
+          "insurer": "Star Health",
+          "source_page": 22,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": 40000,
+          "percent_cap": 25.0
+        }
+      ],
+      "explanation": "The insurer's partial rejection is supported by the policy wording. Under the cataract treatment clauses on page 9 and page 22, coverage for cataract surgery is capped at 25% of the sum insured or Rs. 40,000, whichever is lower, per eye in a policy year. Even if surgery was performed on both eyes, the maximum allowable limit would be Rs. 80,000, which is still less than the total bill of Rs. 95,000. Because the claim exceeds the maximum possible cap under the policy, the insurer is entitled to cap payment under the sub-limit provision.",
+      "what_would_change_it": "The decision would change if the policyholder can show an endorsement or addendum that specifically removed the sub-limit cap for cataract treatments from their policy.",
+      "arguments": {
+        "insurer_position": "Under the sub-limit provision on page 8, the insurer is not liable for any expenses exceeding the pre-defined policy cap. Furthermore, the cataract treatment clauses on page 9 and page 22 explicitly restrict coverage for cataract surgery to a maximum of Rs. 40,000 or 25% of the Sum Insured, whichever is lower, per eye in a policy year. Therefore, the claim of Rs. 95,000 was properly capped in accordance with these policy terms.",
+        "claimant_position": "The insurer partially rejected the claim based on a sub-limit, but under the cataract treatment clauses on page 9 and page 22, the cap of 25% of Sum Insured or Rs. 40,000 applies per eye per policy year. The insurer has not shown whether the surgery was performed on one eye or both eyes, nor has it established the total Sum Insured required to calculate the applicable threshold. Without proving these material facts, the insurer cannot establish that the claim is capped at a single per-eye limit under the sub-limit clause on page 8.",
+        "insurer_weak_point": "The policy documents provided do not specify the total Sum Insured or whether the surgery was performed on one or both eyes, leaving open the argument regarding the exact mathematical calculation of the cap.",
+        "claimant_weak_point": "The insurer will argue that the policy explicitly imposes a hard cap of Rs. 40,000 per eye for cataract treatment, which strictly limits their liability regardless of the total expenses incurred."
+      },
+      "unknown_facts": [
+        {
+          "fact": "Whether the cataract surgery was performed on one eye or both eyes",
+          "material": false,
+          "why": "The policy caps cataract expenses at Rs. 40,000 per eye. Even if both eyes were operated on, the maximum possible coverage is Rs. 80,000, which is still lower than the Rs. 95,000 claim amount, so the sub-limit cap applies either way."
+        },
+        {
+          "fact": "The total Sum Insured of the policy",
+          "material": false,
+          "why": "Because the limit is 25% of the Sum Insured or Rs. 40,000, whichever is lower, the maximum cap per eye can never exceed Rs. 40,000 regardless of how high the total Sum Insured is."
+        }
+      ],
+      "rejection_type": "sublimit",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 47
+  },
+  {
+    "key": "f#3",
+    "label": "sub-limit, Star Arogya Sanjeevani, cataract",
+    "sent": {
+      "rejection_text": "Your claim for cataract surgery has been partially settled. As per policy terms the amount payable for cataract is subject to a sub-limit. The balance amount is not payable and stands deducted.",
+      "insurer_id": "star_health",
+      "policy_id": "star_arogya_sanjeevani",
+      "claim": {
+        "treatment": "Cataract surgery",
+        "amount": 95000,
+        "policy_start_date": "2023-04-01",
+        "admission_date": "2026-05-20"
+      }
+    },
+    "result": {
+      "case_id": "433f7425-aa1a-4b07-8663-22df3e9485e8",
+      "status": "complete",
+      "verdict": "well_supported",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "3",
+          "clause_title": "Cataract Treatment",
+          "clause_text": "3. Cataract Treatment: The Company shall\nindemnify medical expenses incurred for\ntreatment of Cataract, subject to a limit\nof 25% of Sum Insured or Rs.40,000/-,\nwhichever is lower, per each eye in one\nPolicy Year.",
+          "insurer": "Star Health",
+          "source_page": 9,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": 40000,
+          "percent_cap": 25.0
+        },
+        {
+          "clause_id": null,
+          "clause_title": "Cataract Treatment",
+          "clause_text": "Up to 25% of Sum Insured or Rs.40,000/-, whichever is lower, per eye, under one\nCataract Treatment\npolicy year.",
+          "insurer": "Star Health",
+          "source_page": 22,
+          "exclusion_code": null,
+          "waiting_period_days": null,
+          "monetary_cap": 40000,
+          "percent_cap": 25.0
+        }
+      ],
+      "explanation": "The cataract treatment clauses on page 9 and page 22 cap medical expenses for cataract surgery at Rs 40,000 or 25% of the Sum Insured, whichever is lower, per eye in a policy year. Even if the procedure was performed on both eyes, the maximum policy coverage would be Rs 80,000, which is less than the claimed amount of Rs 95,000. Therefore, the insurer is fully within its rights to apply a sub-limit and partially settle the claim rather than paying the full bill.",
+      "what_would_change_it": "A specific endorsement or rider in your policy schedule that explicitly removes or increases the sub-limit cap for cataract surgery.",
+      "arguments": {
+        "insurer_position": "Under the cataract treatment clauses on page 9 and page 22, expenses incurred for cataract treatment are subject to a specific cap of 25% of the sum insured or Rs 40,000, whichever is lower, per eye in a policy year. Furthermore, the sub-limit clause on page 8 specifies that the insurer is not liable to pay any amount exceeding a pre-defined limit. Therefore, capping the payable amount for the Rs 95,000 cataract surgery claim is fully compliant with the policy terms.",
+        "claimant_position": "The insurer partially settled the claim citing a sub-limit, but the cataract treatment clauses on page 9 and page 22 explicitly state that the cap of Rs. 40,000 or 25% of the Sum Insured applies per eye. The insurer has not established that the surgery was performed on only a single eye rather than both eyes, nor has it demonstrated the Sum Insured figure used to determine the applicable limit. Consequently, the insurer has failed to justify the reduction, and the full expenses should be indemnified subject only to the 5% co-payment under the co-payment clause on page 10.",
+        "insurer_weak_point": "The claim details do not specify the total Sum Insured or whether the surgery was performed on one eye or both eyes, which could affect the precise calculation of the applicable sub-limit.",
+        "claimant_weak_point": "The insurer may present medical records showing that the cataract surgery was performed on only one eye, which would legitimately restrict policy coverage to a maximum of Rs. 40,000 under the cataract treatment sub-limit clauses on page 9 and page 22."
+      },
+      "unknown_facts": [
+        {
+          "fact": "Whether the cataract surgery was performed on one eye or both eyes",
+          "material": false,
+          "why": "Even if surgery was performed on both eyes, the maximum cap of Rs 40,000 per eye limits total payout to at most Rs 80,000, which is still lower than the Rs 95,000 claimed."
+        },
+        {
+          "fact": "The total Sum Insured under the policy",
+          "material": false,
+          "why": "The policy caps coverage at Rs 40,000 or 25% of the Sum Insured, whichever is lower, so the cap per eye can never exceed Rs 40,000 regardless of the Sum Insured."
+        }
+      ],
+      "rejection_type": "sublimit",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 57
+  },
+  {
+    "key": "h#2",
+    "label": "specified disease waiting period, Niva ReAssure, hernia",
+    "sent": {
+      "rejection_text": "The claim is denied as the treatment falls within the specified disease waiting period of 24 months from policy commencement.",
+      "insurer_id": "niva_bupa",
+      "policy_id": "niva_reassure",
+      "claim": {
+        "treatment": "Hernia repair",
+        "amount": 78000,
+        "policy_start_date": "2025-03-01",
+        "admission_date": "2026-07-20"
+      }
+    },
+    "result": {
+      "case_id": "70708940-4565-4cbb-83ef-4f46ae02c117",
+      "status": "complete",
+      "verdict": "insufficient_information",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "6.2",
+          "clause_title": "Specified disease/procedure waiting period",
+          "clause_text": "a. Expenses related to the treatment of the listed conditions, surgeries/treatments shall be excluded until the expiry of 24 months of\ncontinuous coverage after the date of inception of the first Policy. This exclusion shall not be applicable for claims arising due to an\nAccident (covered from day 1) or Cancer (covered after 30-days waiting period).\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase.\nc. If any of the specified disease/procedure falls under the waiting period specified for pre-Existing diseases, then the longer of the\ntwo waiting periods shall apply.\nd. The waiting period for listed conditions shall apply even if contracted after the Policy or declared and accepted without a specific\nexclusion.\ne. If the Insured Person is continuously covered without any break as defined under the applicable norms on portability stipulated by\nIRDAI then waiting period for the same would be reduced to the extent of prior coverage.\nf. List of specific diseases/procedures:\na. Pancreatitis and stones in biliary and urinary system\nb. Cataract, glaucoma and retinal detachment\nc. Hyperplasia of prostate, hydrocele and spermatocele\nd. Prolapse uterus or cervix, endometriosis, Fibroids, Polycystic ovarian disease (PCOD), hysterectomy (unless necessitated by\nMalignancy)\ne. Hemorrhoids, fissure, fistula or abscess of anal and rectal region\nf. Hernia of any site or type,\ng. Osteoarthritis, joint replacement, osteoporosis, systemic connective tissue disorders, inflammatory polyarthropathies,\nRheumatoid Arthritis, gout, intervertebral disc disorders, arthroscopic surgeries for ligament repair\nh. Varicose veins of lower extremities\ni. All internal or external benign neoplasms/ tumours, cyst, sinus, polyps, nodules, mass or lump\nj. Ulcer, erosion or varices of gastro intestinal tract\nk. Surgical treatment for diseases of middle ear and mastoid (including otitis media, cholesteatoma, perforation of tympanic\nmembrane), Tonsils and adenoids, nasal septum and nasal sinuses",
+          "insurer": "Niva Bupa",
+          "source_page": 22,
+          "exclusion_code": "Excl02",
+          "waiting_period_days": 720,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The specified disease waiting period clause on page 22 excludes coverage for all types of hernia until 24 months of continuous coverage have passed. Between the policy start date of March 1, 2025, and the admission date of July 20, 2026, only about 16.5 months elapsed. However, this clause explicitly waives the waiting period for claims arising from an accident and reduces the period for policies ported with prior continuous coverage. Because the record does not state whether the hernia was caused by an accident or whether the policy was ported with prior coverage credit, this claim cannot be decided without those facts.",
+      "what_would_change_it": "Medical records showing the hernia resulted from an accident, or proof of at least 8 months of continuous prior health insurance coverage ported into this policy.",
+      "arguments": {
+        "insurer_position": "The claim for hernia repair was incurred on July 20, 2026, under a policy initiated on March 1, 2025, representing less than 24 months of continuous coverage. Under the specified disease/procedure waiting period clause on page 22, expenses for hernia of any site or type are excluded from coverage until the expiry of 24 months of continuous coverage from the date of inception of the first policy. Consequently, the requested treatment falls squarely within the applicable time-bound exclusion.",
+        "claimant_position": "Under the specified disease/procedure waiting period clause on page 22, the 24-month waiting period for hernia repair is reduced by any prior continuous coverage under portability norms and does not apply to claims arising from an accident. The insurer denied the claim strictly based on the policy commencement date but has not established that the claimant lacked prior continuous coverage or that the treatment was not due to an accident. Without demonstrating that these exceptions do not apply, the insurer has not established grounds for denying the claim.",
+        "insurer_weak_point": "The claimant may argue that they possessed continuous prior coverage under portability norms as noted in the specified disease/procedure waiting period clause on page 22, which would reduce the waiting period, though no prior policy details or portability records have been established.",
+        "claimant_weak_point": "The insurer will argue that only about 16.5 months elapsed between the policy commencement date of March 1, 2025, and the admission date of July 20, 2026, placing the hernia repair well within the explicit 24-month specified disease waiting period."
+      },
+      "unknown_facts": [
+        {
+          "fact": "Whether the hernia repair was necessitated by an accident",
+          "material": true,
+          "why": "If the hernia was caused by an accident, the specified disease waiting period clause explicitly waives the 24-month waiting period and covers treatment from day one."
+        },
+        {
+          "fact": "Whether the policyholder ported continuous prior health insurance coverage of at least 8 months into this policy",
+          "material": true,
+          "why": "If the policy was ported with prior continuous coverage under regulatory norms, that time reduces the 24-month waiting period, which would make the 16.5 months served sufficient."
+        }
+      ],
+      "rejection_type": "waiting_period",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 58
+  },
+  {
+    "key": "h#3",
+    "label": "specified disease waiting period, Niva ReAssure, hernia",
+    "sent": {
+      "rejection_text": "The claim is denied as the treatment falls within the specified disease waiting period of 24 months from policy commencement.",
+      "insurer_id": "niva_bupa",
+      "policy_id": "niva_reassure",
+      "claim": {
+        "treatment": "Hernia repair",
+        "amount": 78000,
+        "policy_start_date": "2025-03-01",
+        "admission_date": "2026-07-20"
+      }
+    },
+    "result": {
+      "case_id": "f6745fbc-286c-43d8-b09f-c3dea5f516a6",
+      "status": "complete",
+      "verdict": "insufficient_information",
+      "confidence": 0.95,
+      "deciding_clauses": [
+        {
+          "clause_id": "6.2",
+          "clause_title": "Specified disease/procedure waiting period",
+          "clause_text": "a. Expenses related to the treatment of the listed conditions, surgeries/treatments shall be excluded until the expiry of 24 months of\ncontinuous coverage after the date of inception of the first Policy. This exclusion shall not be applicable for claims arising due to an\nAccident (covered from day 1) or Cancer (covered after 30-days waiting period).\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase.\nc. If any of the specified disease/procedure falls under the waiting period specified for pre-Existing diseases, then the longer of the\ntwo waiting periods shall apply.\nd. The waiting period for listed conditions shall apply even if contracted after the Policy or declared and accepted without a specific\nexclusion.\ne. If the Insured Person is continuously covered without any break as defined under the applicable norms on portability stipulated by\nIRDAI then waiting period for the same would be reduced to the extent of prior coverage.\nf. List of specific diseases/procedures:\na. Pancreatitis and stones in biliary and urinary system\nb. Cataract, glaucoma and retinal detachment\nc. Hyperplasia of prostate, hydrocele and spermatocele\nd. Prolapse uterus or cervix, endometriosis, Fibroids, Polycystic ovarian disease (PCOD), hysterectomy (unless necessitated by\nMalignancy)\ne. Hemorrhoids, fissure, fistula or abscess of anal and rectal region\nf. Hernia of any site or type,\ng. Osteoarthritis, joint replacement, osteoporosis, systemic connective tissue disorders, inflammatory polyarthropathies,\nRheumatoid Arthritis, gout, intervertebral disc disorders, arthroscopic surgeries for ligament repair\nh. Varicose veins of lower extremities\ni. All internal or external benign neoplasms/ tumours, cyst, sinus, polyps, nodules, mass or lump\nj. Ulcer, erosion or varices of gastro intestinal tract\nk. Surgical treatment for diseases of middle ear and mastoid (including otitis media, cholesteatoma, perforation of tympanic\nmembrane), Tonsils and adenoids, nasal septum and nasal sinuses",
+          "insurer": "Niva Bupa",
+          "source_page": 22,
+          "exclusion_code": "Excl02",
+          "waiting_period_days": 720,
+          "monetary_cap": null,
+          "percent_cap": null
+        }
+      ],
+      "explanation": "The specified disease waiting period clause on page 22 excludes hernia repairs for 24 months from the policy start date. However, this same clause explicitly waives the waiting period for injuries caused by an accident and reduces the waiting period for any prior continuous coverage earned through portability. Since only 16 months have elapsed under this policy, the claim cannot be decided without knowing whether the hernia was caused by an accident or if the policyholder holds credit for prior continuous insurance.",
+      "what_would_change_it": "Medical records showing the hernia was caused by an accident, or proof of at least 8 months of prior continuous health insurance coverage ported into this policy.",
+      "arguments": {
+        "insurer_position": "The treatment for hernia repair occurred on July 20, 2026, which is within 17 months of the policy start date of March 1, 2025. Under the specified disease/procedure waiting period clause on page 22, expenses related to hernia of any site or type are excluded from coverage until the expiry of 24 months of continuous coverage. Because the mandatory 24-month waiting period had not elapsed at the time of admission, the claim was properly excluded.",
+        "claimant_position": "Under the specified disease/procedure waiting period clause on page 22, the 24-month exclusion for listed conditions does not apply to claims arising from an accident and is subject to reduction for prior continuous coverage under portability norms. The insurer has not established that the claimant's hernia repair was unrelated to an accident, nor has it shown that the claimant lacks prior continuous coverage that would reduce or fulfill the waiting period. Consequently, denying the claim solely based on the elapsed time from policy inception without establishing these key facts is unjustified.",
+        "insurer_weak_point": "The insured could argue that the hernia was caused by an accident, which is exempted from the 24-month waiting period under the specified disease/procedure waiting period clause on page 22, or that prior continuous coverage credits apply under portability norms, though the record does not establish either circumstance.",
+        "claimant_weak_point": "The insurer will argue that hernia repair is explicitly listed as a specified procedure under the 24-month waiting period on page 22, and the treatment occurred approximately 16 months after the policy start date."
+      },
+      "unknown_facts": [
+        {
+          "fact": "Whether the hernia repair was necessitated by an accident",
+          "material": true,
+          "why": "If the hernia was caused by an accident, the 24-month waiting period is waived from day one and the claim must be paid; if it was not caused by an accident, the waiting period applies."
+        },
+        {
+          "fact": "Whether the insured had prior continuous health insurance coverage that was ported into this policy",
+          "material": true,
+          "why": "If the insured ported from a previous policy with at least 8 months of continuous coverage, the 24-month waiting period would be satisfied and the claim would be payable."
+        }
+      ],
+      "rejection_type": "waiting_period",
+      "considered_count": 15,
+      "appeal_available": true,
+      "letter_type": "substantiate"
+    },
+    "seconds": 54
   },
   {
     "key": "j#2",
@@ -633,10 +969,10 @@
       }
     },
     "result": {
-      "case_id": "1f30d3a1-b9a3-467f-913c-003e2ed0551e",
+      "case_id": "1308ac51-e6de-486d-8f97-cf8adbdfe76c",
       "status": "complete",
       "verdict": "insufficient_information",
-      "confidence": 0.9,
+      "confidence": 0.95,
       "deciding_clauses": [
         {
           "clause_id": "1.a",
@@ -650,20 +986,32 @@
           "percent_cap": null
         }
       ],
-      "explanation": "The pre-existing disease clause on page 30 excludes coverage for pre-existing conditions during a 36-month waiting period and requires that any pre-existing condition be declared at application and accepted by the insurer for coverage after 36 months. While more than 36 months have passed between your policy start date of January 15, 2020, and your hospital admission on June 10, 2026, the claim details do not state when your diabetes was first diagnosed. Furthermore, it is not stated whether diabetes was declared on your proposal form when you applied for the policy. Because coverage after 36 months depends on whether the condition existed before the policy started and whether it was declared and accepted at inception, this claim cannot be decided without these missing details.",
-      "what_would_change_it": "Medical records showing when diabetes was first diagnosed and a copy of the original policy proposal form showing whether it was declared at inception.",
+      "explanation": "Your policy was continuously active for over six years before your admission in June 2026, which is well beyond the 36-month waiting period specified in the pre-existing disease clause on page 30. However, the dispute cannot be decided because critical facts are missing from the claim record. Specifically, it is not stated whether your diabetes was diagnosed prior to your policy start date in January 2020, or whether you declared it on your original application form. If diabetes was diagnosed after the policy started, or if it was declared at inception and accepted by the insurer, your claim would be covered; without these facts, a decision cannot be made.",
+      "what_would_change_it": "Medical records showing the first diagnosis date of your diabetes, along with your original policy proposal form showing whether diabetes was declared when you applied.",
       "arguments": {
-        "insurer_position": "Under the pre-existing disease clause on page 30, coverage for expenses related to a pre-existing disease after the 36-month waiting period is strictly subject to the condition having been declared at the time of application and accepted by the insurer. It has not been established whether diabetes mellitus met the pre-existing disease definition on page 7 prior to policy inception, nor has the insurer shown that the condition was undeclared. Consequently, without proof that the condition was declared and accepted at inception, entitlement to post-36-month coverage under the policy remains unproven.",
-        "claimant_position": "The insurer has not established that diabetes mellitus meets the definition of a pre-existing condition under the pre-existing disease definition clause on page 7. Furthermore, even if it were a pre-existing disease, the policy was incepted on January 15, 2020, and the hospitalization occurred on June 10, 2026, which far exceeds the 36-month maximum waiting period specified in the pre-existing diseases clause on page 30. Additionally, the ABCD chronic care clause on page 69 explicitly covers hospitalization expenses for diabetes after a 30-day waiting period.",
-        "insurer_weak_point": "The hospitalization occurred in June 2026, over six years after the policy start date in January 2020, meaning the 36-month waiting period under the pre-existing disease clause on page 30 has elapsed, and there is no evidence that diabetes was a pre-existing condition or that it was withheld at inception.",
-        "claimant_weak_point": "The insurer may argue that coverage after 36 months for a pre-existing disease is subject to the condition having been declared at the time of application and accepted by the insurer under sub-clause iv of the pre-existing diseases clause on page 30."
+        "insurer_position": "Under the pre-existing disease clause on page 30, expenses related to a pre-existing condition and its direct complications are covered after the 36-month waiting period only if the condition was declared at the time of application and accepted by the insurer. Although the policy was in force for over 36 months prior to the June 2026 admission date, the claimant has not established that diabetes mellitus was declared at inception and accepted by the insurer. Consequently, the claimant has failed to demonstrate that the criteria for post-36-month coverage under the pre-existing disease clause on page 30 have been met.",
+        "claimant_position": "The policy has been continuously active since January 15, 2020, meaning the admission on June 10, 2026, occurred well after the expiry of the 36-month waiting period specified in the pre-existing disease clause on page 30. Additionally, the insurer has not established that diabetes mellitus was diagnosed or treated prior to policy inception under the pre-existing disease definition on page 7, nor have they shown that it was undeclared at the time of application. Consequently, the insurer cannot deny the claim under the pre-existing disease exclusion.",
+        "insurer_weak_point": "The policy was in force for over six years prior to admission, well beyond the 36-month waiting period, and the insurer has not established that diabetes mellitus was a pre-existing condition prior to policy inception or that it was undeclared.",
+        "claimant_weak_point": "The insurer may argue that under the pre-existing disease clause on page 30, post-36-month coverage is conditional upon the condition having been declared at the time of application, and assert that non-disclosure invalidates the claim if diabetes was existing prior to inception."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether diabetes mellitus was diagnosed or treated prior to the policy inception date of January 15, 2020",
+          "material": true,
+          "why": "If diabetes developed after policy inception, it is not a pre-existing disease and the exclusion does not apply at all. If it existed prior to inception, coverage after 36 months depends on whether it was declared and accepted."
+        },
+        {
+          "fact": "Whether diabetes mellitus was declared in the policy application/proposal form and accepted by the insurer at inception",
+          "material": true,
+          "why": "Under the pre-existing disease clause on page 30, coverage after 36 months for a pre-existing condition requires that the condition was declared at application and accepted by the insurer. If declared and accepted, the claim is payable after 36 months; if not declared, the claim is not covered under that provision."
+        }
+      ],
       "rejection_type": "pre_existing",
       "considered_count": 15,
       "appeal_available": true,
       "letter_type": "substantiate"
     },
-    "seconds": 55
+    "seconds": 58
   },
   {
     "key": "j#3",
@@ -680,10 +1028,10 @@
       }
     },
     "result": {
-      "case_id": "f971dc54-2227-49bc-a46f-a69dbc55558c",
+      "case_id": "11fa9566-793e-403e-9bb4-066ab5afe363",
       "status": "complete",
       "verdict": "insufficient_information",
-      "confidence": 0.9,
+      "confidence": 0.95,
       "deciding_clauses": [
         {
           "clause_id": "1.a",
@@ -697,19 +1045,26 @@
           "percent_cap": null
         }
       ],
-      "explanation": "The pre-existing disease clause on page 30 states that coverage for a pre-existing condition after the 36-month waiting period requires the condition to have been declared at the time of application and accepted by the insurer. Although the treatment in June 2026 occurred more than six years after the policy started in January 2020, the record does not state when diabetes was first diagnosed. Furthermore, it is unknown whether diabetes was declared on the proposal form and accepted by the insurer at policy inception. Without these essential facts regarding prior diagnosis and disclosure, it is impossible to determine whether the rejection is supported.",
-      "what_would_change_it": "A copy of the policy proposal form showing diabetes was declared at inception and accepted by the insurer, or medical records showing diabetes was first diagnosed after January 15, 2020.",
+      "explanation": "The claim cannot be decided without knowing when the insured was first diagnosed with diabetes mellitus and whether it was declared on the policy application. Under the pre-existing disease clause on page 30, expenses for pre-existing conditions and their direct complications are covered after 36 months of continuous coverage, provided the condition was declared at application and accepted by the insurer. Because the policy has been active for over six years since January 15, 2020, the standard 36-month waiting period has expired, but coverage depends on whether the condition was pre-existing and whether it was disclosed. Without medical records showing the initial diagnosis date or the proposal form showing what was declared, the rejection cannot be validated or overturned.",
+      "what_would_change_it": "Medical records showing that diabetes mellitus was first diagnosed after January 15, 2020, or a copy of the initial proposal form proving it was declared and accepted by the insurer.",
       "arguments": {
-        "insurer_position": "Under the pre-existing disease clause on page 30, expenses related to the treatment of a pre-existing disease and its direct complications are excluded, and post-36-month coverage is strictly subject to the condition having been declared at the time of application and accepted by the insurer. Although the policy commenced on January 15, 2020, and the 36-month waiting period has elapsed prior to the June 10, 2026 admission date, it has not been established that diabetes mellitus was declared at inception and accepted by the insurer. Therefore, expenses arising from complications of diabetes mellitus remain excluded under the policy terms.",
-        "claimant_position": "The admission on June 10, 2026, occurred more than six years after the policy inception date of January 15, 2020, which far exceeds the 36-month waiting period set out in the pre-existing disease clause on page 30. Additionally, the insurer has not established that diabetes mellitus was diagnosed or treated within 36 months prior to commencement under the pre-existing disease definition on page 7, nor has the insurer shown that the condition was undeclared at the time of application. Because the 36-month waiting period has elapsed and no non-disclosure has been demonstrated, the claim is admissible.",
-        "insurer_weak_point": "The admission date is more than six years after the policy inception date, so the 36-month waiting period under the pre-existing disease clause on page 30 has long expired, and the record does not establish that diabetes was diagnosed prior to policy inception or that it was undeclared.",
-        "claimant_weak_point": "The insurer may argue that under the pre-existing disease clause on page 30, coverage after 36 months is subject to the pre-existing disease having been declared at the time of application and accepted by the insurer."
+        "insurer_position": "Under the pre-existing disease clause on page 30 and the pre-existing disease definition on page 7, coverage for a pre-existing condition and its direct complications after 36 months of continuous coverage requires that the disease was declared at application and accepted by the insurer. While the policy commenced on January 15, 2020 and the admission occurred on June 10, 2026, the claimant has not established that diabetes mellitus was declared at inception and accepted by the insurer, nor whether it was diagnosed prior to policy commencement. In the absence of proof that the condition was declared and accepted or arose post-inception, the claim remains excluded.",
+        "claimant_position": "The policy commenced on January 15, 2020, while the admission occurred on June 10, 2026, which is well past six years of continuous coverage. Under the pre-existing disease clause on page 30, expenses related to a pre-existing disease and its direct complications are only excluded until the expiry of 36 months. Furthermore, the insurer has not established that the condition met the definition of a pre-existing disease on page 7 at policy inception or that it was undeclared.",
+        "insurer_weak_point": "The policy has been active for over six years, well beyond the 36-month waiting period, and the insurer has not established that diabetes mellitus was a pre-existing condition diagnosed prior to policy inception.",
+        "claimant_weak_point": "The insurer may contend that under the pre-existing disease clause on page 30, coverage after 36 months is subject to the condition having been explicitly declared at the time of application and accepted by the insurer."
       },
+      "unknown_facts": [
+        {
+          "fact": "Whether the insured's diabetes mellitus was diagnosed or treated before the policy start date of January 15, 2020, and if so, whether it was declared on the proposal form and accepted by the insurer.",
+          "material": true,
+          "why": "If diabetes mellitus developed after the policy start date, or if it was a pre-existing condition that was declared and accepted at inception, the 36-month waiting period has expired and the claim is covered. If it was a pre-existing condition that was not declared, coverage remains excluded under the policy terms."
+        }
+      ],
       "rejection_type": "pre_existing",
       "considered_count": 15,
       "appeal_available": true,
       "letter_type": "substantiate"
     },
-    "seconds": 53
+    "seconds": 56
   }
 ]

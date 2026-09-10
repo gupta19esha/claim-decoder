@@ -1072,60 +1072,73 @@ established.
 `insufficient_information`** (0.95, 0.90, 0.90), each naming the missing
 fact. The instability is gone.
 
-### The rule fires where the unknown does not matter — OPEN
+### Materiality and the structured field — PARTLY WORKING, STILL OPEN
 
-`f` (Star cataract sub-limit) went from a stable `well_supported` **to
-`insufficient_information`**, on the grounds that the Sum Insured is not
-stated and so "it is impossible to determine whether 25% of that figure is
-less than Rs. 40,000".
+10 Sep 2026, second pass. Two changes: the rule that an unknown fact only
+prevents a decision if it could change the answer, and an `unknown_facts`
+array returned **first** in the adjudicator's JSON, each entry naming the fact
+and whether it is material. Keys are generated in order, so enumerating the
+silences before naming a verdict makes the verdict a consequence of the list
+rather than something the list is written to justify.
 
-**That reasoning is wrong, and the arithmetic says so.** The clause caps at
-"25% of Sum Insured or Rs.40,000, whichever is **lower**" — so the cap is at
-most Rs 40,000 per eye whatever the Sum Insured is. The bill was Rs 95,000.
-One eye or two, the bill exceeds the maximum possible cap. **The unknown fact
-cannot change the answer.**
+**Where it worked, it worked exactly as intended.** On the cataract sub-limit
+the Sum Insured is now marked not material in all three runs, with the
+arithmetic spelled out: *"the cap per eye can never exceed Rs 40,000
+regardless of the Sum Insured"*. That is the reasoning that was wanted.
 
-The missing qualifier is materiality: *an unknown fact should block a
-decision only if it could change the outcome.* Proposed addition, not yet
-applied:
+**But enumeration without a burden principle becomes paralysis.** The model
+is now far better at *finding* unknowns, and nothing tells it which ones
+count, so it finds exceptions nobody has raised and stops.
 
-> An unknown fact only prevents a decision if it could change the answer. If
-> the clause resolves the same way whichever value the unknown fact takes,
-> decide the case and say why the unknown does not matter.
+| case | before | after | wanted |
+|---|---|---|---|
+| j — PED, declaration silent | `insufficient_information` ×3 | **×3, stable** | ✔ |
+| f — cataract sub-limit | `insufficient_information` ×3 | `well_supported` ×2, `insufficient_information` ×1 | ✘ wanted ×3 |
+| a — PED, 77 months | II ×2, weak ×1 | `insufficient_information` ×3 | now stable |
+| h — specified disease | `well_supported` ×3 | **`insufficient_information` ×3** | ✘ **regressed** |
 
-### The rule is also applied inconsistently — OPEN
+`h` is the clearest failure. The dates give 16.5 months against a 24-month
+specified-disease waiting period, which decides it. The model instead flags
+*"whether the hernia repair was necessitated by an accident"* and *"whether
+prior coverage was ported"* — both real exceptions in Excl02, neither raised
+by anybody. **There is always some exception whose non-applicability is
+unstated, so on this reading almost every rejection is undecidable.**
 
-Case `a` (same dates, Angioplasty) ran 2 of 3 `insufficient_information`, 1 of
-3 `weakly_supported`. All three runs retrieve the same two clauses and all
-three notice a **second** silence: the claim gives a start date and an
-admission date but never says coverage was continuously renewed, which both
-the 36-month clause and the page-37 moratorium require.
+`f`'s remaining run tested materiality against the wrong question: it asked
+whether the unknown changes *the payable amount* rather than *the verdict*.
+Both eyes gives Rs 80,000, still under the Rs 95,000 bill, so the verdict does
+not move.
 
-Two runs treat that as unknown. One assumes continuity and decides — this
-time in the **claimant's** favour. So the residual swing is the original
-defect on a different silence, not an over-correction, and the rule is
-symmetric: it catches silences that favour either side. Adherence is the
-problem, not the rule.
+**The missing principle is burden, and it separates the cases cleanly:**
 
-A structured `"unknown_facts": [...]` field in the adjudicator's JSON would
-force enumeration before the verdict and would likely fix both the adherence
-and the materiality problem, since a fact listed as unknown can then be
-tested against the outcome. Not attempted.
+- `j` — the insurer *needs* declaration-and-acceptance to be true to sustain
+  the exclusion past 36 months. It is a precondition of their own case and it
+  is unstated. Genuinely material.
+- `h` — an accident, or ported coverage, would be an *exception* to a clause
+  that otherwise applies. Nobody has claimed one. Not material.
 
-### Where this leaves the corpus of test cases
+Draft wording, not applied:
 
-| case | before | after |
-|---|---|---|
-| j — PED, declaration silent | (the defect) | `insufficient_information` ×3, stable |
-| a — PED, 77 months, Angioplasty | `weakly_supported` ×2 | 2× `insufficient_information`, 1× `weakly_supported` |
-| f — cataract sub-limit | `well_supported` ×2 | **`insufficient_information` — regression** |
-| h — specified disease, dates given | `well_supported` | `well_supported`, unaffected |
+> A fact is material only if the party relying on the clause needs it to be
+> true and has not stated it. An exception nobody has claimed is not a
+> material unknown: if a clause applies unless some condition holds, and
+> neither the letter nor the claim details raises that condition, decide on
+> the clause as it stands. The mere existence of an exception is never a
+> reason you cannot decide.
 
-`python run_matrix.py j x3` runs one case repeatedly. **Adjudication is not
-deterministic, and a verdict that moves between runs of identical input is
-telling you the input does not determine it — that is a finding, not noise.**
-Any prompt change should be run at least three times per case before it is
-believed.
+**Two lessons worth keeping regardless of how this is resolved.**
+
+A prompt rule that is correct in isolation can be wrong in aggregate. "Never
+resolve a silence" is right; applied without a burden principle it makes the
+product answer "not enough to judge" to almost everything, which is useless
+in a different way from being confidently wrong.
+
+And `python run_matrix.py <case> x3` is the minimum before believing any
+prompt change. Adjudication is not deterministic, and a verdict that moves
+between runs of identical input is telling you the input does not determine
+it — that is a finding, not noise. Both prompt changes on 10 Sep looked fine
+on the case they targeted and broke a neighbouring case that was not checked
+until afterwards.
 ---
 
 ## Known gaps

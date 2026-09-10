@@ -178,6 +178,10 @@ def run(key):
               f"{c.get('exclusion_code')} | {(c.get('clause_title') or '')[:70]}")
         print(f"             wait={c.get('waiting_period_days')} "
               f"cap={c.get('monetary_cap')} pct={c.get('percent_cap')}")
+    for u in res.get("unknown_facts") or []:
+        mark = "MATERIAL" if u.get("material") else "not material"
+        print(f"     unknown [{mark}]: {u.get('fact')}")
+        print(f"               why: {(u.get('why') or '')[:190]}")
     print(f"     why: {(res.get('explanation') or '')[:400]}")
     return {"key": key, "label": label, "sent": body, "result": res,
             "seconds": round(took)}
