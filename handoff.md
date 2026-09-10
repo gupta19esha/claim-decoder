@@ -45,9 +45,23 @@ whole. Both of those failed silently for months. See "The silent-loss family".
 GCP project `project-37e668b0-6b36-4e1f-a02`, region `asia-south1`. Free trial
 credits, expiring 16 Nov 2026.
 
-Verified end to end on 31 Aug 2026: a pasted HDFC rejection returns
-`well_supported` at 0.95 confidence citing Excl01 on page 30 with its 36-month
-waiting period, and correctly reasons that 14 months of coverage is short of it.
+**The canonical demo case, and how to check it.** A pasted HDFC rejection with
+a policy start of 01 Jan 2025 and an admission of 10 Jun 2026 returns
+`well_supported` at 0.95, citing Excl01 on page 30 with its 36-month waiting
+period, and reasons that 17 months of continuous coverage is short of it.
+
+Run it before trusting it, and run it three times:
+
+```
+python run_matrix.py b x3
+```
+
+**It has broken twice.** Both times a prompt change fixed a different case and
+swallowed this one, and both times it looked healthy in every other respect —
+the API answered, the retrieval was right, the clause and page were right, and
+only the verdict was wrong. Verified `well_supported` 3 of 3 on 10 Sep 2026.
+If it returns `insufficient_information`, nothing is broken in the
+infrastructure; read the adjudicator section below.
 
 ### Corpus
 
@@ -1072,98 +1086,112 @@ established.
 `insufficient_information`** (0.95, 0.90, 0.90), each naming the missing
 fact. The instability is gone.
 
-### Materiality — TRIED TWICE, REVERTED. Read this before trying again.
+### Materiality: three attempts, and the one that worked was narrowing
 
-10 Sep 2026. The unknown-fact rule above fixed the reported case and left two
-neighbours wrong: the cataract sub-limit abstained over a Sum Insured that
-cannot change the answer, and the specified-disease case abstained over
-exceptions nobody had raised. Two attempts to fix that, both reverted.
+10 Sep 2026. The unknown-fact rule fixed the reported defect and quietly
+broke almost everything else. Two attempts to repair it in general failed.
+The third succeeded by giving up on generality.
 
-**Attempt 1 — a materiality rule plus an `unknown_facts` array returned first
-in the JSON.** Partly worked. The Sum Insured came out "not material" 3 of 3
-with the arithmetic spelled out — *"the cap per eye can never exceed Rs 40,000
-regardless of the Sum Insured"*. But better enumeration without a burden
-principle is paralysis: the specified-disease case went to
-`insufficient_information` 3 of 3, flagging accident and portability
-exceptions nobody had claimed.
+**What the broad rule actually did.** "A fact not stated is unknown, never
+resolve a silence" is true, and applied to every unstated fact it made the
+product abstain on the commonest rejection type in India. Insurers do not put
+a diagnosis date in the letter, so whether a disease is pre-existing *at all*
+is always unstated — and the adjudicator started answering "not enough to
+judge" to a case where 17 months of coverage sits inside a 36-month waiting
+period and the wording plainly settles it.
 
-**Attempt 2 — a burden rule, then a `role` / `raised_by` decision table.** The
-prose rule suppressed exceptions indiscriminately. The structured version
-asked the model to attribute each unknown before judging it. Neither landed,
-and the second one showed why.
+**Attempt 1, a materiality rule plus `unknown_facts` returned first in the
+JSON.** Partly worked: the sub-limit's Sum Insured came out not material 3 of
+3 with the arithmetic spelled out. But better enumeration without a burden
+principle is paralysis — the specified-disease case went to
+`insufficient_information` 3 of 3 over exceptions nobody had claimed.
 
-**THE FINDING THAT SETTLES IT: `raised_by` was filled in wrongly.** In the
-case where nobody mentions portability, two of three runs recorded it as
-*"raised by the claimant"*. In the case where the letter says in terms that
-the insured contends the hernia followed a road accident, two of three runs
-recorded the accident as *"raised by nobody"* and decided the case on that
-basis.
+**Attempt 2, a burden rule, then a `role` / `raised_by` decision table.**
+Failed, and showed why the whole approach could not work. **The attribution
+was filled in wrongly.** Where nobody mentions portability, 2 of 3 runs
+recorded it as "raised by the claimant". Where the letter says in terms that
+the insured contends the hernia followed a road accident, 2 of 3 runs recorded
+the accident as "raised by nobody" and decided on that. That is the model
+misreading who said what in a four-line letter, and every version of the rule
+depends on that reading being right. **A structured field does not make a
+judgement reliable; it gives an unreliable judgement a tidier place to be
+wrong.**
 
-That is not a rule-wording problem. It is the model misreading who said what
-in a four-line letter. **No refinement of the rule reaches it**, because every
-version of the rule depends on that attribution being right. A structured
-field does not make a judgement reliable; it only gives an unreliable
-judgement a tidier place to be wrong.
+**Attempt 3, narrowing — this is what is live.** The defect reported was
+specific: the adjudicator inventing that a disease *was not declared at
+application*. So the abstention trigger is scoped to exactly that, and it is
+mechanical rather than a judgement:
 
-**Measured across states, three runs each**, on the two cases that matter:
+> Excl01 carries two separate conditions — a waiting period, and, for
+> coverage after that period expires, that the disease was declared at
+> application and accepted. **The declaration condition only becomes live once
+> the waiting period has been satisfied by time.** When the months of cover
+> exceed the waiting period, the exclusion can only stand on the declaration,
+> and if nothing states whether it was declared the case is undecidable.
+> Everywhere else, decide on what you were given.
 
-| state | h — dates settle it, want well_supported | f — cap settles it, want well_supported | j — genuinely undecidable |
-|---|---|---|---|
-| `4a43f54` unknown-fact rule (**live**) | **2 / 3** | 1 / 3 | 3 / 3 |
-| `b45450f` + materiality + unknown_facts | 0 / 3 | 2 / 3 | 3 / 3 |
-| attempt 2, burden rule | 1 / 3 | 0 / 3 | 3 / 3 |
-| attempt 2, role + raised_by | 1 / 3 | not run | 3 / 3 |
+That single distinction separates the two cases cleanly. 77 months of cover
+means the time condition is met and the declaration is all that is left, so
+it abstains. 17 months means the exclusion bites on the timeline and the
+declaration is irrelevant, so it decides. Three explicit counterweights stop
+the rule spreading: do not abstain because a diagnosis date is unstated, do
+not abstain because an unraised exception has not been ruled out, do not
+abstain over a figure that cannot change the verdict.
 
-Reverted to `4a43f54`. It is the best available on `h`, and a wrong "cannot
-decide" on a case the dates plainly settle is worse than a cautious one on a
-sub-limit. **`j` is 3 of 3 in every variant, so the original defect — the
-adjudicator resolving a silence in the insurer's favour — stays fixed
-whatever else is done here.**
+**Measured, three runs per case, every state:**
 
-**What is still wrong, and what would actually be needed.** `f` abstains 2 of
-3 over a Sum Insured that cannot change the answer, and `h` abstains 1 of 3
-over an exception nobody raised. Both are the same root cause: judging
-materiality requires holding the clause logic, the stated facts and who
-asserted them simultaneously, and the model does that inconsistently at this
-prompt length. If it is picked up again, the thing to try is **not** another
-rule. Either:
+| case | pre-fix | broad rule `4a43f54` | + materiality | narrowed (**live**) |
+|---|---|---|---|---|
+| b — 17 months, inside the window | `well_supported` | II ×3 | — | **WS ×3** |
+| j — 77 months, declaration silent | *the defect* | II ×3 | II ×3 | **II ×3** |
+| h — specified disease, dates settle it | `well_supported` | WS 8/9 | II ×3 | **WS ×3** |
+| f — cataract sub-limit | WS 2/3 | II ×3 | WS 2/3 | **WS ×3** |
+| k — accident exception raised | — | — | WS 2/3 | WS ×3 |
 
-- decide materiality deterministically in Python for the shapes that recur —
-  a cap with "whichever is lower" against a bill is arithmetic, not judgement;
-  or
-- run the attribution as its own small call with only the letter and the
-  question "which of these exceptions does this letter mention?", so the
-  reading step is not competing with the reasoning step.
+Every case is now right and stable except `k`, and `j` — the defect that
+started this — stays fixed.
 
-### The process fix, which is the durable part
+**`k` is the known limitation.** The letter records the insured contending the
+hernia followed a road accident, Excl02 excepts accidents, and the tool still
+returns `well_supported`. It is defensible — the rejection is supported on the
+wording and the dates as they stand, and the contention is unproven — and
+`what_would_change_it` names the thing to get: *"Proof that the hernia was
+caused directly by an accident"*. A stricter reading would be
+`partially_supported`. **Do not fix this by widening the abstention rule.**
+That is what broke b, h and f twice. If it is worth fixing, the exception a
+party has actually raised needs to reach the adjudicator as a separate
+structured input, not as something it has to notice while doing everything
+else.
 
-**Deploy to a no-traffic revision and run every case against it before
-promoting.**
+### The process, which is the durable part
+
+**Deploy to a no-traffic revision and run every case before promoting.**
 
 ```
 gcloud run deploy claim-decoder-api --source backend --region asia-south1 \
   --max-instances 1 --no-traffic --tag candidate
 CLAIM_API=https://candidate---claim-decoder-api-a5vy5uonga-el.a.run.app \
-  python run_matrix.py h x3
+  python run_matrix.py b x3
 gcloud run services update-traffic claim-decoder-api \
   --region asia-south1 --to-latest      # only once it passes
 ```
 
 `run_matrix.py` takes `CLAIM_API` for exactly this. Both regressions on 10 Sep
-went live because each change was shipped and its neighbours checked
-afterwards.
+reached production because each change was shipped and its neighbours checked
+afterwards. The third attempt was tested across all five cases first and
+promoted once.
 
-**And three runs, never one.** The claim in an earlier revision of this file
-that `h` was well_supported "3 of 3" at `4a43f54` was wrong: it rested on a
-single run, and the real figure is 2 of 3. Adjudication is not deterministic,
-a verdict that moves between runs of identical input is telling you the input
-does not determine it, and a single run is not evidence of anything.
-`python run_matrix.py <case> x3` is the minimum.
+**Three runs, never one.** An earlier revision of this file claimed `h` passed
+3 of 3 on the broad rule; that rested on a single run and the real figure was
+2 of 3. A verdict that moves between runs of identical input is telling you
+the input does not determine it — that is a finding, not noise.
 
-Case `k` in `run_matrix.py` is the control worth keeping: it is `h` with the
-accident exception actually raised in the letter. A rule that suppresses
-unraised exceptions must still flag `k`. Any future attempt should be judged
-on `h` and `k` together — passing one alone proves nothing.
+**The five cases are a suite, not examples.** `b` and `j` are a matched pair
+that pull in opposite directions: the same clause and the same insurer, one
+inside the waiting period and one past it, and any rule about silences must
+get both right. `h` and `k` are the same for unraised versus raised
+exceptions. `f` is the arithmetic case. Judge a change on all five, because
+each of the three attempts above passed the case it targeted.
 ---
 
 ## Known gaps
