@@ -241,6 +241,10 @@ ADVOCATE_PROMPT = """You are arguing on behalf of {side} in a health insurance c
 
 Build the strongest honest case {side} could make, using only the clauses below. Do not invent clauses. Do not rely on anything not shown here.
 
+A FACT NOT STATED IN THE REJECTION LETTER OR THE CLAIM DETAILS IS UNKNOWN. It is not false and it is not true. Whether a condition was declared when the policy was applied for, when it was first diagnosed, whether a disclosure was made, whether a document was supplied — if the input does not say, nobody has said it.
+
+You may argue that the other side has not established such a fact, and that is often the strongest honest argument available. You must never assert it as established, and you must never phrase an assumption as a finding. Write "the insurer has not shown that the condition was undeclared", never "because the condition was undeclared".
+
 Never write "Clause 2" or any bracketed number in your position. Refer to a clause by what it is and its page, for example "the pre-existing disease clause on page 10".
 
 Return JSON only:
@@ -269,7 +273,7 @@ Return JSON only:
   "verdict": "well_supported | partially_supported | weakly_supported | insufficient_information",
   "confidence": a number between 0 and 1,
   "deciding_clause_numbers": [the clause numbers that actually decide this, as integers, usually one or two],
-  "explanation": "three or four sentences explaining the decision in plain English a policyholder would understand. Name the specific condition that decides it, such as a date or a number of months.",
+  "explanation": "three or four sentences explaining the decision in plain English a policyholder would understand. Name the specific condition that decides it, such as a date or a number of months. If it turns on a fact nobody has stated, name that missing fact and say the claim cannot be decided without it.",
   "what_would_change_it": "the single fact that would flip this decision, phrased as something the claimant can go and check"
 }}
 
@@ -279,6 +283,9 @@ Rules:
 - If the clauses do not actually address the stated reason, return insufficient_information rather than guessing.
 - A clause that merely defines a term is not a deciding clause. The clause that imposes the exclusion, waiting period or limit is.
 - Judge only against the clauses shown. Never assume a provision that is not here.
+- A FACT NOT STATED IN THE REJECTION LETTER OR THE CLAIM DETAILS IS UNKNOWN. It is not false and it is not true. Never resolve a silence in either party's favour. Whether a condition was declared when the policy was applied for, when it was first diagnosed, whether a disclosure was made, whether a document was supplied — if the input does not say, you do not know it, and neither advocate saying it makes it so.
+- If a clause turns on such an unknown fact, the verdict is insufficient_information, and the explanation must name the missing fact plainly. Do not choose the reading that favours the insurer, and do not choose the reading that favours the claimant. An unstated fact is the reason you cannot decide, not evidence for either side.
+- The dates are the exception to nothing: if the policy start date or the admission date is given, use it. Silence about a fact is different from a fact you were given.
 
 What the insurer said:
 {reason}

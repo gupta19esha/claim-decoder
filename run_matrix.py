@@ -11,6 +11,11 @@ Sequential, never parallel: the case store is an in-process dict behind
 
   python run_matrix.py            # everything
   python run_matrix.py a b i      # named cases only
+  python run_matrix.py j x3       # the same case three times, for stability
+
+Extraction is not deterministic and neither is adjudication. A verdict that
+moves between runs of identical input is telling you the input does not
+determine it — which is a finding, not noise.
 
 Writes matrix_results.json with the full result of every run.
 """
@@ -33,6 +38,20 @@ HDFC_PED = (
     "complications is excluded until the expiry of 36 months of continuous "
     "coverage after the date of inception of the first policy with us. The "
     "claim is therefore not payable."
+)
+
+# The case that exposed the adjudicator resolving a silence in the insurer's
+# favour. The dates clear the 36-month waiting period outright (77 months of
+# cover), so the only thing left that could sustain the rejection is Excl01's
+# other condition — that the disease was declared at application and accepted.
+# NOTHING IN THIS INPUT SAYS WHETHER IT WAS. That is the silence.
+HDFC_PED_DIABETES = (
+    "We regret to inform you that your claim under policy Optima Secure has "
+    "been repudiated. The insured was admitted for treatment of complications "
+    "arising from diabetes mellitus, which is a pre-existing condition. As "
+    "per Exclusion Excl01 of the policy wording, treatment of a pre-existing "
+    "disease and its direct complications is excluded. The claim is therefore "
+    "not payable."
 )
 
 STAR_SUBLIMIT = (
@@ -89,9 +108,15 @@ CASES = {
     # system could have.
     "i": ("WRONG INSURER: HDFC letter filed against Star Arogya Sanjeevani",
           STAR, HDFC_PED, FULL_INSIDE),
+
+    # The unstated-fact case. Should be insufficient_information naming the
+    # missing fact, and should be stable across runs — with the fact unknown,
+    # a verdict either way is free to swing.
+    "j": ("UNSTATED FACT: PED diabetes, 77 months of cover, declaration silent",
+          HDFC, HDFC_PED_DIABETES, (None, None, "2020-01-15", "2026-06-10")),
 }
 
-ORDER = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+ORDER = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
 
 
 def post(path, body):
@@ -159,11 +184,23 @@ def run(key):
 
 
 def main():
-    keys = [k for k in sys.argv[1:] if k in CASES] or ORDER
+    args = sys.argv[1:]
+    repeat = 1
+    for a in args:
+        if a.startswith("x") and a[1:].isdigit():
+            repeat = int(a[1:])
+    keys = [k for k in args if k in CASES] or ORDER
+    if repeat > 1:
+        keys = [k for k in keys for _ in range(repeat)]
     out = []
+    seen = {}
     for k in keys:
+        seen[k] = seen.get(k, 0) + 1
+        tag = k if seen[k] == 1 else f"{k}#{seen[k]}"
         try:
-            out.append(run(k))
+            r = run(k)
+            r["key"] = tag
+            out.append(r)
         except urllib.error.HTTPError as e:
             print(f"     HTTP {e.code}: {e.read().decode('utf-8')[:300]}")
             out.append({"key": k, "error": f"HTTP {e.code}"})
@@ -180,7 +217,8 @@ def main():
         prior = {}
     for r in out:
         prior[r["key"]] = r
-    merged = [prior[k] for k in ORDER if k in prior]
+    order = ORDER + sorted(k for k in prior if k not in ORDER)
+    merged = [prior[k] for k in order if k in prior]
     with open("matrix_results.json", "w", encoding="utf-8") as fh:
         json.dump(merged, fh, indent=2, ensure_ascii=False)
     print("\nwrote matrix_results.json")

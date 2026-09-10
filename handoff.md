@@ -1030,6 +1030,104 @@ rounding artefact — so `rule` went from `#cdc5b0` to `#c9c0a9`.
 API, no model, runs in under a second. Run it after any colour change.
 ---
 
+## NEW — the adjudicator was resolving silences, and the fix has a known cost
+
+10 Sep 2026.
+
+**The defect.** An HDFC pre-existing disease rejection, policy start 15 Jan
+2020, admission 10 Jun 2026 — 77 months of cover, well past the 36-month
+waiting period. The adjudicator returned `well_supported` at 0.95 reasoning
+"Because the pre-existing diabetes was not declared and accepted when the
+policy was issued, expenses for its treatment remain excluded."
+
+**Nothing in the input said the condition was undeclared.** Excl01 has a
+second condition — coverage after 36 months requires the disease to have been
+declared at application and accepted — and with the waiting period satisfied,
+that condition was the only thing left that could sustain the rejection. The
+model resolved the silence in the insurer's favour and stated it as settled.
+
+The system half-knew: `what_would_change_it` asked for proof the condition
+was declared, and the insurer's own weak spot named the six years of cover.
+It recognised the fact was unestablished while the verdict treated it as
+established.
+
+The same input had returned `weakly_supported` earlier the same day. **That
+instability was a symptom of the same gap** — with the fact unknown, the
+verdict is free to swing on whichever reading the model lands on.
+
+*Cause:* the prompts constrained **clauses** ("Judge only against the clauses
+shown. Never assume a provision that is not here") and said nothing about
+**facts**. The model could not invent a clause but was free to invent a fact
+about the claimant.
+
+*Fix:* a rule in `ADJUDICATOR_PROMPT` and `ADVOCATE_PROMPT` that a fact not
+stated in the rejection letter or the claim details is UNKNOWN — not false,
+not true — and that a silence is never resolved in either party's favour.
+Where a clause turns on such a fact the verdict is
+`insufficient_information` and the explanation names the missing fact. An
+advocate may argue a fact is unproven but must never assert it as
+established.
+
+**Result on the reported case: three runs, three times
+`insufficient_information`** (0.95, 0.90, 0.90), each naming the missing
+fact. The instability is gone.
+
+### The rule fires where the unknown does not matter — OPEN
+
+`f` (Star cataract sub-limit) went from a stable `well_supported` **to
+`insufficient_information`**, on the grounds that the Sum Insured is not
+stated and so "it is impossible to determine whether 25% of that figure is
+less than Rs. 40,000".
+
+**That reasoning is wrong, and the arithmetic says so.** The clause caps at
+"25% of Sum Insured or Rs.40,000, whichever is **lower**" — so the cap is at
+most Rs 40,000 per eye whatever the Sum Insured is. The bill was Rs 95,000.
+One eye or two, the bill exceeds the maximum possible cap. **The unknown fact
+cannot change the answer.**
+
+The missing qualifier is materiality: *an unknown fact should block a
+decision only if it could change the outcome.* Proposed addition, not yet
+applied:
+
+> An unknown fact only prevents a decision if it could change the answer. If
+> the clause resolves the same way whichever value the unknown fact takes,
+> decide the case and say why the unknown does not matter.
+
+### The rule is also applied inconsistently — OPEN
+
+Case `a` (same dates, Angioplasty) ran 2 of 3 `insufficient_information`, 1 of
+3 `weakly_supported`. All three runs retrieve the same two clauses and all
+three notice a **second** silence: the claim gives a start date and an
+admission date but never says coverage was continuously renewed, which both
+the 36-month clause and the page-37 moratorium require.
+
+Two runs treat that as unknown. One assumes continuity and decides — this
+time in the **claimant's** favour. So the residual swing is the original
+defect on a different silence, not an over-correction, and the rule is
+symmetric: it catches silences that favour either side. Adherence is the
+problem, not the rule.
+
+A structured `"unknown_facts": [...]` field in the adjudicator's JSON would
+force enumeration before the verdict and would likely fix both the adherence
+and the materiality problem, since a fact listed as unknown can then be
+tested against the outcome. Not attempted.
+
+### Where this leaves the corpus of test cases
+
+| case | before | after |
+|---|---|---|
+| j — PED, declaration silent | (the defect) | `insufficient_information` ×3, stable |
+| a — PED, 77 months, Angioplasty | `weakly_supported` ×2 | 2× `insufficient_information`, 1× `weakly_supported` |
+| f — cataract sub-limit | `well_supported` ×2 | **`insufficient_information` — regression** |
+| h — specified disease, dates given | `well_supported` | `well_supported`, unaffected |
+
+`python run_matrix.py j x3` runs one case repeatedly. **Adjudication is not
+deterministic, and a verdict that moves between runs of identical input is
+telling you the input does not determine it — that is a finding, not noise.**
+Any prompt change should be run at least three times per case before it is
+believed.
+---
+
 ## Known gaps
 
 - **Six List I items missing** from Star's Annexure, serials 9, 20, 21, 24, 25,
